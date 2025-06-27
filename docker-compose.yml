@@ -1,0 +1,97 @@
+version: "3.8"
+services:
+  php-fpm:
+    container_name: app-comparator
+    build:
+      context: .
+      dockerfile: ./docker/php/fpm/Dockerfile
+    entrypoint: sh setup-dev.sh
+    expose:
+      - 9000
+      - 5173
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/var/www:rw,z
+      - ./public:/var/www/public:rw,z
+    depends_on:
+      - db
+    networks:
+      - app_network
+    environment:
+      APP_ENV: local
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: '${DB_DATABASE}'
+      DB_USERNAME: '${DB_USERNAME}'
+      DB_PASSWORD: '${DB_PASSWORD}'
+      APP_NAME: Comparator
+      APP_KEY: base64:pbBpy9hYSSDYzes0z2D6/e/YFZ121hjfBDvWxGe1CAU=
+      APP_DEBUG: "true"
+      APP_URL: http://localhost/
+    
+
+  nginx:
+    container_name: nginx-comparator
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+    - ./public:/var/www/public
+    ports:
+      - 80:80
+    depends_on:
+      - php-fpm
+    environment:
+      NGINX_FPM_HOST: app-comparator
+      NGINX_ROOT: /var/www/public
+    networks:
+      - app_network
+
+  db:
+    container_name: db-comparator
+    image: 'mysql/mysql-server:8.0'
+    restart: always
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-p${DB_PASSWORD}'
+      retries: 3
+      timeout: 5s
+    networks:
+      - app_network
+
+  # MailPit service // Utilitaire de test email
+  mailpit:
+    image: 'axllent/mailpit:latest'
+    container_name: 'mailpit-comparator'
+    ports:
+      - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+      - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+    networks:
+      - app_network
+
+
+# volumes
+volumes:
+  dbdata:
+    driver: local
+
+# docker networks
+networks:
+  app_network:
+    driver: bridge
