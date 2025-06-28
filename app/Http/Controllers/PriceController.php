@@ -18,9 +18,10 @@ class PriceController extends Controller
         $this->priceParser = $priceParser;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('price.search');
+        $isbn = $request->query('isbn');
+        return view('price.search', compact('isbn'));
     }
 
     public function historique()
@@ -47,19 +48,41 @@ class PriceController extends Controller
         $search->isbn = $isbn;
         $search->save();
 
-        $apiKey = env('SCRAPER_API_KEY');
-
         // Récupérer le titre via l'API OpenLibrary
         $title = $this->getTitleFromIsbn($isbn);
-
-        $results = [];
-        $prices = [];
 
         // Créer le dossier storage/app/public/results s'il n'existe pas
         $resultsPath = storage_path('app/public/results');
         if (!file_exists($resultsPath)) {
             mkdir($resultsPath, 0755, true);
         }
+
+        // Récupérer les prix et résultats
+        $searchData = $this->searchPrices($isbn, $title, $search->id, $resultsPath);
+
+        // Mettre à jour l'historique avec les prix uniquement
+        $search->update([
+            'prix_fnac' => $searchData['prices']['fnac'],
+            'prix_amazon' => $searchData['prices']['amazon'],
+            'prix_cultura' => $searchData['prices']['cultura'],
+            'estimation_occasion' => $searchData['occasion_price'],
+        ]);
+
+        return view('price.results', [
+            'isbn' => $isbn,
+            'title' => $title,
+            'results' => $searchData['results'],
+            'prices' => $searchData['prices'],
+            'historique_id' => $search->id,
+            'occasion_price' => $searchData['occasion_price']
+        ]);
+    }
+
+    private function searchPrices($isbn, $title, $searchId = null, $resultsPath = null)
+    {
+        $apiKey = env('SCRAPER_API_KEY');
+        $results = [];
+        $prices = [];
 
         // AMAZON
         $target_url = "https://www.amazon.fr/dp/" . $isbn;
@@ -69,18 +92,24 @@ class PriceController extends Controller
         try {
             $response = Http::timeout(60)->get($api_url);
             $results['amazon'] = $response->body();
-            $amazonFile = $resultsPath . '/index_amazon_' . $search->id . '.html';
-            file_put_contents($amazonFile, $response->body());
-            chmod($amazonFile, 0644);
+            $prices['amazon'] = $this->priceParser->parseAmazonPrice($results['amazon']);
+            
+            // Sauvegarder le fichier si un chemin est fourni
+            if ($resultsPath && $searchId) {
+                $amazonFile = $resultsPath . '/index_amazon_' . $searchId . '.html';
+                file_put_contents($amazonFile, $response->body());
+                chmod($amazonFile, 0644);
+            }
         } catch (\Exception $e) {
             $results['amazon'] = '<html><body>Erreur lors de la récupération Amazon</body></html>';
-            $amazonFile = $resultsPath . '/index_amazon_' . $search->id . '.html';
-            file_put_contents($amazonFile, $results['amazon']);
-            chmod($amazonFile, 0644);
+            $prices['amazon'] = null;
+            
+            if ($resultsPath && $searchId) {
+                $amazonFile = $resultsPath . '/index_amazon_' . $searchId . '.html';
+                file_put_contents($amazonFile, $results['amazon']);
+                chmod($amazonFile, 0644);
+            }
         }
-        
-        // Parser le prix Amazon
-        $prices['amazon'] = $this->priceParser->parseAmazonPrice($results['amazon']);
 
         // CULTURA
         $target_url = "https://www.cultura.com/search/results?search_query=" . $isbn;
@@ -90,18 +119,23 @@ class PriceController extends Controller
         try {
             $response = Http::timeout(60)->get($api_url);
             $results['cultura'] = $response->body();
-            $culturaFile = $resultsPath . '/index_cultura_' . $search->id . '.html';
-            file_put_contents($culturaFile, $response->body());
-            chmod($culturaFile, 0644);
+            $prices['cultura'] = $this->priceParser->parseCulturaPrice($results['cultura']);
+            
+            if ($resultsPath && $searchId) {
+                $culturaFile = $resultsPath . '/index_cultura_' . $searchId . '.html';
+                file_put_contents($culturaFile, $response->body());
+                chmod($culturaFile, 0644);
+            }
         } catch (\Exception $e) {
             $results['cultura'] = '<html><body>Erreur lors de la récupération Cultura</body></html>';
-            $culturaFile = $resultsPath . '/index_cultura_' . $search->id . '.html';
-            file_put_contents($culturaFile, $results['cultura']);
-            chmod($culturaFile, 0644);
+            $prices['cultura'] = null;
+            
+            if ($resultsPath && $searchId) {
+                $culturaFile = $resultsPath . '/index_cultura_' . $searchId . '.html';
+                file_put_contents($culturaFile, $results['cultura']);
+                chmod($culturaFile, 0644);
+            }
         }
-        
-        // Parser le prix Cultura
-        $prices['cultura'] = $this->priceParser->parseCulturaPrice($results['cultura']);
 
         // FNAC
         $target_url = "https://www.fnac.com/SearchResult/ResultList.aspx?Search=" . urlencode($title);
@@ -111,38 +145,32 @@ class PriceController extends Controller
         try {
             $response = Http::timeout(60)->get($api_url);
             $results['fnac'] = $response->body();
-            $fnacFile = $resultsPath . '/index_fnac_' . $search->id . '.html';
-            file_put_contents($fnacFile, $response->body());
-            chmod($fnacFile, 0644);
+            $prices['fnac'] = $this->priceParser->parseFnacPrice($results['fnac']);
+            
+            if ($resultsPath && $searchId) {
+                $fnacFile = $resultsPath . '/index_fnac_' . $searchId . '.html';
+                file_put_contents($fnacFile, $response->body());
+                chmod($fnacFile, 0644);
+            }
         } catch (\Exception $e) {
             $results['fnac'] = '<html><body>Erreur lors de la récupération Fnac</body></html>';
-            $fnacFile = $resultsPath . '/index_fnac_' . $search->id . '.html';
-            file_put_contents($fnacFile, $results['fnac']);
-            chmod($fnacFile, 0644);
+            $prices['fnac'] = null;
+            
+            if ($resultsPath && $searchId) {
+                $fnacFile = $resultsPath . '/index_fnac_' . $searchId . '.html';
+                file_put_contents($fnacFile, $results['fnac']);
+                chmod($fnacFile, 0644);
+            }
         }
-        
-        // Parser le prix Fnac
-        $prices['fnac'] = $this->priceParser->parseFnacPrice($results['fnac']);
 
-        // Obtenir l'estimation de prix d'occasion via OpenAI avec les prix neufs
+        // Obtenir l'estimation de prix d'occasion
         $occasionPrice = $this->getOccasionPriceEstimation($isbn, $prices);
 
-        // Mettre à jour l'historique avec les prix uniquement
-        $search->update([
-            'prix_fnac' => $prices['fnac'],
-            'prix_amazon' => $prices['amazon'],
-            'prix_cultura' => $prices['cultura'],
-            'estimation_occasion' => $occasionPrice,
-        ]);
-
-        return view('price.results', [
-            'isbn' => $isbn,
-            'title' => $title,
+        return [
             'results' => $results,
             'prices' => $prices,
-            'historique_id' => $search->id,
             'occasion_price' => $occasionPrice
-        ]);
+        ];
     }
 
     private function getTitleFromIsbn($isbn)
@@ -333,5 +361,184 @@ class PriceController extends Controller
         } catch (\Exception $e) {
             return 'Estimation non disponible';
         }
+    }
+
+    public function verifyIsbn(Request $request)
+    {
+        $request->validate([
+            'isbn' => 'required|string|max:20',
+        ]);
+
+        $isbn = $request->input('isbn');
+        
+        // Nettoyer l'ISBN (enlever les espaces et tirets)
+        $isbn = preg_replace('/[^0-9X]/', '', strtoupper($isbn));
+        
+        // Vérifier la validité de base de l'ISBN
+        if (!$this->isValidIsbn($isbn)) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Format ISBN invalide'
+            ]);
+        }
+
+        // Récupérer les informations du livre
+        $bookInfo = $this->getBookInfo($isbn);
+        
+        if (!$bookInfo) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'ISBN non trouvé dans les bases de données'
+            ]);
+        }
+
+        return response()->json([
+            'valid' => true,
+            'isbn' => $isbn,
+            'title' => $bookInfo['title'],
+            'author' => $bookInfo['author'] ?? 'Auteur inconnu',
+            'publisher' => $bookInfo['publisher'] ?? 'Éditeur inconnu',
+            'published_date' => $bookInfo['published_date'] ?? 'Date inconnue',
+            'message' => 'Livre trouvé : ' . $bookInfo['title']
+        ]);
+    }
+
+    private function isValidIsbn($isbn)
+    {
+        $length = strlen($isbn);
+        
+        // ISBN-10 ou ISBN-13
+        if ($length !== 10 && $length !== 13) {
+            return false;
+        }
+
+        // Vérification de la checksum pour ISBN-10
+        if ($length === 10) {
+            $sum = 0;
+            for ($i = 0; $i < 9; $i++) {
+                $sum += (10 - $i) * intval($isbn[$i]);
+            }
+            $checkDigit = $isbn[9] === 'X' ? 10 : intval($isbn[9]);
+            return ($sum + $checkDigit) % 11 === 0;
+        }
+
+        // Vérification de la checksum pour ISBN-13
+        if ($length === 13) {
+            $sum = 0;
+            for ($i = 0; $i < 12; $i++) {
+                $sum += intval($isbn[$i]) * ($i % 2 === 0 ? 1 : 3);
+            }
+            $checkDigit = intval($isbn[12]);
+            return (10 - ($sum % 10)) % 10 === $checkDigit;
+        }
+
+        return false;
+    }
+
+    private function getBookInfo($isbn)
+    {
+        try {
+            // Essayer OpenLibrary d'abord
+            $url = "https://openlibrary.org/api/books?bibkeys=ISBN:{$isbn}&format=json&jscmd=data";
+            $response = Http::timeout(10)->get($url);
+            $data = $response->json();
+
+            if (isset($data["ISBN:{$isbn}"])) {
+                $book = $data["ISBN:{$isbn}"];
+                return [
+                    'title' => $book['title'] ?? 'Titre inconnu',
+                    'author' => isset($book['authors'][0]['name']) ? $book['authors'][0]['name'] : null,
+                    'publisher' => isset($book['publishers'][0]['name']) ? $book['publishers'][0]['name'] : null,
+                    'published_date' => $book['publish_date'] ?? null
+                ];
+            }
+
+            // Fallback: Google Books API
+            $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:{$isbn}";
+            $response = Http::timeout(10)->get($url);
+            $data = $response->json();
+
+            if (isset($data['items'][0]['volumeInfo'])) {
+                $book = $data['items'][0]['volumeInfo'];
+                return [
+                    'title' => $book['title'] ?? 'Titre inconnu',
+                    'author' => isset($book['authors'][0]) ? $book['authors'][0] : null,
+                    'publisher' => $book['publisher'] ?? null,
+                    'published_date' => $book['publishedDate'] ?? null
+                ];
+            }
+
+            return null;
+
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function searchPricesOnly($isbn)
+    {
+        $title = $this->getTitleFromIsbn($isbn);
+        $searchData = $this->searchPrices($isbn, $title, null, null);
+        
+        // Convertir les prix en float
+        $prices = [];
+        foreach ($searchData['prices'] as $site => $price) {
+            if ($price && $price !== "Prix non trouvé") {
+                $prices[$site] = $this->extractPriceFromString($price);
+            } else {
+                $prices[$site] = null;
+            }
+        }
+        
+        // Convertir le prix d'occasion en float
+        $occasionPrice = null;
+        if ($searchData['occasion_price']) {
+            $occasionPrice = $this->extractPriceFromString($searchData['occasion_price']);
+        }
+        
+        return [
+            'prices' => $prices,
+            'occasion_price' => $occasionPrice,
+            'title' => $title
+        ];
+    }
+
+    private function extractPriceFromString($priceString)
+    {
+        if (!$priceString || $priceString === "Prix non trouvé") {
+            return null;
+        }
+        
+        // Nettoyer la chaîne
+        $price = trim($priceString);
+        
+        // Supprimer le symbole euro et autres caractères
+        $price = str_replace(['€', 'EUR', 'euros', 'euro'], '', $price);
+        $price = preg_replace('/[^\d.,]/', '', $price);
+        
+        // Gérer les virgules et points
+        if (strpos($price, ',') !== false && strpos($price, '.') !== false) {
+            // Format "1,234.56" ou "1.234,56"
+            if (strpos($price, ',') < strpos($price, '.')) {
+                // "1,234.56" -> virgule pour milliers
+                $price = str_replace(',', '', $price);
+            } else {
+                // "1.234,56" -> point pour milliers, virgule pour décimales
+                $price = str_replace('.', '', $price);
+                $price = str_replace(',', '.', $price);
+            }
+        } else {
+            // Format simple avec virgule ou point
+            $price = str_replace(',', '.', $price);
+        }
+        
+        $numericPrice = floatval($price);
+        
+        // Vérifier que c'est un prix valide
+        if ($numericPrice > 0 && $numericPrice < 10000) {
+            return $numericPrice;
+        }
+        
+        return null;
     }
 } 

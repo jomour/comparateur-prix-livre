@@ -31,13 +31,14 @@
                                 <input type="text" 
                                        name="isbn" 
                                        id="isbn" 
-                                       value="{{ request('isbn') }}"
+                                       value="{{ $isbn ?? request('isbn') }}"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                                        placeholder="Ex: 9782505000000"
                                        required>
                                 <p class="mt-2 text-sm text-gray-500">
                                     Entrez l'ISBN à 10 ou 13 chiffres du manga
                                 </p>
+                                <div id="isbnStatus" class="mt-2 text-sm hidden"></div>
                             </div>
 
                             <div class="text-center">
@@ -137,6 +138,52 @@
                             <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-300 to-red-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                         </div>
                     </div>
+
+                    <!-- Modal de confirmation ISBN -->
+                    <div id="isbnModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                        <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                                <h3 class="text-lg font-semibold text-gray-800">Confirmer le livre</h3>
+                            </div>
+                            
+                            <div id="bookInfo" class="mb-6">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="mb-3">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Titre :</label>
+                                        <p id="bookTitle" class="text-gray-900 font-medium"></p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Auteur :</label>
+                                        <p id="bookAuthor" class="text-gray-900"></p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Éditeur :</label>
+                                        <p id="bookPublisher" class="text-gray-900"></p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">ISBN :</label>
+                                        <p id="bookIsbn" class="text-gray-900 font-mono"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-3">
+                                <button type="button" 
+                                        id="confirmIsbn"
+                                        class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-check mr-2"></i>
+                                    Confirmer
+                                </button>
+                                <button type="button" 
+                                        id="cancelIsbn"
+                                        class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,45 +196,189 @@
             const searchButton = document.getElementById('searchButton');
             const searchIcon = document.getElementById('searchIcon');
             const buttonText = document.getElementById('buttonText');
+            const isbnInput = document.getElementById('isbn');
+            const isbnStatus = document.getElementById('isbnStatus');
+            const isbnModal = document.getElementById('isbnModal');
+            const confirmIsbn = document.getElementById('confirmIsbn');
+            const cancelIsbn = document.getElementById('cancelIsbn');
             
+            // Gestion du formulaire avec vérification au clic
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    console.log('Formulaire soumis - Affichage du loading');
                     
-                    // Désactiver le bouton
-                    if (searchButton) {
-                        searchButton.disabled = true;
-                        searchButton.classList.remove('hover:scale-105', 'hover:bg-indigo-700');
-                        searchButton.classList.add('opacity-75', 'cursor-not-allowed');
-                    }
+                    const isbn = isbnInput.value.trim();
                     
-                    // Changer l'icône
-                    if (searchIcon) {
-                        searchIcon.className = 'fas fa-spinner fa-spin mr-2';
-                    }
-                    
-                    // Changer le texte
-                    if (buttonText) {
-                        buttonText.textContent = 'Recherche en cours...';
-                    }
-                    
-                    // Afficher l'overlay
-                    if (loadingOverlay) {
-                        loadingOverlay.style.display = 'flex';
-                        console.log('Overlay affiché');
+                    if (isbn.length >= 10) {
+                        // Vérifier l'ISBN au moment du clic
+                        verifyIsbnOnClick(isbn);
                     } else {
-                        console.log('Overlay non trouvé');
+                        // Si l'ISBN est trop court, procéder directement
+                        submitForm();
+                    }
+                });
+            }
+            
+            function verifyIsbnOnClick(isbn) {
+                // Désactiver le bouton pendant la vérification
+                if (searchButton) {
+                    searchButton.disabled = true;
+                    searchButton.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+                
+                // Changer l'icône et le texte
+                if (searchIcon) {
+                    searchIcon.className = 'fas fa-spinner fa-spin mr-2';
+                }
+                if (buttonText) {
+                    buttonText.textContent = 'Vérification...';
+                }
+                
+                fetch('{{ route("price.verify.isbn") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ isbn: isbn })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Réactiver le bouton
+                    if (searchButton) {
+                        searchButton.disabled = false;
+                        searchButton.classList.remove('opacity-75', 'cursor-not-allowed');
                     }
                     
-                    // Soumettre le formulaire après un court délai
-                    setTimeout(() => {
-                        form.submit();
-                    }, 100);
+                    // Restaurer l'icône et le texte
+                    if (searchIcon) {
+                        searchIcon.className = 'fas fa-search mr-2';
+                    }
+                    if (buttonText) {
+                        buttonText.textContent = 'Comparer les Prix';
+                    }
+                    
+                    if (data.valid) {
+                        // Afficher la popup de confirmation
+                        showIsbnModal(data);
+                    } else {
+                        // Afficher l'erreur et arrêter
+                        showErrorAndStop(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la vérification:', error);
+                    
+                    // Réactiver le bouton
+                    if (searchButton) {
+                        searchButton.disabled = false;
+                        searchButton.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }
+                    
+                    // Restaurer l'icône et le texte
+                    if (searchIcon) {
+                        searchIcon.className = 'fas fa-search mr-2';
+                    }
+                    if (buttonText) {
+                        buttonText.textContent = 'Comparer les Prix';
+                    }
+                    
+                    // En cas d'erreur réseau, permettre de continuer
+                    showNetworkErrorAndProceed('Erreur de connexion. Voulez-vous continuer quand même ?');
                 });
-            } else {
-                console.log('Formulaire non trouvé');
             }
+            
+            function showErrorAndStop(message) {
+                // Afficher l'erreur et ne pas procéder
+                isbnStatus.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>' + message;
+                isbnStatus.className = 'mt-2 text-sm text-red-600';
+                isbnStatus.classList.remove('hidden');
+                
+                // Ne pas lancer la recherche automatiquement
+                // L'utilisateur devra corriger l'ISBN ou cliquer à nouveau
+            }
+            
+            function showNetworkErrorAndProceed(message) {
+                // Afficher l'erreur réseau avec option de continuer
+                isbnStatus.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>' + message + 
+                    ' <button id="continueButton" class="ml-2 text-blue-600 hover:text-blue-800 underline">Continuer</button>';
+                isbnStatus.className = 'mt-2 text-sm text-orange-600';
+                isbnStatus.classList.remove('hidden');
+                
+                // Ajouter l'événement au bouton continuer
+                document.getElementById('continueButton').addEventListener('click', function() {
+                    isbnStatus.classList.add('hidden');
+                    submitForm();
+                });
+            }
+            
+            function showIsbnModal(data) {
+                document.getElementById('bookTitle').textContent = data.title;
+                document.getElementById('bookAuthor').textContent = data.author;
+                document.getElementById('bookPublisher').textContent = data.publisher;
+                document.getElementById('bookIsbn').textContent = data.isbn;
+                
+                isbnModal.classList.remove('hidden');
+            }
+            
+            function hideIsbnModal() {
+                isbnModal.classList.add('hidden');
+            }
+            
+            function submitForm() {
+                console.log('Formulaire soumis - Affichage du loading');
+                
+                // Désactiver le bouton
+                if (searchButton) {
+                    searchButton.disabled = true;
+                    searchButton.classList.remove('hover:scale-105', 'hover:bg-indigo-700');
+                    searchButton.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+                
+                // Changer l'icône
+                if (searchIcon) {
+                    searchIcon.className = 'fas fa-spinner fa-spin mr-2';
+                }
+                
+                // Changer le texte
+                if (buttonText) {
+                    buttonText.textContent = 'Recherche en cours...';
+                }
+                
+                // Afficher l'overlay
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                    console.log('Overlay affiché');
+                } else {
+                    console.log('Overlay non trouvé');
+                }
+                
+                // Soumettre le formulaire après un court délai
+                setTimeout(() => {
+                    form.submit();
+                }, 100);
+            }
+            
+            // Gestion des boutons de la modal
+            if (confirmIsbn) {
+                confirmIsbn.addEventListener('click', function() {
+                    hideIsbnModal();
+                    submitForm();
+                });
+            }
+            
+            if (cancelIsbn) {
+                cancelIsbn.addEventListener('click', function() {
+                    hideIsbnModal();
+                });
+            }
+            
+            // Fermer la modal en cliquant à l'extérieur
+            isbnModal.addEventListener('click', function(e) {
+                if (e.target === isbnModal) {
+                    hideIsbnModal();
+                }
+            });
         });
     </script>
 </x-app-layout> 
