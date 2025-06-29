@@ -37,80 +37,136 @@
                     @endif
 
                     @if(session('mangas'))
-                        <div class="mt-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold">Mangas détectés :</h3>
-                                <button onclick="searchAllPrices()" id="searchAllButton" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-lg flex items-center cursor-not-allowed" disabled>
-                                    <i class="fas fa-lock mr-2" id="searchAllIcon"></i>
-                                    <span id="searchAllText">Validez tous les mangas d'abord</span>
-                                </button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Titre</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">ISBN</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix estimé</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach(session('mangas') as $manga)
+                        <!-- Debug temporaire -->
+                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                            <h4 class="font-semibold">Debug - Contenu de session('mangas') :</h4>
+                            <pre class="text-sm">{{ print_r(session('mangas'), true) }}</pre>
+                            <p>Count: {{ count(session('mangas')) }}</p>
+                            <p>Empty: {{ empty(session('mangas')) ? 'Oui' : 'Non' }}</p>
+                            <p>Type: {{ gettype(session('mangas')) }}</p>
+                        </div>
+                        
+                        @if(count(session('mangas')) > 0)
+                            <div class="mt-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-semibold">Mangas détectés :</h3>
+                                    <button onclick="searchAllPrices()" id="searchAllButton" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-lg flex items-center cursor-not-allowed" disabled>
+                                        <i class="fas fa-lock mr-2" id="searchAllIcon"></i>
+                                        <span id="searchAllText">Validez tous les mangas d'abord</span>
+                                    </button>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                                        <thead class="bg-gray-50">
                                             <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $manga['title'] }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {{ $manga['isbn'] }}
-                                                    @if($manga['isDuplicate'])
-                                                        <span class="inline-block ml-2 text-red-500 cursor-help" title="Attention : ISBN en doublon sur plusieurs mangas différents">⚠️</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" id="price-{{ $loop->index }}">
-                                                    <span class="text-gray-400">-</span>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    @if($manga['isbn'] === 'Non trouvé')
-                                                        <button onclick="searchIsbn('{{ $manga['title'] }}')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
-                                                            Rechercher
-                                                        </button>
-                                                    @else
-                                                        <button onclick="verifyMangaIsbn('{{ $manga['isbn'] }}', '{{ $manga['title'] }}')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" title="Vérifier l'ISBN et valider le manga">
-                                                            <i class="fas fa-check-circle mr-1"></i>
-                                                            Vérifier l'ISBN
-                                                        </button>
-                                                    @endif
-                                                    <button onclick="editIsbn('{{ $manga['title'] }}', '{{ $manga['isbn'] }}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2" title="Modifier l'ISBN">
-                                                        ✏️
-                                                    </button>
-                                                    <button onclick="removeManga('{{ $manga['title'] }}')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" title="Supprimer de la liste">
-                                                        🗑️
-                                                    </button>
-                                                </td>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Titre</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">ISBN</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix estimé</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Actions</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Résumé global -->
-                            <div id="globalSummary" class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 hidden">
-                                <h4 class="text-lg font-semibold text-blue-800 mb-3">Estimation globale du lot</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div class="bg-white p-3 rounded-lg border">
-                                        <div class="text-sm text-gray-600">Nombre de mangas</div>
-                                        <div id="totalMangas" class="text-2xl font-bold text-blue-600">0</div>
-                                    </div>
-                                    <div class="bg-white p-3 rounded-lg border">
-                                        <div class="text-sm text-gray-600">Prix total estimé</div>
-                                        <div id="totalPrice" class="text-2xl font-bold text-green-600">0,00 €</div>
-                                    </div>
-                                    <div class="bg-white p-3 rounded-lg border">
-                                        <div class="text-sm text-gray-600">Prix moyen</div>
-                                        <div id="averagePrice" class="text-2xl font-bold text-purple-600">0,00 €</div>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            @foreach(session('mangas') as $manga)
+                                                <tr>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $manga['title'] }}</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        {{ $manga['isbn'] }}
+                                                        @if($manga['isDuplicate'])
+                                                            <span class="inline-block ml-2 text-red-500 cursor-help" title="Attention : ISBN en doublon sur plusieurs mangas différents">⚠️</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" id="price-{{ $loop->index }}">
+                                                        <span class="text-gray-400">-</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        @if($manga['isbn'] === 'Non trouvé')
+                                                            <button onclick="searchIsbn('{{ str_replace("'", "\\'", $manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                                                                Rechercher
+                                                            </button>
+                                                        @else
+                                                            <button onclick="verifyMangaIsbn('{{ str_replace("'", "\\'", $manga['isbn']) }}', '{{ str_replace("'", "\\'", $manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" title="Vérifier l'ISBN et valider le manga">
+                                                                <i class="fas fa-check-circle mr-1"></i>
+                                                                Vérifier l'ISBN
+                                                            </button>
+                                                        @endif
+                                                        <button onclick="editIsbn('{{ str_replace("'", "\\'", $manga['title']) }}', '{{ str_replace("'", "\\'", $manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2" title="Modifier l'ISBN">
+                                                            ✏️
+                                                        </button>
+                                                        <button onclick="removeManga('{{ str_replace("'", "\\'", $manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" title="Supprimer de la liste">
+                                                            🗑️
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Résumé global -->
+                                <div id="globalSummary" class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 hidden">
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-3">Estimation globale du lot</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="bg-white p-3 rounded-lg border">
+                                            <div class="text-sm text-gray-600">Nombre de mangas</div>
+                                            <div id="totalMangas" class="text-2xl font-bold text-blue-600">0</div>
+                                        </div>
+                                        <div class="bg-white p-3 rounded-lg border">
+                                            <div class="text-sm text-gray-600">Prix total estimé</div>
+                                            <div id="totalPrice" class="text-2xl font-bold text-green-600">0,00 €</div>
+                                        </div>
+                                        <div class="bg-white p-3 rounded-lg border">
+                                            <div class="text-sm text-gray-600">Prix moyen</div>
+                                            <div id="averagePrice" class="text-2xl font-bold text-purple-600">0,00 €</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            <!-- Message quand aucun manga n'est détecté -->
+                            <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <div class="flex items-center mb-4">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mr-3"></i>
+                                    <h3 class="text-lg font-semibold text-yellow-800">Aucun manga détecté</h3>
+                                </div>
+                                <p class="text-yellow-700 mb-4">
+                                    L'analyse de votre image n'a pas permis de détecter de mangas. Cela peut être dû à plusieurs raisons :
+                                </p>
+                                <ul class="text-yellow-700 space-y-2 mb-6">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
+                                        <span>La qualité de l'image n'est pas suffisante (floue, sombre, etc.)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
+                                        <span>Les mangas ne sont pas clairement visibles dans l'image</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
+                                        <span>L'image ne contient pas de mangas ou contient d'autres types de livres</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
+                                        <span>Les couvertures des mangas sont partiellement cachées</span>
+                                    </li>
+                                </ul>
+                                <div class="bg-white p-4 rounded-lg border border-yellow-200">
+                                    <h4 class="font-semibold text-yellow-800 mb-2">Suggestions pour améliorer la détection :</h4>
+                                    <ul class="text-yellow-700 space-y-1 text-sm">
+                                        <li>• Assurez-vous que l'image est bien éclairée et nette</li>
+                                        <li>• Photographiez les mangas de face, couvertures bien visibles</li>
+                                        <li>• Évitez les reflets et les ombres sur les couvertures</li>
+                                        <li>• Essayez de prendre l'image dans un environnement bien éclairé</li>
+                                        <li>• Vérifiez que l'image contient bien des mangas et non d'autres types de livres</li>
+                                    </ul>
+                                </div>
+                                <div class="mt-4 flex justify-center">
+                                    <button onclick="document.getElementById('uploadForm').scrollIntoView({behavior: 'smooth'})" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Essayer une autre image
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
                     @endif
 
                     <form action="{{ route('image.upload.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
@@ -490,13 +546,70 @@
             const rows = document.querySelectorAll('tbody tr');
             let updated = false;
             
-            rows.forEach(row => {
+            rows.forEach((row, index) => {
                 const titleCell = row.querySelector('td:first-child');
                 if (titleCell && titleCell.textContent.trim() === title) {
                     const isbnCell = row.querySelector('td:nth-child(2)');
                     if (isbnCell) {
                         // Mettre à jour l'ISBN
                         isbnCell.innerHTML = newIsbn;
+                        
+                        // Trouver la cellule des boutons
+                        const buttonCell = row.querySelector('td:nth-child(4)');
+                        if (buttonCell) {
+                            // Vider complètement la cellule des boutons
+                            buttonCell.innerHTML = '';
+                            
+                            // Échapper les caractères spéciaux
+                            const escapedTitle = title.replace(/'/g, "\\'");
+                            const escapedIsbn = newIsbn.replace(/'/g, "\\'");
+                            
+                            // Créer le bon bouton selon l'ISBN
+                            if (newIsbn === 'Non trouvé') {
+                                // Bouton "Rechercher"
+                                const searchButton = document.createElement('button');
+                                searchButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
+                                searchButton.innerHTML = 'Rechercher';
+                                searchButton.setAttribute('data-row-index', index);
+                                searchButton.addEventListener('click', function() {
+                                    searchIsbn(title);
+                                });
+                                buttonCell.appendChild(searchButton);
+                            } else {
+                                // Bouton "Vérifier l'ISBN"
+                                const verifyButton = document.createElement('button');
+                                verifyButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
+                                verifyButton.title = 'Vérifier l\'ISBN et valider le manga';
+                                verifyButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Vérifier l\'ISBN';
+                                verifyButton.setAttribute('data-row-index', index);
+                                verifyButton.addEventListener('click', function() {
+                                    verifyMangaIsbn(newIsbn, title);
+                                });
+                                buttonCell.appendChild(verifyButton);
+                            }
+                            
+                            // Ajouter le bouton d'édition
+                            const editButton = document.createElement('button');
+                            editButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2';
+                            editButton.title = 'Modifier l\'ISBN';
+                            editButton.innerHTML = '✏️';
+                            editButton.setAttribute('data-row-index', index);
+                            editButton.addEventListener('click', function() {
+                                editIsbn(title, newIsbn);
+                            });
+                            buttonCell.appendChild(editButton);
+                            
+                            // Ajouter le bouton de suppression
+                            const deleteButton = document.createElement('button');
+                            deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
+                            deleteButton.title = 'Supprimer de la liste';
+                            deleteButton.innerHTML = '🗑️';
+                            deleteButton.setAttribute('data-row-index', index);
+                            deleteButton.addEventListener('click', function() {
+                                removeManga(title);
+                            });
+                            buttonCell.appendChild(deleteButton);
+                        }
                         
                         // Vérifier s'il y a des doublons
                         checkForDuplicates();
@@ -783,6 +896,26 @@
 
         async function verifyMangaIsbn(isbn, title) {
             try {
+                // Trouver l'index de la ligne du bouton cliqué via l'événement
+                let rowIndex = -1;
+                
+                // Récupérer l'index depuis l'attribut data-row-index du bouton cliqué
+                const event = window.event || arguments.callee.caller.arguments[0];
+                if (event && event.target && event.target.hasAttribute('data-row-index')) {
+                    rowIndex = parseInt(event.target.getAttribute('data-row-index'));
+                } else {
+                    // Fallback: chercher par onclick (pour les boutons originaux)
+                    const rows = document.querySelectorAll('tbody tr');
+                    rows.forEach((row, index) => {
+                        const verifyButton = row.querySelector('button[onclick*="verifyMangaIsbn"]');
+                        if (verifyButton && verifyButton.onclick && verifyButton.onclick.toString().includes(isbn)) {
+                            rowIndex = index;
+                        }
+                    });
+                }
+                
+                console.log('Index de la ligne trouvé:', rowIndex);
+                
                 const response = await fetch('{{ route("price.verify.isbn") }}', {
                     method: 'POST',
                     headers: {
@@ -797,8 +930,8 @@
                 if (response.ok) {
                     const data = await response.json();
                     if (data.valid) {
-                        // Afficher la modal de confirmation avec les détails du livre
-                        showMangaConfirmationModal(data);
+                        // Afficher la modal de confirmation avec les détails du livre et l'index
+                        showMangaConfirmationModal(data, rowIndex);
                     } else {
                         // Afficher l'erreur
                         showTemporaryMessage(`Erreur: ${data.message}`, 'error');
@@ -812,7 +945,10 @@
             }
         }
 
-        function showMangaConfirmationModal(data) {
+        function showMangaConfirmationModal(data, rowIndex) {
+            // Stocker l'index de la ligne dans la modal pour la validation
+            document.getElementById('mangaDetailsModal').setAttribute('data-row-index', rowIndex);
+            
             // Remplir le contenu de la modal avec les détails du livre
             document.getElementById('mangaDetailsContent').innerHTML = `
                 <div class="space-y-4">
@@ -939,13 +1075,14 @@
             confirmButton.addEventListener('click', function() {
                 const titleElement = document.querySelector('#mangaDetailsContent .text-gray-900.font-medium');
                 const isbnElement = document.querySelector('#mangaDetailsContent .text-gray-900.font-mono');
+                const rowIndex = document.getElementById('mangaDetailsModal').getAttribute('data-row-index');
                 
-                if (titleElement && isbnElement) {
+                if (titleElement && isbnElement && rowIndex !== null) {
                     const title = titleElement.textContent;
                     const isbn = isbnElement.textContent;
                     
-                    // Marquer le manga comme validé dans le tableau
-                    markMangaAsValidated(title, isbn);
+                    // Marquer le manga comme validé dans le tableau en utilisant l'index
+                    markMangaAsValidatedByIndex(parseInt(rowIndex), title, isbn);
                     
                     // Fermer la modal
                     closeMangaDetails();
@@ -956,80 +1093,77 @@
             });
         });
 
-        function markMangaAsValidated(title, isbn) {
-            console.log('Tentative de validation pour:', title, isbn);
+        function markMangaAsValidatedByIndex(index, title, isbn) {
+            console.log('Tentative de validation pour l\'index:', index, 'Titre:', title, 'ISBN:', isbn);
             
-            // Trouver la ligne du tableau correspondante
+            // Trouver la ligne du tableau par index
             const rows = document.querySelectorAll('tbody tr');
-            let found = false;
             
-            // Vérifier s'il y a des lignes (pas encore de résultats d'analyse)
+            // Vérifier s'il y a des lignes et si l'index est valide
             if (rows.length === 0) {
                 console.log('Aucune ligne trouvée dans le tableau, pas encore de résultats d\'analyse');
                 return;
             }
             
-            rows.forEach((row, index) => {
-                const isbnCell = row.querySelector('td:nth-child(2)');
-                
-                if (isbnCell) {
-                    // Nettoyer l'ISBN de la ligne (enlever les indicateurs de doublon)
-                    const rowIsbn = isbnCell.textContent.trim().replace(/⚠️/g, '').trim();
-                    
-                    console.log(`Ligne ${index}: ISBN: "${rowIsbn}" vs "${isbn}"`);
-                    
-                    // Vérifier si c'est la bonne ligne (par ISBN seulement)
-                    if (rowIsbn === isbn) {
-                        console.log('Ligne trouvée par ISBN, validation en cours...');
-                        found = true;
-                        
-                        // Ajouter une classe pour indiquer que le manga est validé
-                        row.classList.add('bg-green-50', 'border-l-4', 'border-green-500');
-                        
-                        // Ajouter un indicateur visuel
-                        const actionsCell = row.querySelector('td:last-child');
-                        if (actionsCell) {
-                            // Vérifier si l'indicateur existe déjà
-                            if (!actionsCell.querySelector('.validation-indicator')) {
-                                const indicator = document.createElement('span');
-                                indicator.className = 'inline-block ml-2 text-green-500 validation-indicator';
-                                indicator.title = 'Manga validé';
-                                indicator.innerHTML = '<i class="fas fa-check-circle"></i>';
-                                actionsCell.appendChild(indicator);
-                            }
-                        }
-                        
-                        // Désactiver le bouton "Vérifier l'ISBN" et le remplacer par un indicateur
-                        const verifyButton = row.querySelector('button[onclick*="verifyMangaIsbn"]');
-                        if (verifyButton) {
-                            verifyButton.disabled = true;
-                            verifyButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
-                            verifyButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-                            verifyButton.innerHTML = '<i class="fas fa-check mr-1"></i>Validé';
-                            verifyButton.onclick = null;
-                        }
-                        
-                        // Supprimer les boutons Éditer et Supprimer
-                        const editButton = row.querySelector('button[onclick*="editIsbn"]');
-                        if (editButton) {
-                            editButton.remove();
-                        }
-                        
-                        const deleteButton = row.querySelector('button[onclick*="removeManga"]');
-                        if (deleteButton) {
-                            deleteButton.remove();
-                        }
-                    }
-                }
-            });
-            
-            if (!found) {
-                console.error('Aucune ligne trouvée pour la validation avec ISBN:', isbn);
-            } else {
-                console.log('Validation terminée, vérification du compteur...');
-                // Vérifier si tous les mangas sont maintenant validés
-                checkAllMangasValidated();
+            if (index < 0 || index >= rows.length) {
+                console.error('Index invalide:', index, 'Nombre de lignes:', rows.length);
+                showTemporaryMessage('Erreur: Index de ligne invalide.', 'error');
+                return;
             }
+            
+            // Récupérer la ligne par index
+            const row = rows[index];
+            const titleCell = row.querySelector('td:first-child');
+            const rowTitle = titleCell ? titleCell.textContent.trim() : '';
+            
+            console.log(`Validation de la ligne ${index}: "${rowTitle}" avec ISBN "${isbn}"`);
+            
+            // Ajouter une classe pour indiquer que le manga est validé
+            row.classList.add('bg-green-50', 'border-l-4', 'border-green-500');
+            
+            // Ajouter un indicateur visuel
+            const actionsCell = row.querySelector('td:nth-child(4)');
+            if (actionsCell) {
+                // Vérifier si l'indicateur existe déjà
+                if (!actionsCell.querySelector('.validation-indicator')) {
+                    const indicator = document.createElement('span');
+                    indicator.className = 'inline-block ml-2 text-green-500 validation-indicator';
+                    indicator.title = 'Manga validé';
+                    indicator.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    actionsCell.appendChild(indicator);
+                }
+            }
+            
+            // Désactiver le bouton "Vérifier l'ISBN" et le remplacer par un indicateur
+            const verifyButton = row.querySelector('button[onclick*="verifyMangaIsbn"]') || 
+                                row.querySelector('button[title*="Vérifier l\'ISBN"]');
+            if (verifyButton) {
+                verifyButton.disabled = true;
+                verifyButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
+                verifyButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                verifyButton.innerHTML = '<i class="fas fa-check mr-1"></i>Validé';
+                verifyButton.onclick = null;
+                // Supprimer tous les event listeners
+                const newButton = verifyButton.cloneNode(true);
+                verifyButton.parentNode.replaceChild(newButton, verifyButton);
+            }
+            
+            // Supprimer les boutons Éditer et Supprimer
+            const editButton = row.querySelector('button[onclick*="editIsbn"]') || 
+                              row.querySelector('button[title*="Modifier l\'ISBN"]');
+            if (editButton) {
+                editButton.remove();
+            }
+            
+            const deleteButton = row.querySelector('button[onclick*="removeManga"]') || 
+                                row.querySelector('button[title*="Supprimer de la liste"]');
+            if (deleteButton) {
+                deleteButton.remove();
+            }
+            
+            console.log('Validation terminée, vérification du compteur...');
+            // Vérifier si tous les mangas sont maintenant validés
+            checkAllMangasValidated();
         }
 
         function checkAllMangasValidated() {

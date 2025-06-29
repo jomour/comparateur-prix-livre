@@ -25,34 +25,147 @@ class ImageController extends Controller
 
     public function upload(Request $request)
     {
+        // Validation renforcée
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => [
+                'required',
+                'file',
+                'image',
+                'mimes:jpeg,png,jpg,gif',
+                'max:2048', // 2MB max
+                'dimensions:min_width=100,min_height=100,max_width=4000,max_height=4000'
+            ]
         ]);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
             
-            // Stockage direct dans le dossier storage/app/public/images
+            // Vérifications de sécurité supplémentaires
+            if (!$this->isSecureImage($image)) {
+                return back()->with('error', 'Fichier non sécurisé détecté.');
+            }
+            
+            // Nettoyer et sécuriser le nom de fichier
+            $originalName = $image->getClientOriginalName();
+            $extension = $image->getClientOriginalExtension();
+            $imageName = $this->generateSecureFileName($originalName, $extension);
+            
+            // Stockage sécurisé
             $destinationPath = storage_path('app/public/images');
             
-            // S'assurer que le dossier existe
+            // S'assurer que le dossier existe avec les bonnes permissions
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0755, true);
             }
             
-            // Déplacer le fichier
-            $image->move($destinationPath, $imageName);
+            // Vérifier que le dossier est sécurisé
+            if (!is_writable($destinationPath)) {
+                return back()->with('error', 'Erreur de permissions sur le dossier de stockage.');
+            }
             
-            // Analyser l'image avec OpenAI
-            $mangas = $this->analyzeImageWithOpenAI($destinationPath . '/' . $imageName);
-            
-            return back()->with('success', 'Image analysée avec succès!')
-                        ->with('image', $imageName)
-                        ->with('mangas', $mangas);
+            try {
+                // Déplacer le fichier avec vérification
+                $fullPath = $destinationPath . '/' . $imageName;
+                $image->move($destinationPath, $imageName);
+                
+                // Vérification post-upload
+                if (!file_exists($fullPath) || !$this->isValidImageFile($fullPath)) {
+                    // Nettoyer le fichier invalide
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
+                    return back()->with('error', 'Fichier image invalide détecté.');
+                }
+                
+                // Analyser l'image avec OpenAI
+                $mangas = $this->analyzeImageWithOpenAI($fullPath);
+                
+                // Nettoyer l'image après analyse (optionnel, pour économiser l'espace)
+                // unlink($fullPath);
+                
+                return back()->with('success', 'Image analysée avec succès!')
+                            ->with('image', $imageName)
+                            ->with('mangas', $mangas);
+                            
+            } catch (\Exception $e) {
+                // Nettoyer en cas d'erreur
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
+                Log::error('Erreur lors du traitement de l\'image : ' . $e->getMessage());
+                return back()->with('error', 'Erreur lors du traitement de l\'image.');
+            }
         }
 
         return back()->with('error', 'Erreur lors du chargement de l\'image.');
+    }
+
+    private function isSecureImage($image)
+    {
+        // Vérifier le type MIME réel
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $image->getPathname());
+        finfo_close($finfo);
+        
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        
+        if (!in_array($mimeType, $allowedMimes)) {
+            Log::warning('Type MIME non autorisé détecté : ' . $mimeType);
+            return false;
+        }
+        
+        // Vérifier la taille du fichier
+        if ($image->getSize() > 2 * 1024 * 1024) { // 2MB
+            Log::warning('Fichier trop volumineux : ' . $image->getSize() . ' bytes');
+            return false;
+        }
+        
+        // Vérifier les dimensions
+        $imageInfo = getimagesize($image->getPathname());
+        if (!$imageInfo) {
+            Log::warning('Impossible de lire les dimensions de l\'image');
+            return false;
+        }
+        
+        $width = $imageInfo[0];
+        $height = $imageInfo[1];
+        
+        if ($width < 100 || $height < 100 || $width > 4000 || $height > 4000) {
+            Log::warning('Dimensions d\'image non autorisées : ' . $width . 'x' . $height);
+            return false;
+        }
+        
+        return true;
+    }
+
+    private function generateSecureFileName($originalName, $extension)
+    {
+        // Nettoyer le nom original
+        $cleanName = preg_replace('/[^a-zA-Z0-9._-]/', '', $originalName);
+        $cleanName = substr($cleanName, 0, 50); // Limiter la longueur
+        
+        // Générer un hash unique
+        $hash = hash('sha256', uniqid() . $originalName . time());
+        
+        // Combiner pour un nom sécurisé
+        return $hash . '_' . $cleanName . '.' . $extension;
+    }
+
+    private function isValidImageFile($filePath)
+    {
+        // Vérifier que c'est bien une image valide
+        $imageInfo = getimagesize($filePath);
+        if (!$imageInfo) {
+            return false;
+        }
+        
+        // Vérifier le type MIME
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $filePath);
+        finfo_close($finfo);
+        
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        return in_array($mimeType, $allowedMimes);
     }
 
     private function analyzeImageWithOpenAI($imagePath)
@@ -87,48 +200,78 @@ class ImageController extends Controller
                 'max_tokens' => 2000
             ]);
 
-            $content = $response->choices[0]->message->content;
-            
-            // Nettoyer le contenu pour extraire le JSON
-            $jsonStart = strpos($content, '[');
-            $jsonEnd = strrpos($content, ']');
+            $rawResponse = trim($response->choices[0]->message->content);
+            Log::info("Réponse brute de l'IA : " . $rawResponse);
+
+            // Nettoyer la réponse pour extraire le JSON
+            $jsonStart = strpos($rawResponse, '[');
+            $jsonEnd = strrpos($rawResponse, ']');
             
             if ($jsonStart !== false && $jsonEnd !== false) {
-                $jsonString = substr($content, $jsonStart, $jsonEnd - $jsonStart + 1);
-                $mangas = json_decode($jsonString, true);
-                
-                if (json_last_error() === JSON_ERROR_NONE && is_array($mangas)) {
-                    // Rechercher les ISBN pour chaque manga de manière synchrone
-                    $mangasWithIsbn = [];
-                    foreach ($mangas as $manga) {
-                        $isbn = $this->findIsbnByTitle($manga['title']);
-                        $mangasWithIsbn[] = [
-                            'title' => $manga['title'],
-                            'isbn' => $isbn
-                        ];
-                        
-                        // Petite pause pour éviter de surcharger les APIs
-                        usleep(500000); // 0.5 seconde
-                    }
-                    
-                    // Détecter les doublons d'ISBN
-                    $duplicateIsbns = $this->detectDuplicateIsbns($mangasWithIsbn);
-                    
-                    // Ajouter l'information de doublon à chaque manga
-                    foreach ($mangasWithIsbn as &$manga) {
-                        $manga['isDuplicate'] = in_array($manga['isbn'], $duplicateIsbns);
-                    }
-                    
-                    return $mangasWithIsbn;
+                $jsonString = substr($rawResponse, $jsonStart, $jsonEnd - $jsonStart + 1);
+            } else {
+                $jsonString = $rawResponse;
+            }
+
+            $mangas = json_decode($jsonString, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error("Erreur JSON : " . json_last_error_msg());
+                return [];
+            }
+
+            if (!is_array($mangas)) {
+                Log::error("La réponse n'est pas un tableau : " . gettype($mangas));
+                return [];
+            }
+
+            // Si aucun manga n'est détecté, retourner un tableau vide
+            if (empty($mangas)) {
+                Log::info("Aucun manga détecté dans l'image");
+                return [];
+            }
+
+            // Rechercher les ISBN pour chaque manga via les API
+            $mangasWithIsbn = [];
+            foreach ($mangas as $manga) {
+                if (isset($manga['title']) && !empty($manga['title'])) {
+                    $isbn = $this->findIsbnByTitle($manga['title']);
+                    $mangasWithIsbn[] = [
+                        'title' => $manga['title'],
+                        'isbn' => $isbn,
+                        'isDuplicate' => false
+                    ];
                 }
             }
-            
-            // Si le parsing JSON échoue, retourner un message d'erreur
-            return [['title' => 'Erreur lors de l\'analyse', 'isbn' => 'Impossible de parser la réponse', 'isDuplicate' => false]];
-            
+
+            // Détecter les doublons d'ISBN
+            $duplicateIsbns = $this->detectDuplicateIsbns($mangasWithIsbn);
+            foreach ($mangasWithIsbn as &$manga) {
+                if (in_array($manga['isbn'], $duplicateIsbns)) {
+                    $manga['isDuplicate'] = true;
+                }
+            }
+
+            return $mangasWithIsbn;
+
         } catch (\Exception $e) {
-            return [['title' => 'Erreur lors de l\'analyse: ' . $e->getMessage(), 'isbn' => 'Erreur', 'isDuplicate' => false]];
+            Log::error("Erreur lors de l'analyse OpenAI : " . $e->getMessage());
+            return [];
         }
+    }
+
+    private function isValidIsbn10($isbn)
+    {
+        if (strlen($isbn) !== 10) {
+            return false;
+        }
+
+        $sum = 0;
+        for ($i = 0; $i < 9; $i++) {
+            $sum += (10 - $i) * intval($isbn[$i]);
+        }
+        $checkDigit = $isbn[9] === 'X' ? 10 : intval($isbn[9]);
+        return ($sum + $checkDigit) % 11 === 0;
     }
 
     private function detectDuplicateIsbns($mangas)
