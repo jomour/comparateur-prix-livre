@@ -37,15 +37,6 @@
                     @endif
 
                     @if(session('mangas'))
-                        <!-- Debug temporaire -->
-                        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                            <h4 class="font-semibold">Debug - Contenu de session('mangas') :</h4>
-                            <pre class="text-sm">{{ print_r(session('mangas'), true) }}</pre>
-                            <p>Count: {{ count(session('mangas')) }}</p>
-                            <p>Empty: {{ empty(session('mangas')) ? 'Oui' : 'Non' }}</p>
-                            <p>Type: {{ gettype(session('mangas')) }}</p>
-                        </div>
-                        
                         @if(count(session('mangas')) > 0)
                             <div class="mt-6">
                                 <div class="flex justify-between items-center mb-4">
@@ -632,15 +623,34 @@
                 const titleCell = row.querySelector('td:first-child');
                 if (titleCell && titleCell.textContent.trim() === title) {
                     row.remove();
+                    
+                    // Mettre à jour tous les data-row-index après suppression
+                    updateRowIndices();
+                    
+                    // Vérifier s'il y a des doublons après suppression
+                    checkForDuplicates();
+                    
+                    // Mettre à jour le compteur du bouton de recherche globale
+                    checkAllMangasValidated();
+                    
+                    // Afficher un message de succès temporaire
+                    showTemporaryMessage('Manga supprimé de la liste', 'success');
                     return;
                 }
             });
+        }
+
+        function updateRowIndices() {
+            // Mettre à jour tous les data-row-index après suppression
+            const rows = document.querySelectorAll('tbody tr');
             
-            // Vérifier s'il y a des doublons après suppression
-            checkForDuplicates();
-            
-            // Afficher un message de succès temporaire
-            showTemporaryMessage('Manga supprimé de la liste', 'success');
+            rows.forEach((row, newIndex) => {
+                // Mettre à jour tous les boutons dans cette ligne
+                const buttons = row.querySelectorAll('button[data-row-index]');
+                buttons.forEach(button => {
+                    button.setAttribute('data-row-index', newIndex);
+                });
+            });
         }
 
         function checkForDuplicates() {
