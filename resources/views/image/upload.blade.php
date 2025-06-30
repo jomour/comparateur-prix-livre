@@ -160,7 +160,7 @@
                         @endif
                     @endif
 
-                    <form action="{{ route('image.upload.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
+                    <form action="{{ route('image.upload.process') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
                         @csrf
                         
                         <div>
@@ -410,10 +410,36 @@
             const uploadIcon = document.getElementById('uploadIcon');
             const buttonText = document.getElementById('buttonText');
             
-            // Gestion du formulaire avec affichage du loading
+            // Fonction pour réinitialiser le bouton
+            function resetUploadButton() {
+                if (uploadButton) {
+                    uploadButton.disabled = false;
+                    uploadButton.classList.remove('opacity-75', 'cursor-not-allowed');
+                    uploadButton.classList.add('hover:scale-105', 'hover:bg-blue-700');
+                }
+                if (uploadIcon) {
+                    uploadIcon.className = 'fas fa-upload mr-2';
+                }
+                if (buttonText) {
+                    buttonText.textContent = 'Analyser l\'image';
+                }
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+            
+            // Gestion du formulaire avec upload AJAX
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    
+                    const fileInput = document.getElementById('image');
+                    const file = fileInput.files[0];
+                    
+                    if (!file) {
+                        showTemporaryMessage('Veuillez sélectionner une image', 'error');
+                        return;
+                    }
                     
                     // Désactiver le bouton
                     if (uploadButton) {
@@ -437,12 +463,61 @@
                         loadingOverlay.style.display = 'flex';
                     }
                     
-                    // Soumettre le formulaire après un court délai
-                    setTimeout(() => {
-                        form.submit();
-                    }, 100);
+                    // Créer FormData pour l'upload
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('_token', '{{ csrf_token() }}');
+                    
+                    // Upload AJAX
+                    fetch('{{ route("image.upload.ajax") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            // Erreur détectée
+                            resetUploadButton();
+                            showTemporaryMessage(data.error, 'error');
+                        } else if (data.success) {
+                            // Succès - rediriger vers la page d'upload pour afficher les résultats
+                            window.location.href = data.redirect;
+                        } else {
+                            // Réponse inattendue
+                            resetUploadButton();
+                            showTemporaryMessage('Réponse inattendue du serveur', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de l\'upload:', error);
+                        resetUploadButton();
+                        showTemporaryMessage('Erreur de connexion lors de l\'analyse. Veuillez réessayer.', 'error');
+                    });
                 });
             }
+            
+            // Vérifier s'il y a des erreurs au chargement de la page
+            const errorMessages = document.querySelectorAll('.bg-red-100, .text-red-700');
+            if (errorMessages.length > 0) {
+                // S'il y a des erreurs, masquer la popup de chargement
+                resetUploadButton();
+            }
+            
+            // Gestion des erreurs de navigation
+            window.addEventListener('beforeunload', function() {
+                // Masquer la popup si l'utilisateur quitte la page
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            });
         });
 
         function searchIsbn(title) {

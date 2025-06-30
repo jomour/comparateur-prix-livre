@@ -29,8 +29,9 @@ Route::get('/price/show/cultura/{id?}', [PriceController::class, 'showCultura'])
 Route::get('/price/show/fnac/{id?}', [PriceController::class, 'showFnac'])->name('price.show.fnac')->middleware('auth');
 
 // Routes pour le chargement d'image
-Route::get('/image', [ImageController::class, 'index'])->name('image.upload')->middleware('auth');
-Route::post('/image/upload', [ImageController::class, 'upload'])->name('image.upload.submit')->middleware('auth');
+Route::get('/image', [ImageController::class, 'index'])->name('image.upload.form')->middleware('auth');
+Route::post('/image/upload', [ImageController::class, 'upload'])->name('image.upload.process')->middleware('auth');
+Route::post('/image/upload/ajax', [ImageController::class, 'uploadAjax'])->name('image.upload.ajax')->middleware('auth');
 Route::post('/image/search-isbn', [ImageController::class, 'searchIsbnByTitle'])->name('image.search.isbn')->middleware('auth');
 Route::post('/image/search-price', [ImageController::class, 'searchPrice'])->name('image.search.price')->middleware('auth');
 Route::post('/image/search-all-prices', [ImageController::class, 'searchAllPrices'])->name('image.search.all.prices')->middleware('auth');

@@ -134,7 +134,7 @@
 
                     <!-- Actions -->
                     <div class="mt-8 flex justify-center space-x-4">
-                        <a href="{{ route('image.upload') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <a href="{{ route('image.upload.form') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             <i class="fas fa-arrow-left mr-2"></i>
                             Nouvelle analyse
                         </a>

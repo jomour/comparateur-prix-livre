@@ -18,7 +18,7 @@
                     <x-nav-link :href="route('price.historique')" :active="request()->routeIs('price.historique')">
                         {{ __('Historique') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('image.upload')" :active="request()->routeIs('image.upload')">
+                    <x-nav-link :href="route('image.upload.form')" :active="request()->routeIs('image.upload.form')">
                         {{ __('Analyse de lot en image') }}
                     </x-nav-link>
                 </div>
@@ -79,7 +79,7 @@
             <x-responsive-nav-link :href="route('price.historique')" :active="request()->routeIs('price.historique')">
                 {{ __('Historique') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('image.upload')" :active="request()->routeIs('image.upload')">
+            <x-responsive-nav-link :href="route('image.upload.form')" :active="request()->routeIs('image.upload.form')">
                 {{ __('Analyse de lot en image') }}
             </x-responsive-nav-link>
         </div>

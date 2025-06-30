@@ -25,16 +25,8 @@ class ImageController extends Controller
 
     public function upload(Request $request)
     {
-        // Validation renforcée
         $request->validate([
-            'image' => [
-                'required',
-                'file',
-                'image',
-                'mimes:jpeg,png,jpg,gif',
-                'max:2048', // 2MB max
-                'dimensions:min_width=100,min_height=100,max_width=4000,max_height=4000'
-            ]
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         if ($request->hasFile('image')) {
@@ -63,6 +55,8 @@ class ImageController extends Controller
                 return back()->with('error', 'Erreur de permissions sur le dossier de stockage.');
             }
             
+            $fullPath = null;
+           
             try {
                 // Déplacer le fichier avec vérification
                 $fullPath = $destinationPath . '/' . $imageName;
@@ -77,8 +71,18 @@ class ImageController extends Controller
                     return back()->with('error', 'Fichier image invalide détecté.');
                 }
                 
+                // Augmenter les limites de temps et de mémoire pour l'analyse
+                set_time_limit(300); // 5 minutes
+                ini_set('memory_limit', '512M');
+                
                 // Analyser l'image avec OpenAI
                 $mangas = $this->analyzeImageWithOpenAI($fullPath);
+                
+                // Vérifier si l'analyse a échoué silencieusement
+                if ($mangas === null) {
+                    Log::error('Analyse OpenAI a retourné null - possible timeout ou erreur silencieuse');
+                    return back()->with('error', 'Erreur lors de l\'analyse de l\'image. L\'analyse a pris trop de temps ou a échoué.');
+                }
                 
                 // Nettoyer l'image après analyse (optionnel, pour économiser l'espace)
                 // unlink($fullPath);
@@ -89,15 +93,130 @@ class ImageController extends Controller
                             
             } catch (\Exception $e) {
                 // Nettoyer en cas d'erreur
-                if (file_exists($fullPath)) {
+                if ($fullPath && file_exists($fullPath)) {
                     unlink($fullPath);
                 }
+                
+                // Log détaillé de l'erreur
                 Log::error('Erreur lors du traitement de l\'image : ' . $e->getMessage());
-                return back()->with('error', 'Erreur lors du traitement de l\'image.');
+                Log::error('Stack trace : ' . $e->getTraceAsString());
+                
+                // Message d'erreur plus spécifique
+                $errorMessage = 'Erreur lors du traitement de l\'image.';
+                if (strpos($e->getMessage(), 'timeout') !== false) {
+                    $errorMessage = 'L\'analyse a pris trop de temps. Veuillez réessayer avec une image plus simple.';
+                } elseif (strpos($e->getMessage(), 'memory') !== false) {
+                    $errorMessage = 'Erreur de mémoire. Veuillez essayer avec une image plus petite.';
+                } elseif (strpos($e->getMessage(), 'OpenAI') !== false) {
+                    $errorMessage = 'Erreur de communication avec l\'IA. Veuillez réessayer.';
+                }
+                
+                return back()->with('error', $errorMessage);
             }
         }
-
+        
         return back()->with('error', 'Erreur lors du chargement de l\'image.');
+    }
+
+    public function uploadAjax(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            
+            // Vérifications de sécurité supplémentaires
+            if (!$this->isSecureImage($image)) {
+                return response()->json(['error' => 'Fichier non sécurisé détecté.'], 400);
+            }
+            
+            // Nettoyer et sécuriser le nom de fichier
+            $originalName = $image->getClientOriginalName();
+            $extension = $image->getClientOriginalExtension();
+            $imageName = $this->generateSecureFileName($originalName, $extension);
+            
+            // Stockage sécurisé
+            $destinationPath = storage_path('app/public/images');
+            
+            // S'assurer que le dossier existe avec les bonnes permissions
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            
+            // Vérifier que le dossier est sécurisé
+            if (!is_writable($destinationPath)) {
+                return response()->json(['error' => 'Erreur de permissions sur le dossier de stockage.'], 500);
+            }
+            
+            $fullPath = null;
+            
+            try {
+                // Déplacer le fichier avec vérification
+                $fullPath = $destinationPath . '/' . $imageName;
+                $image->move($destinationPath, $imageName);
+                
+                // Vérification post-upload
+                if (!file_exists($fullPath) || !$this->isValidImageFile($fullPath)) {
+                    // Nettoyer le fichier invalide
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
+                    return response()->json(['error' => 'Fichier image invalide détecté.'], 400);
+                }
+                
+                // Augmenter les limites de temps et de mémoire pour l'analyse
+                set_time_limit(300); // 5 minutes
+                ini_set('memory_limit', '512M');
+                
+                // Analyser l'image avec OpenAI
+                $mangas = $this->analyzeImageWithOpenAI($fullPath);
+                
+                // Vérifier si l'analyse a échoué silencieusement
+                if ($mangas === null) {
+                    Log::error('Analyse OpenAI a retourné null - possible timeout ou erreur silencieuse');
+                    return response()->json(['error' => 'Erreur lors de l\'analyse de l\'image. L\'analyse a pris trop de temps ou a échoué.'], 500);
+                }
+                
+                // Stocker les données dans la session pour l'affichage
+                session([
+                    'success' => 'Image analysée avec succès!',
+                    'image' => $imageName,
+                    'mangas' => $mangas
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Image analysée avec succès!',
+                    'redirect' => route('image.upload.form')
+                ]);
+                            
+            } catch (\Exception $e) {
+                // Nettoyer en cas d'erreur
+                if ($fullPath && file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
+                
+                // Log détaillé de l'erreur
+                Log::error('Erreur lors du traitement de l\'image : ' . $e->getMessage());
+                Log::error('Stack trace : ' . $e->getTraceAsString());
+                
+                // Message d'erreur plus spécifique
+                $errorMessage = 'Erreur lors du traitement de l\'image.';
+                if (strpos($e->getMessage(), 'timeout') !== false) {
+                    $errorMessage = 'L\'analyse a pris trop de temps. Veuillez réessayer avec une image plus simple.';
+                } elseif (strpos($e->getMessage(), 'memory') !== false) {
+                    $errorMessage = 'Erreur de mémoire. Veuillez essayer avec une image plus petite.';
+                } elseif (strpos($e->getMessage(), 'OpenAI') !== false) {
+                    $errorMessage = 'Erreur de communication avec l\'IA. Veuillez réessayer.';
+                }
+                
+                return response()->json(['error' => $errorMessage], 500);
+            }
+        }
+        
+        return response()->json(['error' => 'Erreur lors du chargement de l\'image.'], 400);
     }
 
     private function isSecureImage($image)
@@ -217,18 +336,18 @@ class ImageController extends Controller
             
             if (json_last_error() !== JSON_ERROR_NONE) {
                 Log::error("Erreur JSON : " . json_last_error_msg());
-                return [];
+                return null;
             }
 
             if (!is_array($mangas)) {
                 Log::error("La réponse n'est pas un tableau : " . gettype($mangas));
-                return [];
+                return null;
             }
 
-            // Si aucun manga n'est détecté, retourner un tableau vide
+            // Si aucun manga n'est détecté, retourner null
             if (empty($mangas)) {
                 Log::info("Aucun manga détecté dans l'image");
-                return [];
+                return null;
             }
 
             // Rechercher les ISBN pour chaque manga via les API
@@ -256,7 +375,7 @@ class ImageController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'analyse OpenAI : " . $e->getMessage());
-            return [];
+            return null;
         }
     }
 
