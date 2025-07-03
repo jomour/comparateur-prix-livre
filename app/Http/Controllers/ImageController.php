@@ -898,7 +898,7 @@ class ImageController extends Controller
         $totalMangas = session('total_mangas', 0);
 
         if (empty($results)) {
-            return redirect()->route('image.upload')->with('error', 'Aucun résultat de recherche trouvé.');
+            return redirect()->route('image.upload.form')->with('error', 'Aucun résultat de recherche trouvé.');
         }
 
         return view('image.search-results', compact('results', 'totalPrice', 'foundPrices', 'totalMangas'));

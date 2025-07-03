@@ -1,9 +1,9 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
+    <form method="POST" action="{{ \App\Helpers\LocalizedRoute::localized('password.store') }}">
         @csrf
 
         <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+        <input type="hidden" name="token" value="{{ $request->\App\Helpers\LocalizedRoute::localized('token') }}">
 
         <!-- Email Address -->
         <div>

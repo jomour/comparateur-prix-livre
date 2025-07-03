@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Résultats de la recherche globale') }}
+            {{ __('messages.global_search_results') }}
         </h2>
     </x-slot>
 
@@ -15,7 +15,7 @@
                             <i class="fas fa-chart-bar text-green-600 mr-3"></i>
                             Résultats de la recherche globale
                         </h1>
-                        <p class="text-gray-600">Prix trouvés pour {{ $totalMangas }} mangas</p>
+                        <p class="text-gray-600">{{ __('messages.prices_found_for_mangas_count', ['count' => $totalMangas]) }}</p>
                     </div>
 
                     <!-- Statistiques globales -->
@@ -24,7 +24,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-books text-blue-500 text-2xl mr-3"></i>
                                 <div>
-                                    <div class="text-sm text-gray-600">Nombre de mangas</div>
+                                    <div class="text-sm text-gray-600">{{ __('messages.manga_count_simple') }}</div>
                                     <div class="text-2xl font-bold text-blue-600">{{ $totalMangas }}</div>
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-calculator text-purple-500 text-2xl mr-3"></i>
                                 <div>
-                                    <div class="text-sm text-gray-600">Prix moyen</div>
+                                    <div class="text-sm text-gray-600">{{ __('messages.average_price_simple') }}</div>
                                     <div class="text-2xl font-bold text-purple-600">
                                         {{ $foundPrices > 0 ? number_format($totalPrice / $foundPrices, 2) : '0.00' }} €
                                     </div>
@@ -58,13 +58,13 @@
                         <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Titre</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">ISBN</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix Amazon</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix Cultura</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix Fnac</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix Occasion</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Statut</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.title') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.isbn') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.amazon_price') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.cultura_price') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.fnac_price') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.used_price') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.status') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -134,14 +134,14 @@
 
                     <!-- Actions -->
                     <div class="mt-8 flex justify-center space-x-4">
-                        <a href="{{ route('image.upload.form') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <a href="{{ \App\Helpers\LocalizedRoute::localized('image.upload.form') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             <i class="fas fa-arrow-left mr-2"></i>
-                            Nouvelle analyse
+                            {{ __('messages.new_analysis') }}
                         </a>
                         
-                        <a href="{{ route('price.search') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             <i class="fas fa-search mr-2"></i>
-                            Recherche simple
+                            {{ __('messages.simple_search') }}
                         </a>
                     </div>
                 </div>

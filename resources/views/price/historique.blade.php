@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Historique des Recherches') }}
+            {{ __('messages.search_history') }}
         </h2>
     </x-slot>
 
@@ -13,25 +13,25 @@
                     <div class="grid md:grid-cols-4 gap-4 text-center">
                         <div>
                             <div class="text-2xl font-bold text-indigo-600">{{ $searches->total() }}</div>
-                            <div class="text-sm text-gray-600">Total des recherches</div>
+                            <div class="text-sm text-gray-600">{{ __('messages.total_searches') }}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-green-600">
                                 {{ $searches->getCollection()->where('has_all_prices', true)->count() }}
                             </div>
-                            <div class="text-sm text-gray-600">Recherches complètes</div>
+                            <div class="text-sm text-gray-600">{{ __('messages.complete_searches') }}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-blue-600">
                                 {{ $searches->getCollection()->where('prices_found', '>', 0)->count() }}
                             </div>
-                            <div class="text-sm text-gray-600">Avec prix trouvés</div>
+                            <div class="text-sm text-gray-600">{{ __('messages.with_prices') }}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-orange-600">
                                 {{ $searches->getCollection()->where('prices_found', 0)->count() }}
                             </div>
-                            <div class="text-sm text-gray-600">Sans prix</div>
+                            <div class="text-sm text-gray-600">{{ __('messages.without_prices') }}</div>
                         </div>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date
+                                    {{ __('messages.date') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     ISBN
@@ -59,13 +59,13 @@
                                     Fnac
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Meilleur Prix
+                                    {{ __('messages.best_price') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Estimation Occasion
+                                    {{ __('messages.used_estimation') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
+                                    {{ __('messages.actions') }}
                                 </th>
                             </tr>
                         </thead>
@@ -84,7 +84,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <i class="fab fa-amazon text-orange-500 mr-2"></i>
-                                            <span class="text-sm {{ $search->prix_amazon !== 'Prix non trouvé' ? 'text-green-600 font-semibold' : 'text-red-500' }}">
+                                            <span class="text-sm {{ $search->prix_amazon !== __('messages.price_not_found') ? 'text-green-600 font-semibold' : 'text-red-500' }}">
                                                 {{ $search->prix_amazon }}
                                             </span>
                                         </div>
@@ -92,7 +92,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <i class="fas fa-store text-blue-500 mr-2"></i>
-                                            <span class="text-sm {{ $search->prix_cultura !== 'Prix non trouvé' ? 'text-green-600 font-semibold' : 'text-red-500' }}">
+                                            <span class="text-sm {{ $search->prix_cultura !== __('messages.price_not_found') ? 'text-green-600 font-semibold' : 'text-red-500' }}">
                                                 {{ $search->prix_cultura }}
                                             </span>
                                         </div>
@@ -100,7 +100,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <i class="fas fa-shopping-cart text-red-500 mr-2"></i>
-                                            <span class="text-sm {{ $search->prix_fnac !== 'Prix non trouvé' ? 'text-green-600 font-semibold' : 'text-red-500' }}">
+                                            <span class="text-sm {{ $search->prix_fnac !== __('messages.price_not_found') ? 'text-green-600 font-semibold' : 'text-red-500' }}">
                                                 {{ $search->prix_fnac }}
                                             </span>
                                         </div>
@@ -117,7 +117,7 @@
                                                 </span>
                                             </div>
                                         @else
-                                            <span class="text-sm text-gray-500">Aucun prix</span>
+                                            <span class="text-sm text-gray-500">{{ __('messages.no_price') }}</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -129,32 +129,32 @@
                                                 </span>
                                             </div>
                                         @else
-                                            <span class="text-sm text-gray-500">Non disponible</span>
+                                            <span class="text-sm text-gray-500">{{ __('messages.not_available') }}</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <a href="{{ route('price.show.amazon', $search->id) }}" 
+                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.show.amazon', $search->id) }}" 
                                                target="_blank"
                                                class="text-orange-600 hover:text-orange-900" 
-                                               title="Voir Amazon">
+                                               title="{{ __('messages.view_amazon') }}">
                                                 <i class="fab fa-amazon"></i>
                                             </a>
-                                            <a href="{{ route('price.show.cultura', $search->id) }}" 
+                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.show.cultura', $search->id) }}" 
                                                target="_blank"
                                                class="text-blue-600 hover:text-blue-900" 
-                                               title="Voir Cultura">
+                                               title="{{ __('messages.view_cultura') }}">
                                                 <i class="fas fa-store"></i>
                                             </a>
-                                            <a href="{{ route('price.show.fnac', $search->id) }}" 
+                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.show.fnac', $search->id) }}" 
                                                target="_blank"
                                                class="text-red-600 hover:text-red-900" 
-                                               title="Voir Fnac">
+                                               title="{{ __('messages.view_fnac') }}">
                                                 <i class="fas fa-shopping-cart"></i>
                                             </a>
-                                            <a href="{{ route('price.search') }}?isbn={{ $search->isbn }}" 
+                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}?isbn={{ $search->isbn }}" 
                                                class="text-indigo-600 hover:text-indigo-900" 
-                                               title="Nouvelle recherche">
+                                               title="{{ __('messages.new_search') }}">
                                                 <i class="fas fa-redo"></i>
                                             </a>
                                         </div>
@@ -165,12 +165,12 @@
                                     <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                         <div class="flex flex-col items-center">
                                             <i class="fas fa-search text-4xl mb-4 text-gray-300"></i>
-                                            <p class="text-lg font-medium">Aucune recherche trouvée</p>
-                                            <p class="text-sm">Commencez par faire votre première recherche de prix</p>
-                                            <a href="{{ route('price.search') }}" 
+                                            <p class="text-lg font-medium">{{ __('messages.no_searches_found') }}</p>
+                                            <p class="text-sm">{{ __('messages.start_first_search') }}</p>
+                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}" 
                                                class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                                                 <i class="fas fa-search mr-2"></i>
-                                                Nouvelle Recherche
+                                                {{ __('messages.new_search_button') }}
                                             </a>
                                         </div>
                                     </td>

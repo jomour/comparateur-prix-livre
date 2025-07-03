@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Analyse de lot en image') }}
+            {{ __('messages.lot_estimation') }}
         </h2>
     </x-slot>
 
@@ -32,7 +32,7 @@
                     @if(session('image'))
                         <div class="mt-6">
                             <h3 class="text-lg font-semibold mb-4">Image analysée :</h3>
-                            <img src="{{ route('image.show', session('image')) }}" alt="Image uploadée" class="max-w-full h-auto rounded-lg shadow-md">
+                            <img src="{{ \App\Helpers\LocalizedRoute::localized('image.show', session('image')) }}" alt="Image uploadée" class="max-w-full h-auto rounded-lg shadow-md">
                         </div>
                     @endif
 
@@ -151,20 +151,20 @@
                                     </ul>
                                 </div>
                                 <div class="mt-4 flex justify-center">
-                                    <button onclick="document.getElementById('uploadForm').scrollIntoView({behavior: 'smooth'})" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
-                                        <i class="fas fa-upload mr-2"></i>
-                                        Essayer une autre image
-                                    </button>
+                                                                    <button onclick="document.getElementById('uploadForm').scrollIntoView({behavior: 'smooth'})" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                                    <i class="fas fa-upload mr-2"></i>
+                                    {{ __('messages.try_another_image') }}
+                                </button>
                                 </div>
                             </div>
                         @endif
                     @endif
 
-                    <form action="{{ route('image.upload.process') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
+                    <form action="{{ \App\Helpers\LocalizedRoute::localized('image.upload.process') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
                         @csrf
                         
                         <div>
-                            <x-input-label for="image" :value="__('Sélectionner une image de lot de mangas')" />
+                            <x-input-label for="image" :value="__('messages.select_lot_image')" />
                             <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
                             <x-input-error :messages="$errors->get('image')" class="mt-2" />
                         </div>
@@ -172,7 +172,7 @@
                         <div class="flex items-center gap-4">
                             <x-primary-button id="uploadButton">
                                 <i class="fas fa-upload mr-2" id="uploadIcon"></i>
-                                <span id="buttonText">{{ __('Analyser l\'image') }}</span>
+                                <span id="buttonText">{{ __('messages.analyze_image') }}</span>
                             </x-primary-button>
                         </div>
                     </form>
@@ -181,40 +181,40 @@
                     <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
                         <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
                             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Analyse en cours...</h3>
-                            <p class="text-gray-600 mb-4">Nous analysons votre image avec l'IA pour détecter les mangas</p>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.loading') }}</h3>
+                            <p class="text-gray-600 mb-4">{{ __('messages.ai_analysis_description') }}</p>
                             <div class="space-y-2">
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-eye text-blue-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Détection des mangas</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.auto_isbn_search') }}</span>
                                 </div>
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-robot text-purple-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Analyse IA en cours</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.ai_analysis_description') }}</span>
                                 </div>
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-search text-green-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Recherche des ISBN</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.auto_isbn_search') }}</span>
                                 </div>
                             </div>
                             <div class="mt-4">
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-clock text-orange-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Temps estimé : 30-60 secondes</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.estimated_wait_time') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-8 p-4 bg-gray-50 rounded-lg">
-                        <h3 class="text-lg font-medium mb-2">Informations :</h3>
+                        <h3 class="text-lg font-medium mb-2">{{ __('messages.information') }} :</h3>
                         <ul class="text-sm text-gray-600 space-y-1">
-                            <li>• Formats acceptés : JPEG, PNG, JPG, GIF</li>
-                            <li>• Taille maximale : 2 MB</li>
-                            <li>• L'image sera analysée par IA pour détecter les mangas</li>
-                            <li>• <strong>Recherche automatique des ISBN</strong> pour chaque manga détecté</li>
-                            <li>• Les mangas avec ISBN trouvé peuvent être recherchés directement</li>
-                            <li>• Temps d'analyse : 30-60 secondes selon le nombre de mangas</li>
+                            <li>• {{ __('messages.accepted_formats') }}</li>
+                            <li>• {{ __('messages.max_size') }}</li>
+                            <li>• {{ __('messages.ai_analysis_description') }}</li>
+                            <li>• <strong>{{ __('messages.auto_isbn_search') }}</strong></li>
+                            <li>• {{ __('messages.isbn_found_search') }}</li>
+                            <li>• {{ __('messages.analysis_time') }}</li>
                         </ul>
                     </div>
 
@@ -469,7 +469,7 @@
                     formData.append('_token', '{{ csrf_token() }}');
                     
                     // Upload AJAX
-                    fetch('{{ route("image.upload.ajax") }}', {
+                    fetch('{{ \App\Helpers\LocalizedRoute::localized("image.upload.ajax") }}', {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest'
@@ -521,7 +521,7 @@
         });
 
         function searchIsbn(title) {
-            fetch('{{ route("image.search.isbn") }}', {
+            fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.isbn") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -841,7 +841,7 @@
             
             try {
                 // Envoyer les données au backend
-                const response = await fetch('{{ route("image.search.all.prices") }}', {
+                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.all.prices") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -949,7 +949,7 @@
 
         async function searchPriceForIsbn(isbn) {
             try {
-                const response = await fetch('{{ route("image.search.price") }}', {
+                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.price") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1001,7 +1001,7 @@
                 
                 console.log('Index de la ligne trouvé:', rowIndex);
                 
-                const response = await fetch('{{ route("price.verify.isbn") }}', {
+                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("price.verify.isbn") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1072,7 +1072,7 @@
 
         async function loadMangaPrices(isbn) {
             try {
-                const response = await fetch('{{ route("image.search.price") }}', {
+                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.price") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

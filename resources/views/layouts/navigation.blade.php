@@ -5,27 +5,30 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('price.search') }}">
+                    <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('price.search')" :active="request()->routeIs('price.search')">
-                        {{ __('Recherche') }}
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.search')" :active="request()->routeIs('price.search')">
+                        {{ __('messages.search') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('price.historique')" :active="request()->routeIs('price.historique')">
-                        {{ __('Historique') }}
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.historique')" :active="request()->routeIs('price.historique')">
+                        {{ __('messages.history') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('image.upload.form')" :active="request()->routeIs('image.upload.form')">
-                        {{ __('Analyse de lot en image') }}
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::localized('image.upload.form')" :active="request()->routeIs('image.upload.form')">
+                        {{ __('messages.lot_estimation') }}
                     </x-nav-link>
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
+                <!-- Language Switcher -->
+                <x-language-switcher />
+                
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -40,18 +43,18 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                        <x-dropdown-link :href="\App\Helpers\LocalizedRoute::localized('profile.edit')">
+                            {{ __('messages.profile') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ \App\Helpers\LocalizedRoute::localized('logout') }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')"
+                            <x-dropdown-link :href="\App\Helpers\LocalizedRoute::localized('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('messages.logout') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -73,14 +76,14 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('price.search')" :active="request()->routeIs('price.search')">
-                {{ __('Recherche') }}
+            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.search')" :active="request()->routeIs('price.search')">
+                {{ __('messages.search') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('price.historique')" :active="request()->routeIs('price.historique')">
-                {{ __('Historique') }}
+            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.historique')" :active="request()->routeIs('price.historique')">
+                {{ __('messages.history') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('image.upload.form')" :active="request()->routeIs('image.upload.form')">
-                {{ __('Analyse de lot en image') }}
+            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('image.upload.form')" :active="request()->routeIs('image.upload.form')">
+                {{ __('messages.image_upload') }}
             </x-responsive-nav-link>
         </div>
 
@@ -92,18 +95,18 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('profile.edit')">
+                    {{ __('messages.profile') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ \App\Helpers\LocalizedRoute::localized('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
+                    <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('messages.logout') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
