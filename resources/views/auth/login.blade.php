@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>MangaValueCheck</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -14,6 +14,9 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Favicon rond jaune -->
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23fbbf24' stroke='%23f59e0b' stroke-width='2'/><text x='50' y='60' font-family='Arial, sans-serif' font-size='35' font-weight='bold' text-anchor='middle' fill='white'>M</text></svg>">
     </head>
     <body class="font-sans antialiased">
         <!-- Background avec effet manga -->
