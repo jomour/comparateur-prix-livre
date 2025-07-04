@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             {{ __('messages.manga_lot_estimation') }}
         </h2>
     </x-slot>
@@ -43,53 +43,93 @@
                     @if(session('mangas'))
                         @if(count(session('mangas')) > 0)
                             <div class="mt-6">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-semibold">{{ __('messages.detected_mangas') }} :</h3>
-                                    <button onclick="searchAllPrices()" id="searchAllButton" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-lg flex items-center cursor-not-allowed" disabled>
-                                        <i class="fas fa-lock mr-2" id="searchAllIcon"></i>
+                                <div class="flex justify-between items-center mb-6">
+                                    <div class="flex items-center">
+                                        <div class="bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-full p-3 mr-4 border border-purple-500/30">
+                                            <i class="fas fa-books text-purple-300 text-xl"></i>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-white">{{ __('messages.detected_mangas') }} :</h3>
+                                    </div>
+                                    <button onclick="searchAllPrices()" id="searchAllButton" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-xl flex items-center cursor-not-allowed border border-purple-500/30 shadow-lg transform hover:scale-105 transition-all duration-300" disabled>
+                                        <div class="bg-purple-600/30 rounded-full p-2 mr-3 border border-purple-500/30">
+                                            <i class="fas fa-lock mr-2" id="searchAllIcon"></i>
+                                        </div>
                                         <span id="searchAllText">{{ __('messages.validate_all_mangas') }}</span>
                                     </button>
                                 </div>
                                 <div class="overflow-x-auto">
-                                    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-                                        <thead class="bg-gray-50">
+                                    <table class="min-w-full border-2 border-purple-400/40 rounded-lg shadow-2xl">
+                                        <thead class="bg-gradient-to-r from-purple-700/70 to-pink-700/70">
                                             <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.title') }}</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.isbn') }}</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.estimated_price') }}</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.actions') }}</th>
+                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-book mr-2 text-purple-200"></i>
+                                                        {{ __('messages.title') }}
+                                                    </div>
+                                                </th>
+                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-barcode mr-2 text-purple-200"></i>
+                                                        {{ __('messages.isbn') }}
+                                                    </div>
+                                                </th>
+                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-euro-sign mr-2 text-purple-200"></i>
+                                                        {{ __('messages.estimated_price') }}
+                                                    </div>
+                                                </th>
+                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-cogs mr-2 text-purple-200"></i>
+                                                        {{ __('messages.actions') }}
+                                                    </div>
+                                                </th>
                                             </tr>
                                         </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
+                                        <tbody class="divide-y-2 divide-purple-400/30">
                                             @foreach(session('mangas') as $manga)
-                                                <tr>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $manga['title'] }}</td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {{ $manga['isbn'] }}
-                                                        @if($manga['isDuplicate'])
-                                                            <span class="inline-block ml-2 text-red-500 cursor-help" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
-                                                        @endif
+                                                <tr class="hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-pink-600/20 transition-all duration-300 group">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                                        <div class="bg-purple-700/50 px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
+                                                            <span class="font-semibold">{{ $manga['title'] }}</span>
+                                                        </div>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" id="price-{{ $loop->index }}">
-                                                        <span class="text-gray-400">-</span>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                                        <div class="flex items-center">
+                                                            <div class="bg-purple-700/50 px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
+                                                                <span class="font-mono font-semibold">{{ $manga['isbn'] }}</span>
+                                                            </div>
+                                                            @if($manga['isDuplicate'])
+                                                                <span class="inline-block ml-3 text-red-200 cursor-help bg-red-700/60 px-3 py-2 rounded-lg border-2 border-red-400/50 shadow-md font-bold" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
+                                                            @endif
+                                                        </div>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        @if($manga['isbn'] === __('messages.not_found_isbn'))
-                                                            <button onclick="searchIsbn('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
-                                                                {{ __('messages.search') }}
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white" id="price-{{ $loop->index }}">
+                                                        <span class="text-purple-200 bg-purple-700/50 px-3 py-2 rounded-lg border-2 border-purple-400/50 shadow-md font-medium">-</span>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                                        <div class="flex space-x-3">
+                                                            @if($manga['isbn'] === __('messages.not_found_isbn'))
+                                                                <button onclick="searchIsbn('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-blue-400/50 shadow-lg">
+                                                                    <i class="fas fa-search mr-1"></i>
+                                                                    {{ __('messages.search') }}
+                                                                </button>
+                                                            @else
+                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-blue-400/50 shadow-lg" title="{{ __('messages.verify_isbn_tooltip') }}">
+                                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                                    {{ __('messages.verify_isbn') }}
+                                                                </button>
+                                                            @endif
+                                                            <button onclick="editIsbn('{{ addslashes($manga['title']) }}', '{{ addslashes($manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/50 shadow-lg" title="{{ __('messages.edit_isbn_tooltip') }}">
+                                                                <i class="fas fa-edit mr-1"></i>
+                                                                ✏️
                                                             </button>
-                                                        @else
-                                                            <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" title="{{ __('messages.verify_isbn_tooltip') }}">
-                                                                <i class="fas fa-check-circle mr-1"></i>
-                                                                {{ __('messages.verify_isbn') }}
+                                                            <button onclick="removeManga('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-red-400/50 shadow-lg" title="{{ __('messages.remove_manga_tooltip') }}">
+                                                                <i class="fas fa-trash mr-1"></i>
+                                                                🗑️
                                                             </button>
-                                                        @endif
-                                                        <button onclick="editIsbn('{{ addslashes($manga['title']) }}', '{{ addslashes($manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2" title="{{ __('messages.edit_isbn_tooltip') }}">
-                                                            ✏️
-                                                        </button>
-                                                        <button onclick="removeManga('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" title="{{ __('messages.remove_manga_tooltip') }}">
-                                                            🗑️
-                                                        </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -98,20 +138,52 @@
                                 </div>
                                 
                                 <!-- Résumé global -->
-                                <div id="globalSummary" class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 hidden">
-                                    <h4 class="text-lg font-semibold text-blue-800 mb-3">{{ __('messages.global_lot_estimation') }}</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div class="bg-white p-3 rounded-lg border">
-                                            <div class="text-sm text-gray-600">{{ __('messages.manga_count') }}</div>
-                                            <div id="totalMangas" class="text-2xl font-bold text-blue-600">0</div>
+                                <div id="globalSummary" class="mt-6 bg-gradient-to-br from-purple-900/60 via-pink-900/60 to-yellow-900/60 backdrop-blur-lg rounded-xl p-6 border-2 border-purple-400/40 shadow-2xl hidden">
+                                    <div class="flex items-center mb-6">
+                                        <div class="bg-gradient-to-br from-purple-500/50 to-pink-500/50 rounded-full p-4 mr-4 border-2 border-purple-300/50 shadow-lg">
+                                            <i class="fas fa-chart-bar text-white text-xl"></i>
                                         </div>
-                                        <div class="bg-white p-3 rounded-lg border">
-                                            <div class="text-sm text-gray-600">{{ __('messages.total_estimated_price') }}</div>
-                                            <div id="totalPrice" class="text-2xl font-bold text-green-600">0,00 €</div>
+                                        <h4 class="text-xl font-bold text-white drop-shadow-lg">{{ __('messages.global_lot_estimation') }}</h4>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div class="group transform hover:scale-105 transition-all duration-300">
+                                            <div class="bg-gradient-to-br from-blue-700/50 to-cyan-700/50 rounded-xl p-5 border-2 border-blue-400/50 backdrop-blur-sm shadow-xl">
+                                                <div class="flex items-center">
+                                                    <div class="bg-gradient-to-br from-blue-500/70 to-cyan-500/70 rounded-full p-3 mr-4 border-2 border-blue-300/50 shadow-lg">
+                                                        <i class="fas fa-books text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm text-blue-100 font-medium">{{ __('messages.manga_count') }}</div>
+                                                        <div id="totalMangas" class="text-3xl font-bold text-white drop-shadow-lg">0</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="bg-white p-3 rounded-lg border">
-                                            <div class="text-sm text-gray-600">{{ __('messages.average_price') }}</div>
-                                            <div id="averagePrice" class="text-2xl font-bold text-purple-600">0,00 €</div>
+                                        <div class="group transform hover:scale-105 transition-all duration-300">
+                                            <div class="bg-gradient-to-br from-green-700/50 to-emerald-700/50 rounded-xl p-5 border-2 border-green-400/50 backdrop-blur-sm shadow-xl">
+                                                <div class="flex items-center">
+                                                    <div class="bg-gradient-to-br from-green-500/70 to-emerald-500/70 rounded-full p-3 mr-4 border-2 border-green-300/50 shadow-lg">
+                                                        <i class="fas fa-euro-sign text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm text-green-100 font-medium">{{ __('messages.total_estimated_price') }}</div>
+                                                        <div id="totalPrice" class="text-3xl font-bold text-white drop-shadow-lg">0,00 €</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group transform hover:scale-105 transition-all duration-300">
+                                            <div class="bg-gradient-to-br from-purple-700/50 to-pink-700/50 rounded-xl p-5 border-2 border-purple-400/50 backdrop-blur-sm shadow-xl">
+                                                <div class="flex items-center">
+                                                    <div class="bg-gradient-to-br from-purple-500/70 to-pink-500/70 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-lg">
+                                                        <i class="fas fa-calculator text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm text-purple-100 font-medium">{{ __('messages.average_price') }}</div>
+                                                        <div id="averagePrice" class="text-3xl font-bold text-white drop-shadow-lg">0,00 €</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -210,16 +282,55 @@
                         </div>
                     </div>
 
-                    <div class="mt-8 p-4 bg-gray-50 rounded-lg">
-                        <h3 class="text-lg font-medium mb-2">{{ __('messages.information') }} :</h3>
-                        <ul class="text-sm text-gray-600 space-y-1">
-                            <li>• {{ __('messages.accepted_formats') }}</li>
-                            <li>• {{ __('messages.max_size') }}</li>
-                            <li>• {{ __('messages.ai_analysis_description') }}</li>
-                            <li>• <strong>{{ __('messages.auto_isbn_search') }}</strong></li>
-                            <li>• {{ __('messages.isbn_found_search') }}</li>
-                            <li>• {{ __('messages.analysis_time') }}</li>
-                        </ul>
+                    <div class="mt-8 bg-gradient-to-br from-purple-900/60 via-pink-900/60 to-yellow-900/60 backdrop-blur-lg rounded-xl p-6 border-2 border-purple-400/40 shadow-2xl">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-gradient-to-br from-purple-500/50 to-pink-500/50 rounded-full p-4 mr-4 border-2 border-purple-300/50 shadow-lg">
+                                <i class="fas fa-info-circle text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white drop-shadow-lg">{{ __('messages.information') }} :</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-3 border border-purple-400/50 shadow-md">
+                                    <div class="bg-purple-500/60 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-md">
+                                        <i class="fas fa-image text-white"></i>
+                                    </div>
+                                    <span class="text-sm font-medium">{{ __('messages.accepted_formats') }}</span>
+                                </div>
+                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-3 border border-purple-400/50 shadow-md">
+                                    <div class="bg-purple-500/60 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-md">
+                                        <i class="fas fa-weight-hanging text-white"></i>
+                                    </div>
+                                    <span class="text-sm font-medium">{{ __('messages.max_size') }}</span>
+                                </div>
+                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-3 border border-purple-400/50 shadow-md">
+                                    <div class="bg-purple-500/60 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-md">
+                                        <i class="fas fa-robot text-white"></i>
+                                    </div>
+                                    <span class="text-sm font-medium">{{ __('messages.ai_analysis_description') }}</span>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center text-white bg-green-800/30 rounded-lg p-3 border border-green-400/50 shadow-md">
+                                    <div class="bg-green-500/60 rounded-full p-3 mr-4 border-2 border-green-300/50 shadow-md">
+                                        <i class="fas fa-search text-white"></i>
+                                    </div>
+                                    <span class="text-sm font-bold">{{ __('messages.auto_isbn_search') }}</span>
+                                </div>
+                                <div class="flex items-center text-white bg-blue-800/30 rounded-lg p-3 border border-blue-400/50 shadow-md">
+                                    <div class="bg-blue-500/60 rounded-full p-3 mr-4 border-2 border-blue-300/50 shadow-md">
+                                        <i class="fas fa-bolt text-white"></i>
+                                    </div>
+                                    <span class="text-sm font-medium">{{ __('messages.isbn_found_search') }}</span>
+                                </div>
+                                <div class="flex items-center text-white bg-orange-800/30 rounded-lg p-3 border border-orange-400/50 shadow-md">
+                                    <div class="bg-orange-500/60 rounded-full p-3 mr-4 border-2 border-orange-300/50 shadow-md">
+                                        <i class="fas fa-clock text-white"></i>
+                                    </div>
+                                    <span class="text-sm font-medium">{{ __('messages.analysis_time') }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Modal d'édition ISBN -->

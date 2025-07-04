@@ -1,4 +1,5 @@
-<nav x-data="{ open: false }" class="bg-white/10 backdrop-blur-lg border-b border-white/20 shadow-lg">
+<!-- Navigation Desktop -->
+<nav x-data="{ open: false }" class="bg-white/10 backdrop-blur-lg border-b border-white/20 shadow-lg hidden md:block">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -76,62 +77,102 @@
                     </x-slot>
                 </x-dropdown>
             </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:text-yellow-300 focus:outline-none transition-all duration-200">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white/10 backdrop-blur-lg border-t border-white/20">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::url('price.search')" :active="request()->routeIs('fr.comparateur.prix') || request()->routeIs('en.manga.price.comparator')" class="text-white hover:bg-white/10">
-                <i class="fas fa-search mr-2"></i>
-                {{ __('messages.comparator') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::url('price.historique')" :active="request()->routeIs('fr.historique.recherches') || request()->routeIs('en.search.history')" class="text-white hover:bg-white/10">
-                <i class="fas fa-history mr-2"></i>
-                {{ __('messages.history') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::url('image.upload.form')" :active="request()->routeIs('fr.estimation.lot.manga') || request()->routeIs('en.manga.lot.estimation')" class="text-white hover:bg-white/10">
-                <i class="fas fa-camera mr-2"></i>
-                {{ __('messages.manga_lot_estimation') }}
-            </x-responsive-nav-link>
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-white/20">
-            <div class="px-4">
-                <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-purple-200">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('profile.edit')" class="text-white hover:bg-white/10">
-                    <i class="fas fa-user-edit mr-2"></i>
-                    {{ __('messages.profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ \App\Helpers\LocalizedRoute::localized('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();"
-                            class="text-white hover:bg-white/10">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        {{ __('messages.logout') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
         </div>
     </div>
 </nav>
+
+<!-- Navigation Mobile - Bottom Bar -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 z-50">
+    <!-- Bottom Navigation Bar -->
+    <div class="bg-white/10 backdrop-blur-lg border-t border-white/20 shadow-2xl">
+        <div class="flex justify-around items-center h-16 px-4">
+            <!-- Comparateur -->
+            <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" 
+               class="flex flex-col items-center justify-center flex-1 py-2 {{ request()->routeIs('fr.comparateur.prix') || request()->routeIs('en.manga.price.comparator') ? 'text-yellow-300' : 'text-white' }} transition-colors duration-200">
+                <i class="fas fa-search text-lg mb-1"></i>
+                <span class="text-xs font-medium">{{ __('messages.comparator') }}</span>
+            </a>
+
+            <!-- Historique -->
+            <a href="{{ \App\Helpers\LocalizedRoute::url('price.historique') }}" 
+               class="flex flex-col items-center justify-center flex-1 py-2 {{ request()->routeIs('fr.historique.recherches') || request()->routeIs('en.search.history') ? 'text-yellow-300' : 'text-white' }} transition-colors duration-200">
+                <i class="fas fa-history text-lg mb-1"></i>
+                <span class="text-xs font-medium">{{ __('messages.history') }}</span>
+            </a>
+
+            <!-- Estimation -->
+            <a href="{{ \App\Helpers\LocalizedRoute::url('image.upload.form') }}" 
+               class="flex flex-col items-center justify-center flex-1 py-2 {{ request()->routeIs('fr.estimation.lot.manga') || request()->routeIs('en.manga.lot.estimation') ? 'text-yellow-300' : 'text-white' }} transition-colors duration-200">
+                <i class="fas fa-camera text-lg mb-1"></i>
+                <span class="text-xs font-medium">{{ __('messages.manga_lot_estimation') }}</span>
+            </a>
+
+            <!-- Menu Utilisateur -->
+            <div class="flex flex-col items-center justify-center flex-1 py-2" x-data="{ open: false }">
+                <button @click="open = !open" class="flex flex-col items-center justify-center text-white hover:text-yellow-300 transition-colors duration-200">
+                    <div class="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center mb-1">
+                        <i class="fas fa-user text-xs text-white"></i>
+                    </div>
+                    <span class="text-xs font-medium">{{ __('messages.profile') }}</span>
+                </button>
+
+                <!-- Menu déroulant mobile -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="absolute bottom-20 left-4 right-4 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl p-4 z-[9999]"
+                     @click.outside="open = false"
+                     style="display: none;">
+                    
+                    <!-- Language Switcher Mobile -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-800/80 rounded-lg border border-gray-700/50">
+                            <span class="text-white text-sm font-medium">{{ __('messages.language') }}</span>
+                            <div class="flex space-x-2">
+                                <a href="{{ \App\Helpers\LocalizedRoute::switchLanguage('fr', request()->getRequestUri()) }}" 
+                                   class="px-3 py-1 rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-purple-600 text-white' : 'bg-gray-700/80 text-gray-200 hover:bg-gray-600/80' }} text-sm transition-colors duration-200">
+                                    FR
+                                </a>
+                                <a href="{{ \App\Helpers\LocalizedRoute::switchLanguage('en', request()->getRequestUri()) }}" 
+                                   class="px-3 py-1 rounded-lg {{ app()->getLocale() === 'en' ? 'bg-purple-600 text-white' : 'bg-gray-700/80 text-gray-200 hover:bg-gray-600/80' }} text-sm transition-colors duration-200">
+                                    EN
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Info -->
+                    <div class="mb-4 p-3 bg-gray-800/80 rounded-lg border border-gray-700/50">
+                        <div class="text-white text-sm font-medium">{{ Auth::user()->name }}</div>
+                        <div class="text-purple-300 text-xs">{{ Auth::user()->email }}</div>
+                    </div>
+
+                    <!-- Menu Items -->
+                    <div class="space-y-2">
+                        <a href="{{ \App\Helpers\LocalizedRoute::localized('profile.edit') }}" 
+                           class="flex items-center p-3 text-white hover:bg-gray-800/80 rounded-lg transition-colors duration-200 border border-transparent hover:border-gray-600/50">
+                            <i class="fas fa-user-edit mr-3 text-purple-400"></i>
+                            <span class="text-sm">{{ __('messages.profile') }}</span>
+                        </a>
+
+                        <form method="POST" action="{{ \App\Helpers\LocalizedRoute::localized('logout') }}">
+                            @csrf
+                            <button type="submit" 
+                                    class="w-full flex items-center p-3 text-white hover:bg-gray-800/80 rounded-lg transition-colors duration-200 border border-transparent hover:border-gray-600/50">
+                                <i class="fas fa-sign-out-alt mr-3 text-red-400"></i>
+                                <span class="text-sm">{{ __('messages.logout') }}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Padding pour le contenu mobile -->
+<div class="md:hidden pb-16"></div>

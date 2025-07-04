@@ -52,14 +52,14 @@
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white/10 backdrop-blur-lg border-b border-white/20 shadow-lg">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-7xl mx-auto py-4 md:py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
             <!-- Page Content -->
-            <main class="relative z-10">
+            <main class="relative z-10 pb-4 md:pb-0">
                 {{ $slot }}
             </main>
         </div>
