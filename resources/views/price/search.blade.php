@@ -121,6 +121,52 @@
                         </div>
                     </div>
 
+                    <!-- Section explicative -->
+                    <div class="mt-12 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-2xl p-8 border border-purple-300/20">
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold text-white mb-4">{{ __('messages.comparator_estimation_analysis') }}</h3>
+                            <p class="text-purple-200 text-lg leading-relaxed">
+                                {{ __('messages.comparator_description') }}
+                            </p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                                <h4 class="text-xl font-semibold text-yellow-300 mb-3">{{ __('messages.price_estimation_title') }}</h4>
+                                <p class="text-purple-200 text-sm leading-relaxed">
+                                    {{ __('messages.price_estimation_description') }}
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                                <h4 class="text-xl font-semibold text-pink-300 mb-3">{{ __('messages.used_price_comparison_title') }}</h4>
+                                <p class="text-purple-200 text-sm leading-relaxed">
+                                    {{ __('messages.used_price_comparison_description') }}
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                                <h4 class="text-xl font-semibold text-blue-300 mb-3">{{ __('messages.estimation_history_title') }}</h4>
+                                <p class="text-purple-200 text-sm leading-relaxed">
+                                    {{ __('messages.estimation_history_description') }}
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                                <h4 class="text-xl font-semibold text-green-300 mb-3">{{ __('messages.lot_estimation_title') }}</h4>
+                                <p class="text-purple-200 text-sm leading-relaxed">
+                                    {{ __('messages.lot_estimation_description') }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <p class="text-purple-200 text-sm">
+                                {{ __('messages.seo_footer_text') }}
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Modal de confirmation ISBN -->
                     <div id="isbnModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
                         <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">

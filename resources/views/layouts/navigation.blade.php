@@ -6,10 +6,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" class="flex items-center space-x-2 group">
-                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-book-open text-white text-lg"></i>
-                        </div>
+                    <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" class="flex items-center group">
                         <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
                             MangaValueCheck
                         </span>

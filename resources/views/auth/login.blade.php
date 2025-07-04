@@ -1,6 +1,23 @@
-<x-guest-layout>
-    <!-- Background avec effet manga -->
-    <div class="fixed inset-0 bg-gradient-to-br from-purple-900 via-pink-800 to-indigo-900 overflow-hidden">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <title>{{ config('app.name', 'Laravel') }}</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <!-- Background avec effet manga -->
+        <div class="fixed inset-0 bg-gradient-to-br from-purple-900 via-pink-800 to-indigo-900 overflow-hidden">
         <!-- Éléments décoratifs manga -->
         <div class="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
         <div class="absolute top-20 right-20 w-24 h-24 bg-pink-400 rounded-full opacity-30 animate-bounce"></div>
@@ -17,13 +34,10 @@
     </div>
 
     <!-- Contenu principal -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div class="w-full max-w-md">
+    <div class="relative z-10 min-h-screen flex items-center justify-center p-4 mx-auto">
+        <div class="w-full max-w-md mx-auto">
             <!-- Logo et titre -->
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg">
-                    <i class="fas fa-book-open text-3xl text-white"></i>
-                </div>
+            <div class="text-center mb-6">
                 <h1 class="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
                     MangaValueCheck
                 </h1>
@@ -148,4 +162,5 @@
             </div>
         </div>
     </div>
-</x-guest-layout>
+    </body>
+</html>
