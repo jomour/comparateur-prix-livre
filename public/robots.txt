@@ -1,2 +1,28 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: {{ config('app.url') }}/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /bootstrap/
+Disallow: /app/
+Disallow: /config/
+Disallow: /database/
+Disallow: /resources/
+Disallow: /routes/
+Disallow: /tests/
+
+# Allow important pages
+Allow: /fr/prix
+Allow: /en/price
+Allow: /fr/prix/historique
+Allow: /en/price/historique
+Allow: /fr/image
+Allow: /en/image
+
+# Crawl delay (optional)
+Crawl-delay: 1

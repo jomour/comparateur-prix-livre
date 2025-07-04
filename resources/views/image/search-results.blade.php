@@ -13,7 +13,7 @@
                     <div class="text-center mb-8">
                         <h1 class="text-3xl font-bold text-gray-800 mb-2">
                             <i class="fas fa-chart-bar text-green-600 mr-3"></i>
-                            Résultats de la recherche globale
+                            {{ __('messages.global_search_results') }}
                         </h1>
                         <p class="text-gray-600">{{ __('messages.prices_found_for_mangas_count', ['count' => $totalMangas]) }}</p>
                     </div>
@@ -34,7 +34,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-euro-sign text-green-500 text-2xl mr-3"></i>
                                 <div>
-                                    <div class="text-sm text-gray-600">Prix total estimé</div>
+                                    <div class="text-sm text-gray-600">{{ __('messages.total_estimated_price') }}</div>
                                     <div class="text-2xl font-bold text-green-600">{{ number_format($totalPrice, 2) }} €</div>
                                 </div>
                             </div>
@@ -109,19 +109,19 @@
                                                 @case('success')
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                         <i class="fas fa-check mr-1"></i>
-                                                        Prix trouvé
+                                                        {{ __('messages.price_found') }}
                                                     </span>
                                                     @break
                                                 @case('not_found')
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                         <i class="fas fa-times mr-1"></i>
-                                                        Non trouvé
+                                                        {{ __('messages.not_found') }}
                                                     </span>
                                                     @break
                                                 @case('error')
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                        Erreur
+                                                        {{ __('messages.error') }}
                                                     </span>
                                                     @break
                                             @endswitch
@@ -134,12 +134,12 @@
 
                     <!-- Actions -->
                     <div class="mt-8 flex justify-center space-x-4">
-                        <a href="{{ \App\Helpers\LocalizedRoute::localized('image.upload.form') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <a href="{{ \App\Helpers\LocalizedRoute::url('image.upload.form') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             <i class="fas fa-arrow-left mr-2"></i>
                             {{ __('messages.new_analysis') }}
                         </a>
                         
-                        <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             <i class="fas fa-search mr-2"></i>
                             {{ __('messages.simple_search') }}
                         </a>

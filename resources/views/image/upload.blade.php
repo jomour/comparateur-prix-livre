@@ -14,9 +14,9 @@
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle mr-2"></i>
                                 <div>
-                                    <strong>Succès !</strong> {{ session('success') }}
+                                    <strong>{{ __('messages.success') }} !</strong> {{ session('success') }}
                                     <div class="text-sm mt-1">
-                                        <i class="fas fa-search mr-1"></i>Recherche automatique des ISBN effectuée
+                                        <i class="fas fa-search mr-1"></i>{{ __('messages.auto_isbn_search') }}
                                     </div>
                                 </div>
                             </div>
@@ -31,7 +31,7 @@
 
                     @if(session('image'))
                         <div class="mt-6">
-                            <h3 class="text-lg font-semibold mb-4">Image analysée :</h3>
+                            <h3 class="text-lg font-semibold mb-4">{{ __('messages.analyzed_image') }} :</h3>
                             <img src="{{ \App\Helpers\LocalizedRoute::localized('image.show', session('image')) }}" alt="Image uploadée" class="max-w-full h-auto rounded-lg shadow-md">
                         </div>
                     @endif
@@ -40,20 +40,20 @@
                         @if(count(session('mangas')) > 0)
                             <div class="mt-6">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-semibold">Mangas détectés :</h3>
+                                    <h3 class="text-lg font-semibold">{{ __('messages.detected_mangas') }} :</h3>
                                     <button onclick="searchAllPrices()" id="searchAllButton" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-lg flex items-center cursor-not-allowed" disabled>
                                         <i class="fas fa-lock mr-2" id="searchAllIcon"></i>
-                                        <span id="searchAllText">Validez tous les mangas d'abord</span>
+                                        <span id="searchAllText">{{ __('messages.validate_all_mangas') }}</span>
                                     </button>
                                 </div>
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Titre</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">ISBN</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix estimé</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Actions</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.title') }}</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.isbn') }}</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.estimated_price') }}</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.actions') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
@@ -63,27 +63,27 @@
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                         {{ $manga['isbn'] }}
                                                         @if($manga['isDuplicate'])
-                                                            <span class="inline-block ml-2 text-red-500 cursor-help" title="Attention : ISBN en doublon sur plusieurs mangas différents">⚠️</span>
+                                                            <span class="inline-block ml-2 text-red-500 cursor-help" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
                                                         @endif
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" id="price-{{ $loop->index }}">
                                                         <span class="text-gray-400">-</span>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        @if($manga['isbn'] === 'Non trouvé')
-                                                            <button onclick="searchIsbn('{{ str_replace("'", "\\'", $manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
-                                                                Rechercher
+                                                        @if($manga['isbn'] === __('messages.not_found_isbn'))
+                                                            <button onclick="searchIsbn('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                                                                {{ __('messages.search') }}
                                                             </button>
                                                         @else
-                                                            <button onclick="verifyMangaIsbn('{{ str_replace("'", "\\'", $manga['isbn']) }}', '{{ str_replace("'", "\\'", $manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" title="Vérifier l'ISBN et valider le manga">
+                                                            <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" title="{{ __('messages.verify_isbn_tooltip') }}">
                                                                 <i class="fas fa-check-circle mr-1"></i>
-                                                                Vérifier l'ISBN
+                                                                {{ __('messages.verify_isbn') }}
                                                             </button>
                                                         @endif
-                                                        <button onclick="editIsbn('{{ str_replace("'", "\\'", $manga['title']) }}', '{{ str_replace("'", "\\'", $manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2" title="Modifier l'ISBN">
+                                                        <button onclick="editIsbn('{{ addslashes($manga['title']) }}', '{{ addslashes($manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2" title="{{ __('messages.edit_isbn_tooltip') }}">
                                                             ✏️
                                                         </button>
-                                                        <button onclick="removeManga('{{ str_replace("'", "\\'", $manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" title="Supprimer de la liste">
+                                                        <button onclick="removeManga('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" title="{{ __('messages.remove_manga_tooltip') }}">
                                                             🗑️
                                                         </button>
                                                     </td>
@@ -95,18 +95,18 @@
                                 
                                 <!-- Résumé global -->
                                 <div id="globalSummary" class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 hidden">
-                                    <h4 class="text-lg font-semibold text-blue-800 mb-3">Estimation globale du lot</h4>
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-3">{{ __('messages.global_lot_estimation') }}</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div class="bg-white p-3 rounded-lg border">
-                                            <div class="text-sm text-gray-600">Nombre de mangas</div>
+                                            <div class="text-sm text-gray-600">{{ __('messages.manga_count') }}</div>
                                             <div id="totalMangas" class="text-2xl font-bold text-blue-600">0</div>
                                         </div>
                                         <div class="bg-white p-3 rounded-lg border">
-                                            <div class="text-sm text-gray-600">Prix total estimé</div>
+                                            <div class="text-sm text-gray-600">{{ __('messages.total_estimated_price') }}</div>
                                             <div id="totalPrice" class="text-2xl font-bold text-green-600">0,00 €</div>
                                         </div>
                                         <div class="bg-white p-3 rounded-lg border">
-                                            <div class="text-sm text-gray-600">Prix moyen</div>
+                                            <div class="text-sm text-gray-600">{{ __('messages.average_price') }}</div>
                                             <div id="averagePrice" class="text-2xl font-bold text-purple-600">0,00 €</div>
                                         </div>
                                     </div>
@@ -117,44 +117,44 @@
                             <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
                                 <div class="flex items-center mb-4">
                                     <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mr-3"></i>
-                                    <h3 class="text-lg font-semibold text-yellow-800">Aucun manga détecté</h3>
+                                    <h3 class="text-lg font-semibold text-yellow-800">{{ __('messages.no_manga_detected') }}</h3>
                                 </div>
                                 <p class="text-yellow-700 mb-4">
-                                    L'analyse de votre image n'a pas permis de détecter de mangas. Cela peut être dû à plusieurs raisons :
+                                    {{ __('messages.no_manga_detected_explanation') }}
                                 </p>
                                 <ul class="text-yellow-700 space-y-2 mb-6">
                                     <li class="flex items-start">
                                         <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
-                                        <span>La qualité de l'image n'est pas suffisante (floue, sombre, etc.)</span>
+                                        <span>{{ __('messages.image_quality_issue') }}</span>
                                     </li>
                                     <li class="flex items-start">
                                         <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
-                                        <span>Les mangas ne sont pas clairement visibles dans l'image</span>
+                                        <span>{{ __('messages.manga_not_visible') }}</span>
                                     </li>
                                     <li class="flex items-start">
                                         <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
-                                        <span>L'image ne contient pas de mangas ou contient d'autres types de livres</span>
+                                        <span>{{ __('messages.no_manga_in_image') }}</span>
                                     </li>
                                     <li class="flex items-start">
                                         <i class="fas fa-check-circle text-yellow-500 mr-2 mt-1"></i>
-                                        <span>Les couvertures des mangas sont partiellement cachées</span>
+                                        <span>{{ __('messages.covers_partially_hidden') }}</span>
                                     </li>
                                 </ul>
                                 <div class="bg-white p-4 rounded-lg border border-yellow-200">
-                                    <h4 class="font-semibold text-yellow-800 mb-2">Suggestions pour améliorer la détection :</h4>
+                                    <h4 class="font-semibold text-yellow-800 mb-2">{{ __('messages.detection_improvement_suggestions') }} :</h4>
                                     <ul class="text-yellow-700 space-y-1 text-sm">
-                                        <li>• Assurez-vous que l'image est bien éclairée et nette</li>
-                                        <li>• Photographiez les mangas de face, couvertures bien visibles</li>
-                                        <li>• Évitez les reflets et les ombres sur les couvertures</li>
-                                        <li>• Essayez de prendre l'image dans un environnement bien éclairé</li>
-                                        <li>• Vérifiez que l'image contient bien des mangas et non d'autres types de livres</li>
+                                        <li>• {{ __('messages.ensure_good_lighting') }}</li>
+                                        <li>• {{ __('messages.photograph_front_covers') }}</li>
+                                        <li>• {{ __('messages.avoid_reflections_shadows') }}</li>
+                                        <li>• {{ __('messages.take_in_well_lit_environment') }}</li>
+                                        <li>• {{ __('messages.verify_manga_content') }}</li>
                                     </ul>
                                 </div>
                                 <div class="mt-4 flex justify-center">
-                                                                    <button onclick="document.getElementById('uploadForm').scrollIntoView({behavior: 'smooth'})" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
-                                    <i class="fas fa-upload mr-2"></i>
-                                    {{ __('messages.try_another_image') }}
-                                </button>
+                                    <button onclick="document.getElementById('uploadForm').scrollIntoView({behavior: 'smooth'})" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        {{ __('messages.try_another_image') }}
+                                    </button>
                                 </div>
                             </div>
                         @endif
@@ -223,20 +223,20 @@
                         <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
                             <div class="flex items-center mb-4">
                                 <i class="fas fa-edit text-yellow-500 text-2xl mr-3"></i>
-                                <h3 class="text-lg font-semibold text-gray-800">Modifier l'ISBN</h3>
+                                <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.edit_isbn_modal') }}</h3>
                             </div>
                             
                             <div class="mb-6">
                                 <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Titre du manga :</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('messages.manga_title') }} :</label>
                                     <p id="editMangaTitle" class="text-gray-900 font-medium bg-gray-50 p-2 rounded"></p>
                                 </div>
                                 <div class="mb-4">
-                                    <label for="editIsbnInput" class="block text-sm font-medium text-gray-700 mb-1">ISBN :</label>
+                                    <label for="editIsbnInput" class="block text-sm font-medium text-gray-700 mb-1">{{ __('messages.isbn') }} :</label>
                                     <input type="text" 
                                            id="editIsbnInput" 
                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-                                           placeholder="Ex: 9782505000000">
+                                           placeholder="{{ __('messages.isbn_placeholder') }}">
                                 </div>
                             </div>
                             
@@ -245,13 +245,13 @@
                                         id="saveIsbn"
                                         class="flex-1 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
                                     <i class="fas fa-save mr-2"></i>
-                                    Enregistrer
+                                    {{ __('messages.save') }}
                                 </button>
                                 <button type="button" 
                                         id="cancelEdit"
                                         class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
                                     <i class="fas fa-times mr-2"></i>
-                                    Annuler
+                                    {{ __('messages.cancel') }}
                                 </button>
                             </div>
                         </div>
@@ -262,11 +262,11 @@
                         <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
                             <div class="flex items-center mb-4">
                                 <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
-                                <h3 class="text-lg font-semibold text-gray-800">Confirmer la suppression</h3>
+                                <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.confirm_deletion') }}</h3>
                             </div>
                             
                             <div class="mb-6">
-                                <p class="text-gray-600">Êtes-vous sûr de vouloir supprimer ce manga de la liste ?</p>
+                                <p class="text-gray-600">{{ __('messages.confirm_delete_manga') }}</p>
                                 <p id="deleteMangaTitle" class="text-gray-900 font-medium mt-2 bg-gray-50 p-2 rounded"></p>
                             </div>
                             
@@ -275,13 +275,13 @@
                                         id="confirmDelete"
                                         class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
                                     <i class="fas fa-trash mr-2"></i>
-                                    Supprimer
+                                    {{ __('messages.delete_manga') }}
                                 </button>
                                 <button type="button" 
                                         id="cancelDelete"
                                         class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
                                     <i class="fas fa-times mr-2"></i>
-                                    Annuler
+                                    {{ __('messages.cancel_delete') }}
                                 </button>
                             </div>
                         </div>
@@ -291,26 +291,26 @@
                     <div id="searchAllOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
                         <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
                             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Recherche des prix en cours...</h3>
-                            <p class="text-gray-600 mb-4">Nous récupérons les prix pour tous vos mangas</p>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.searching_prices') }}</h3>
+                            <p class="text-gray-600 mb-4">{{ __('messages.retrieving_prices_for_all_mangas') }}</p>
                             <div class="space-y-2">
                                 <div class="flex items-center justify-center">
                                     <i class="fab fa-amazon text-orange-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Amazon</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.amazon') }}</span>
                                 </div>
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-store text-blue-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Cultura</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.cultura') }}</span>
                                 </div>
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-shopping-cart text-red-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">Fnac</span>
+                                    <span class="text-sm text-gray-600">{{ __('messages.fnac') }}</span>
                                 </div>
                             </div>
                             <div class="mt-4">
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-clock text-green-500 mr-2"></i>
-                                    <span id="searchProgress" class="text-sm text-gray-600">Préparation...</span>
+                                    <span id="searchProgress" class="text-sm text-gray-600">{{ __('messages.preparing') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -322,7 +322,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center">
                                     <i class="fas fa-chart-bar text-green-500 text-2xl mr-3"></i>
-                                    <h3 class="text-lg font-semibold text-gray-800">Résultats de la recherche</h3>
+                                    <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.search_results') }}</h3>
                                 </div>
                                 <button onclick="closeSearchResults()" class="text-gray-400 hover:text-gray-600">
                                     <i class="fas fa-times text-xl"></i>
@@ -350,10 +350,10 @@
                                 <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Titre</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">ISBN</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Prix trouvé</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Statut</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.title') }}</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.isbn') }}</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.found_price') }}</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">{{ __('messages.status') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="searchResultsBody" class="bg-white divide-y divide-gray-200">
@@ -370,7 +370,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center">
                                     <i class="fas fa-book text-blue-500 text-2xl mr-3"></i>
-                                    <h3 class="text-lg font-semibold text-gray-800">Détails du manga</h3>
+                                    <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.manga_details') }}</h3>
                                 </div>
                                 <button onclick="closeMangaDetails()" class="text-gray-400 hover:text-gray-600">
                                     <i class="fas fa-times text-xl"></i>
@@ -386,13 +386,13 @@
                                         id="confirmManga"
                                         class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                                     <i class="fas fa-check mr-2"></i>
-                                    Confirmer
+                                    {{ __('messages.confirm') }}
                                 </button>
                                 <button type="button" 
                                         onclick="closeMangaDetails()"
                                         class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
                                     <i class="fas fa-times mr-2"></i>
-                                    Annuler
+                                    {{ __('messages.cancel') }}
                                 </button>
                             </div>
                         </div>
@@ -421,7 +421,7 @@
                     uploadIcon.className = 'fas fa-upload mr-2';
                 }
                 if (buttonText) {
-                    buttonText.textContent = 'Analyser l\'image';
+                    buttonText.textContent = '{{ __('messages.analyze_image') }}';
                 }
                 if (loadingOverlay) {
                     loadingOverlay.style.display = 'none';
@@ -437,7 +437,7 @@
                     const file = fileInput.files[0];
                     
                     if (!file) {
-                        showTemporaryMessage('Veuillez sélectionner une image', 'error');
+                        showTemporaryMessage('{{ __('messages.please_select_image') }}', 'error');
                         return;
                     }
                     
@@ -455,7 +455,7 @@
                     
                     // Changer le texte
                     if (buttonText) {
-                        buttonText.textContent = 'Analyse en cours...';
+                        buttonText.textContent = '{{ __('messages.analysis_in_progress') }}';
                     }
                     
                     // Afficher l'overlay
@@ -493,13 +493,13 @@
                         } else {
                             // Réponse inattendue
                             resetUploadButton();
-                            showTemporaryMessage('Réponse inattendue du serveur', 'error');
+                            showTemporaryMessage('{{ __('messages.unexpected_server_response') }}', 'error');
                         }
                     })
                     .catch(error => {
                         console.error('Erreur lors de l\'upload:', error);
                         resetUploadButton();
-                        showTemporaryMessage('Erreur de connexion lors de l\'analyse. Veuillez réessayer.', 'error');
+                        showTemporaryMessage('{{ __('messages.connection_error_analysis') }}', 'error');
                     });
                 });
             }
@@ -534,14 +534,14 @@
             .then(response => response.json())
             .then(data => {
                 if (data.found) {
-                    alert(`ISBN trouvé pour "${title}": ${data.isbn}`);
+                    alert(`{{ __('messages.isbn_found_for') }} "${title}": ${data.isbn}`);
                 } else {
-                    alert(`Aucun ISBN trouvé pour "${title}"`);
+                    alert(`{{ __('messages.no_isbn_found_for') }} "${title}"`);
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la recherche d\'ISBN');
+                alert('{{ __('messages.error_searching_isbn') }}');
             });
         }
 
@@ -593,7 +593,7 @@
                     updateMangaInTable(title, newIsbn);
                     editModal.classList.add('hidden');
                 } else {
-                    alert('Veuillez entrer un ISBN valide');
+                    alert('{{ __('messages.please_enter_valid_isbn') }}');
                 }
             });
             
@@ -631,11 +631,11 @@
                             const escapedIsbn = newIsbn.replace(/'/g, "\\'");
                             
                             // Créer le bon bouton selon l'ISBN
-                            if (newIsbn === 'Non trouvé') {
+                            if (newIsbn === '{{ __('messages.not_found_isbn') }}') {
                                 // Bouton "Rechercher"
                                 const searchButton = document.createElement('button');
                                 searchButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
-                                searchButton.innerHTML = 'Rechercher';
+                                searchButton.innerHTML = '{{ __('messages.search') }}';
                                 searchButton.setAttribute('data-row-index', index);
                                 searchButton.addEventListener('click', function() {
                                     searchIsbn(title);
@@ -645,8 +645,8 @@
                                 // Bouton "Vérifier l'ISBN"
                                 const verifyButton = document.createElement('button');
                                 verifyButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
-                                verifyButton.title = 'Vérifier l\'ISBN et valider le manga';
-                                verifyButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Vérifier l\'ISBN';
+                                verifyButton.title = '{{ __('messages.verify_isbn_tooltip') }}';
+                                verifyButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>{{ __('messages.verify_isbn') }}';
                                 verifyButton.setAttribute('data-row-index', index);
                                 verifyButton.addEventListener('click', function() {
                                     verifyMangaIsbn(newIsbn, title);
@@ -657,7 +657,7 @@
                             // Ajouter le bouton d'édition
                             const editButton = document.createElement('button');
                             editButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2';
-                            editButton.title = 'Modifier l\'ISBN';
+                            editButton.title = '{{ __('messages.edit_isbn_tooltip') }}';
                             editButton.innerHTML = '✏️';
                             editButton.setAttribute('data-row-index', index);
                             editButton.addEventListener('click', function() {
@@ -668,7 +668,7 @@
                             // Ajouter le bouton de suppression
                             const deleteButton = document.createElement('button');
                             deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
-                            deleteButton.title = 'Supprimer de la liste';
+                            deleteButton.title = '{{ __('messages.remove_manga_tooltip') }}';
                             deleteButton.innerHTML = '🗑️';
                             deleteButton.setAttribute('data-row-index', index);
                             deleteButton.addEventListener('click', function() {
@@ -686,7 +686,7 @@
             
             if (updated) {
                 // Afficher un message de succès temporaire
-                showTemporaryMessage('ISBN mis à jour avec succès', 'success');
+                showTemporaryMessage('{{ __('messages.isbn_updated_successfully') }}', 'success');
             }
         }
 
@@ -709,7 +709,7 @@
                     checkAllMangasValidated();
                     
                     // Afficher un message de succès temporaire
-                    showTemporaryMessage('Manga supprimé de la liste', 'success');
+                    showTemporaryMessage('{{ __('messages.manga_removed_from_list') }}', 'success');
                     return;
                 }
             });
@@ -735,7 +735,7 @@
             // Compter les occurrences de chaque ISBN
             isbnCells.forEach(cell => {
                 const isbn = cell.textContent.trim();
-                if (isbn && isbn !== 'Non trouvé' && isbn !== 'Erreur de recherche') {
+                if (isbn && isbn !== '{{ __('messages.not_found_isbn') }}' && isbn !== '{{ __('messages.search_error') }}') {
                     if (!isbnCounts[isbn]) {
                         isbnCounts[isbn] = [];
                     }
@@ -754,7 +754,7 @@
                     isbnCounts[isbn].forEach(cell => {
                         const indicator = document.createElement('span');
                         indicator.className = 'inline-block ml-2 text-red-500 cursor-help duplicate-indicator';
-                        indicator.title = 'Attention : ISBN en doublon sur plusieurs mangas différents';
+                        indicator.title = '{{ __('messages.duplicate_isbn_warning') }}';
                         indicator.textContent = '⚠️';
                         cell.appendChild(indicator);
                     });
@@ -797,7 +797,7 @@
             });
             
             if (validatedMangas !== totalMangas) {
-                showTemporaryMessage('Tous les mangas doivent être validés avant la recherche globale', 'error');
+                showTemporaryMessage('{{ __('messages.all_mangas_must_be_validated') }}', 'error');
                 return;
             }
             
@@ -811,7 +811,7 @@
             searchAllButton.disabled = true;
             searchAllButton.classList.add('opacity-75', 'cursor-not-allowed');
             searchAllIcon.className = 'fas fa-spinner fa-spin mr-2';
-            searchAllText.textContent = 'Recherche en cours...';
+            searchAllText.textContent = '{{ __('messages.search_in_progress') }}';
             searchAllOverlay.style.display = 'flex';
             
             // Récupérer tous les mangas validés
@@ -821,7 +821,7 @@
                 const isbnCell = row.querySelector('td:nth-child(2)');
                 const isbn = isbnCell.textContent.trim().replace(/⚠️/g, '').trim();
                 
-                if (isbn && isbn !== 'Non trouvé' && isbn !== 'Erreur de recherche' && row.classList.contains('bg-green-50')) {
+                if (isbn && isbn !== '{{ __('messages.not_found_isbn') }}' && isbn !== '{{ __('messages.search_error') }}' && row.classList.contains('bg-green-50')) {
                     validMangas.push({
                         title: row.querySelector('td:first-child').textContent.trim(),
                         isbn: isbn
@@ -830,14 +830,14 @@
             });
             
             if (validMangas.length === 0) {
-                showTemporaryMessage('Aucun manga validé trouvé pour la recherche', 'error');
+                showTemporaryMessage('{{ __('messages.no_validated_manga_found') }}', 'error');
                 resetSearchButton();
                 searchAllOverlay.style.display = 'none';
                 return;
             }
             
             // Mettre à jour le progrès
-            searchProgress.textContent = `Envoi de ${validMangas.length} mangas au serveur...`;
+            searchProgress.textContent = `{{ __('messages.sending_mangas_to_server') }} ${validMangas.length} {{ __('messages.mangas') }}...`;
             
             try {
                 // Envoyer les données au backend
@@ -858,19 +858,19 @@
                         // Rediriger vers la page de résultats
                         window.location.href = data.redirect_url;
                     } else {
-                        showTemporaryMessage('Erreur lors de la recherche: ' + (data.error || 'Erreur inconnue'), 'error');
+                        showTemporaryMessage('{{ __('messages.search_error') }}: ' + (data.error || '{{ __('messages.unknown_error') }}'), 'error');
                         resetSearchButton();
                         searchAllOverlay.style.display = 'none';
                     }
                 } else {
-                    showTemporaryMessage('Erreur lors de la communication avec le serveur', 'error');
+                    showTemporaryMessage('{{ __('messages.server_communication_error') }}', 'error');
                     resetSearchButton();
                     searchAllOverlay.style.display = 'none';
                 }
                 
             } catch (error) {
                 console.error('Erreur lors de la recherche:', error);
-                showTemporaryMessage('Erreur de connexion lors de la recherche', 'error');
+                showTemporaryMessage('{{ __('messages.connection_error_search') }}', 'error');
                 resetSearchButton();
                 searchAllOverlay.style.display = 'none';
             }
@@ -897,15 +897,15 @@
                 let statusText, statusClass;
                 switch(result.status) {
                     case 'success':
-                        statusText = 'Prix trouvé';
+                        statusText = '{{ __('messages.price_found') }}';
                         statusClass = 'text-green-600';
                         break;
                     case 'not_found':
-                        statusText = 'Non trouvé';
+                        statusText = '{{ __('messages.not_found') }}';
                         statusClass = 'text-red-500';
                         break;
                     case 'error':
-                        statusText = 'Erreur';
+                        statusText = '{{ __('messages.error') }}';
                         statusClass = 'text-red-500';
                         break;
                 }
@@ -944,7 +944,7 @@
             searchAllButton.disabled = false;
             searchAllButton.classList.remove('opacity-75', 'cursor-not-allowed');
             searchAllIcon.className = 'fas fa-search mr-2';
-            searchAllText.textContent = 'Rechercher tous les prix';
+            searchAllText.textContent = '{{ __('messages.search_all_prices') }}';
         }
 
         async function searchPriceForIsbn(isbn) {
@@ -1019,14 +1019,14 @@
                         showMangaConfirmationModal(data, rowIndex);
                     } else {
                         // Afficher l'erreur
-                        showTemporaryMessage(`Erreur: ${data.message}`, 'error');
+                        showTemporaryMessage(`{{ __('messages.error') }}: ${data.message}`, 'error');
                     }
                 } else {
-                    showTemporaryMessage('Erreur lors de la vérification de l\'ISBN', 'error');
+                    showTemporaryMessage('{{ __('messages.error_verifying_isbn') }}', 'error');
                 }
             } catch (error) {
                 console.error('Erreur lors de la vérification:', error);
-                showTemporaryMessage('Erreur de connexion lors de la vérification', 'error');
+                showTemporaryMessage('{{ __('messages.connection_error_verification') }}', 'error');
             }
         }
 
@@ -1038,22 +1038,22 @@
             document.getElementById('mangaDetailsContent').innerHTML = `
                 <div class="space-y-4">
                     <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-blue-800 mb-2">Informations du livre</h4>
+                        <h4 class="font-semibold text-blue-800 mb-2">{{ __('messages.book_information') }}</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Titre</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('messages.title') }}</label>
                                 <p class="text-gray-900 font-medium">${data.title}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Auteur</label>
-                                <p class="text-gray-900">${data.author || 'Auteur inconnu'}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('messages.author') }}</label>
+                                <p class="text-gray-900">${data.author || '{{ __('messages.unknown_author') }}'}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Éditeur</label>
-                                <p class="text-gray-900">${data.publisher || 'Éditeur inconnu'}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('messages.publisher') }}</label>
+                                <p class="text-gray-900">${data.publisher || '{{ __('messages.unknown_publisher') }}'}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">ISBN</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('messages.isbn') }}</label>
                                 <p class="text-gray-900 font-mono">${data.isbn}</p>
                             </div>
                         </div>
@@ -1087,11 +1087,11 @@
                     const data = await response.json();
                     displayMangaPrices(data);
                 } else {
-                    displayMangaPrices({ success: false, error: 'Erreur lors du chargement' });
+                    displayMangaPrices({ success: false, error: '{{ __('messages.error_loading') }}' });
                 }
             } catch (error) {
                 console.error('Erreur lors du chargement des prix:', error);
-                displayMangaPrices({ success: false, error: 'Erreur de connexion' });
+                displayMangaPrices({ success: false, error: '{{ __('messages.connection_error') }}' });
             }
         }
 
@@ -1118,7 +1118,7 @@
                     hasValidPrice = true;
                     pricesHtml += `
                         <div class="flex justify-between items-center p-2 bg-orange-50 rounded border border-orange-200">
-                            <span class="font-medium text-gray-700">Occasion</span>
+                            <span class="font-medium text-gray-700">{{ __('messages.used') }}</span>
                             <span class="font-bold text-orange-600">${data.occasion_price.toFixed(2)} €</span>
                         </div>
                     `;
@@ -1128,7 +1128,7 @@
                     pricesHtml = `
                         <div class="text-center text-gray-500 py-4">
                             <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mb-2"></i>
-                            <p>Aucun prix trouvé pour ce manga</p>
+                            <p>{{ __('messages.no_price_found_for_manga') }}</p>
                         </div>
                     `;
                 }
@@ -1138,7 +1138,7 @@
                 pricesContainer.innerHTML = `
                     <div class="text-center text-red-500 py-4">
                         <i class="fas fa-times-circle text-xl mb-2"></i>
-                        <p>Erreur lors du chargement des prix</p>
+                        <p>{{ __('messages.error_loading_prices') }}</p>
                     </div>
                 `;
             }
@@ -1173,7 +1173,7 @@
                     closeMangaDetails();
                     
                     // Afficher un message de succès
-                    showTemporaryMessage('Manga validé avec succès !', 'success');
+                    showTemporaryMessage('{{ __('messages.manga_validated_successfully') }}', 'success');
                 }
             });
         });
@@ -1192,7 +1192,7 @@
             
             if (index < 0 || index >= rows.length) {
                 console.error('Index invalide:', index, 'Nombre de lignes:', rows.length);
-                showTemporaryMessage('Erreur: Index de ligne invalide.', 'error');
+                showTemporaryMessage('{{ __('messages.invalid_row_index_error') }}', 'error');
                 return;
             }
             
@@ -1213,7 +1213,7 @@
                 if (!actionsCell.querySelector('.validation-indicator')) {
                     const indicator = document.createElement('span');
                     indicator.className = 'inline-block ml-2 text-green-500 validation-indicator';
-                    indicator.title = 'Manga validé';
+                    indicator.title = '{{ __('messages.manga_validated') }}';
                     indicator.innerHTML = '<i class="fas fa-check-circle"></i>';
                     actionsCell.appendChild(indicator);
                 }
@@ -1226,7 +1226,7 @@
                 verifyButton.disabled = true;
                 verifyButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
                 verifyButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-                verifyButton.innerHTML = '<i class="fas fa-check mr-1"></i>Validé';
+                verifyButton.innerHTML = '<i class="fas fa-check mr-1"></i>{{ __('messages.validated') }}';
                 verifyButton.onclick = null;
                 // Supprimer tous les event listeners
                 const newButton = verifyButton.cloneNode(true);
@@ -1272,7 +1272,7 @@
                 const isbn = isbnCell.textContent.trim().replace(/⚠️/g, '').trim();
                 
                 // Compter seulement les mangas avec ISBN valide (pas "Non trouvé")
-                if (isbn && isbn !== 'Non trouvé' && isbn !== 'Erreur de recherche') {
+                if (isbn && isbn !== '{{ __('messages.not_found_isbn') }}' && isbn !== '{{ __('messages.search_error') }}') {
                     totalMangas++;
                     
                     // Vérifier si le manga est validé (a la classe bg-green-50)
@@ -1294,17 +1294,17 @@
                 searchAllButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
                 searchAllButton.classList.add('bg-green-600', 'hover:bg-green-700');
                 searchAllIcon.className = 'fas fa-search mr-2';
-                searchAllText.textContent = 'Rechercher tous les prix';
+                searchAllText.textContent = '{{ __('messages.search_all_prices') }}';
                 
                 // Afficher un message de succès
-                showTemporaryMessage('Tous les mangas sont validés ! Recherche globale disponible.', 'success');
+                showTemporaryMessage('{{ __('messages.all_mangas_validated_global_search_available') }}', 'success');
             } else {
                 // Garder le bouton désactivé
                 searchAllButton.disabled = true;
                 searchAllButton.classList.remove('bg-green-600', 'hover:bg-green-700');
                 searchAllButton.classList.add('bg-gray-400', 'cursor-not-allowed');
                 searchAllIcon.className = 'fas fa-lock mr-2';
-                searchAllText.textContent = `Validez tous les mangas d'abord (${validatedMangas}/${totalMangas})`;
+                searchAllText.textContent = `{{ __('messages.validate_all_mangas_first') }} (${validatedMangas}/${totalMangas})`;
             }
         }
 

@@ -5,20 +5,20 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}">
+                    <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.search')" :active="request()->routeIs('price.search')">
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::url('price.search')" :active="request()->routeIs('fr.comparateur.prix') || request()->routeIs('en.manga.price.comparator')">
                         {{ __('messages.search') }}
                     </x-nav-link>
-                    <x-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.historique')" :active="request()->routeIs('price.historique')">
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::url('price.historique')" :active="request()->routeIs('fr.historique.recherches') || request()->routeIs('en.search.history')">
                         {{ __('messages.history') }}
                     </x-nav-link>
-                    <x-nav-link :href="\App\Helpers\LocalizedRoute::localized('image.upload.form')" :active="request()->routeIs('image.upload.form')">
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::url('image.upload.form')" :active="request()->routeIs('fr.recherche.image') || request()->routeIs('en.image.search')">
                         {{ __('messages.lot_estimation') }}
                     </x-nav-link>
                 </div>
@@ -76,13 +76,13 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.search')" :active="request()->routeIs('price.search')">
+            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::url('price.search')" :active="request()->routeIs('fr.comparateur.prix') || request()->routeIs('en.manga.price.comparator')">
                 {{ __('messages.search') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('price.historique')" :active="request()->routeIs('price.historique')">
+            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::url('price.historique')" :active="request()->routeIs('fr.historique.recherches') || request()->routeIs('en.search.history')">
                 {{ __('messages.history') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::localized('image.upload.form')" :active="request()->routeIs('image.upload.form')">
+            <x-responsive-nav-link :href="\App\Helpers\LocalizedRoute::url('image.upload.form')" :active="request()->routeIs('fr.recherche.image') || request()->routeIs('en.image.search')">
                 {{ __('messages.image_upload') }}
             </x-responsive-nav-link>
         </div>

@@ -8,77 +8,382 @@ use Illuminate\Support\Facades\Route;
 class LocalizedRoute
 {
     /**
-     * Génère une URL localisée
+     * Génère une URL localisée pour une route donnée
      */
-    public static function localized($name, $parameters = [], $absolute = true)
+    public static function url($routeName, $parameters = [], $absolute = true)
     {
         $locale = App::getLocale();
+        $routeMapping = self::getRouteMapping();
         
-        // S'assurer que $parameters est un tableau
-        if (!is_array($parameters)) {
-            $parameters = [$parameters];
+        // Trouver la route correspondante dans la langue actuelle
+        if (isset($routeMapping[$routeName]) && isset($routeMapping[$routeName][$locale])) {
+            $localizedRouteName = $routeMapping[$routeName][$locale];
+            
+            if (Route::has($localizedRouteName)) {
+                return route($localizedRouteName, $parameters, $absolute);
+            }
         }
         
-        // Si on est dans un contexte localisé, ajouter le paramètre locale
-        if (request()->segment(1) && preg_match('/^([a-z]{2})$/', request()->segment(1))) {
-            $parameters['locale'] = $locale;
-        }
-        
-        $url = route($name, $parameters, $absolute);
-        
-        // Si l'URL ne contient pas déjà le préfixe de langue, l'ajouter
-        $supportedLocales = array_keys(config('languages.supported'));
-        $pattern = '/\/(' . implode('|', $supportedLocales) . ')\//';
-        
-        if (!preg_match($pattern, $url)) {
-            $defaultLocale = config('languages.default');
-            $url = str_replace('/' . $defaultLocale . '/', '/' . $locale . '/', $url);
-        }
-        
-        return $url;
+        // Fallback vers la route par défaut
+        return route($routeName, $parameters, $absolute);
     }
     
     /**
-     * Génère une URL pour changer de langue
+     * Méthode de compatibilité pour l'ancienne API
      */
-    public static function switchLanguage($locale, $currentUrl = null)
-    {
-        if (!$currentUrl) {
-            $currentUrl = request()->getRequestUri();
-        }
-        
-        // Remplacer le préfixe de langue actuel par le nouveau
-        $supportedLocales = array_keys(config('languages.supported'));
-        $pattern = '/^\/(' . implode('|', $supportedLocales) . ')\//';
-        $newUrl = preg_replace($pattern, '/' . $locale . '/', $currentUrl);
-        
-        return $newUrl;
+    public static function localized($name, $parameters = [], $absolute = true)
+    {  
+        return self::url($name, $parameters, $absolute);
     }
     
     /**
-     * Vérifie si la route actuelle est dans la langue spécifiée
-     */
-    public static function isCurrentLanguage($locale)
-    {
-        return App::getLocale() === $locale;
-    }
-    
-    /**
-     * Redirige vers une route localisée
+     * Redirige vers la version localisée d'une route
      */
     public static function redirectToLocalized($routeName, $parameters = [])
     {
-        $locale = App::getLocale();
-        $parameters['locale'] = $locale;
-        return redirect()->route($routeName, $parameters);
+        return redirect()->to(self::url($routeName, $parameters));
     }
     
     /**
-     * Redirige vers la page d'accueil localisée
+     * Génère un lien localisé
      */
-    public static function redirectToHome()
+    public static function link($routeName, $text, $parameters = [], $attributes = [])
     {
-        $locale = config('languages.default');
-        return redirect('/' . $locale . '/');
+        $url = self::url($routeName, $parameters);
+        $attrString = '';
+        
+        foreach ($attributes as $key => $value) {
+            $attrString .= " {$key}=\"{$value}\"";
+        }
+        
+        return "<a href=\"{$url}\"{$attrString}>{$text}</a>";
+    }
+    
+    /**
+     * Obtient l'URL alternative dans l'autre langue
+     */
+    public static function getAlternateUrl($currentUrl = null)
+    {
+        if (!$currentUrl) {
+            $currentUrl = request()->url();
+        }
+        
+        $locale = App::getLocale();
+        $alternateLocale = $locale === 'fr' ? 'en' : 'fr';
+        
+        // Mapping des URLs
+        $urlMapping = [
+            // Français vers Anglais
+            '/fr/comparateur-prix-manga' => '/en/manga-price-comparator',
+            '/fr/prix-manga' => '/en/manga-prices',
+            '/fr/comparateur-prix-livres' => '/en/manga-book-price-comparison',
+            '/fr/economiser-manga' => '/en/save-money-manga',
+            '/fr/meilleur-prix-manga' => '/en/best-manga-price',
+            '/fr/historique-recherches' => '/en/search-history',
+            '/fr/historique-prix' => '/en/price-history',
+            '/fr/mes-recherches' => '/en/my-searches',
+            '/fr/recherche-image' => '/en/image-search',
+            '/fr/recherche-photo' => '/en/photo-search',
+            '/fr/mon-profil' => '/en/my-profile',
+            
+            // Anglais vers Français
+            '/en/manga-price-comparator' => '/fr/comparateur-prix-manga',
+            '/en/manga-prices' => '/fr/prix-manga',
+            '/en/manga-book-price-comparison' => '/fr/comparateur-prix-livres',
+            '/en/save-money-manga' => '/fr/economiser-manga',
+            '/en/best-manga-price' => '/fr/meilleur-prix-manga',
+            '/en/manga-price-checker' => '/fr/meilleur-prix-manga',
+            '/en/search-history' => '/fr/historique-recherches',
+            '/en/price-history' => '/fr/historique-prix',
+            '/en/my-searches' => '/fr/mes-recherches',
+            '/en/image-search' => '/fr/recherche-image',
+            '/en/photo-search' => '/fr/recherche-photo',
+            '/en/my-profile' => '/fr/mon-profil'
+        ];
+        
+        // Remplacer la langue dans l'URL
+        $alternateUrl = str_replace('/' . $locale . '/', '/' . $alternateLocale . '/', $currentUrl);
+        
+        // Remplacer les URLs localisées selon le mapping
+        foreach ($urlMapping as $from => $to) {
+            $alternateUrl = str_replace($from, $to, $alternateUrl);
+        }
+        
+        return $alternateUrl;
+    }
+    
+    /**
+     * Génère les liens alternatifs pour le hreflang
+     */
+    public static function getAlternateLinks($currentUrl = null)
+    {
+        if (!$currentUrl) {
+            $currentUrl = request()->url();
+        }
+        
+        $alternateUrl = self::getAlternateUrl($currentUrl);
+        $locale = App::getLocale();
+        $alternateLocale = $locale === 'fr' ? 'en' : 'fr';
+        
+        return [
+            $locale => $currentUrl,
+            $alternateLocale => $alternateUrl,
+            'x-default' => $locale === 'fr' ? $alternateUrl : $currentUrl
+        ];
+    }
+    
+    /**
+     * Mapping des routes par langue
+     */
+    private static function getRouteMapping()
+    {
+        return [
+            'price.search' => [
+                'fr' => 'fr.comparateur.prix',
+                'en' => 'en.manga.price.comparator'
+            ],
+            'price.search.submit' => [
+                'fr' => 'fr.comparateur.recherche',
+                'en' => 'en.manga.price.search'
+            ],
+            'price.historique' => [
+                'fr' => 'fr.historique.recherches',
+                'en' => 'en.search.history'
+            ],
+            'price.verify.isbn' => [
+                'fr' => 'fr.verifier.isbn',
+                'en' => 'en.verify.isbn'
+            ],
+            'price.show.amazon' => [
+                'fr' => 'fr.resultats.amazon',
+                'en' => 'en.results.amazon'
+            ],
+            'price.show.cultura' => [
+                'fr' => 'fr.resultats.cultura',
+                'en' => 'en.results.cultura'
+            ],
+            'price.show.fnac' => [
+                'fr' => 'fr.resultats.fnac',
+                'en' => 'en.results.fnac'
+            ],
+            'image.upload.form' => [
+                'fr' => 'fr.recherche.image',
+                'en' => 'en.image.search'
+            ],
+            'image.upload.form.fr' => [
+                'fr' => 'fr.recherche.image',
+                'en' => 'en.image.search'
+            ],
+            'image.upload.process' => [
+                'fr' => 'fr.upload.image',
+                'en' => 'en.upload.image'
+            ],
+            'image.upload.ajax' => [
+                'fr' => 'fr.upload.image.ajax',
+                'en' => 'en.upload.image.ajax'
+            ],
+            'image.search.isbn' => [
+                'fr' => 'fr.recherche.isbn.image',
+                'en' => 'en.search.isbn.image'
+            ],
+            'image.search.price' => [
+                'fr' => 'fr.recherche.prix.image',
+                'en' => 'en.search.price.image'
+            ],
+            'image.search.all.prices' => [
+                'fr' => 'fr.recherche.tous.prix',
+                'en' => 'en.search.all.prices'
+            ],
+            'image.update.isbn' => [
+                'fr' => 'fr.mettre.a.jour.isbn',
+                'en' => 'en.update.isbn'
+            ],
+            'image.remove.manga' => [
+                'fr' => 'fr.supprimer.manga',
+                'en' => 'en.remove.manga'
+            ],
+            'image.show' => [
+                'fr' => 'fr.afficher.image',
+                'en' => 'en.show.image'
+            ],
+            'image.search.results' => [
+                'fr' => 'fr.resultats.recherche.image',
+                'en' => 'en.image.search.results'
+            ],
+            'profile.edit' => [
+                'fr' => 'fr.mon.profil',
+                'en' => 'en.my.profile'
+            ],
+            'profile.update' => [
+                'fr' => 'fr.mon.profil.update',
+                'en' => 'en.my.profile.update'
+            ],
+            'profile.destroy' => [
+                'fr' => 'fr.mon.profil.destroy',
+                'en' => 'en.my.profile.destroy'
+            ],
+            'login' => [
+                'fr' => 'login',
+                'en' => 'login'
+            ],
+            'logout' => [
+                'fr' => 'logout',
+                'en' => 'logout'
+            ],
+            'password.request' => [
+                'fr' => 'password.request',
+                'en' => 'password.request'
+            ],
+            'password.email' => [
+                'fr' => 'password.email',
+                'en' => 'password.email'
+            ],
+            'password.confirm' => [
+                'fr' => 'password.confirm',
+                'en' => 'password.confirm'
+            ],
+            'password.update' => [
+                'fr' => 'password.update',
+                'en' => 'password.update'
+            ],
+            'password.store' => [
+                'fr' => 'password.store',
+                'en' => 'password.store'
+            ],
+            'verification.send' => [
+                'fr' => 'verification.send',
+                'en' => 'verification.send'
+            ],
+            'register' => [
+                'fr' => 'register',
+                'en' => 'register'
+            ]
+        ];
+    }
+    
+    /**
+     * Vérifie si une route existe dans la langue actuelle
+     */
+    public static function hasRoute($routeName)
+    {
+        $locale = App::getLocale();
+        $routeMapping = self::getRouteMapping();
+        
+        foreach ($routeMapping as $baseRoute => $routes) {
+            if (isset($routes[$locale])) {
+                return Route::has($routes[$locale]);
+            }
+        }
+        
+        return Route::has($routeName);
+    }
+    
+    /**
+     * Génère une URL pour changer de langue (mapping logique, pas juste le préfixe)
+     */
+    public static function switchLanguage($locale, $currentUrl = null)
+    {
+        // Si pas d'URL fournie, on prend l'URL courante
+        if (!$currentUrl) {
+            $currentUrl = url()->current();
+        }
+
+        // Récupère le nom de la route courante
+        $currentRouteName = \Route::currentRouteName();
+        $routeMapping = self::getRouteMapping();
+
+        // Cherche la clé logique correspondant à la route courante
+        $logicalKey = null;
+        foreach ($routeMapping as $key => $langs) {
+            if (in_array($currentRouteName, $langs)) {
+                $logicalKey = $key;
+                break;
+            }
+        }
+
+        // Si on trouve un mapping, on génère l'URL dans l'autre langue
+        if ($logicalKey && isset($routeMapping[$logicalKey][$locale])) {
+            // Récupère les paramètres actuels de la route
+            $params = request()->route()?->parameters() ?? [];
+            return route($routeMapping[$logicalKey][$locale], $params);
+        }
+
+        // Fallback : juste remplacer le préfixe (comportement actuel)
+        $supportedLocales = array_keys(config('languages.supported'));
+        $pattern = '#^/(' . implode('|', $supportedLocales) . ')/#';
+        return preg_replace($pattern, '/' . $locale . '/', parse_url($currentUrl, PHP_URL_PATH));
+    }
+    
+    /**
+     * Génère une liste de liens de navigation localisés
+     */
+    public static function getNavigationLinks()
+    {
+        $locale = App::getLocale();
+        
+        $links = [
+            'fr' => [
+                'comparateur' => [
+                    'url' => route('fr.comparateur.prix'),
+                    'text' => 'Comparateur de Prix'
+                ],
+                'prix_manga' => [
+                    'url' => route('fr.prix.manga'),
+                    'text' => 'Prix Manga'
+                ],
+                'economiser' => [
+                    'url' => route('fr.economiser.manga'),
+                    'text' => 'Économiser'
+                ],
+                'meilleur_prix' => [
+                    'url' => route('fr.meilleur.prix'),
+                    'text' => 'Meilleur Prix'
+                ],
+                'historique' => [
+                    'url' => route('fr.historique.recherches'),
+                    'text' => 'Historique'
+                ],
+                'recherche_image' => [
+                    'url' => route('fr.recherche.image'),
+                    'text' => 'Recherche par Image'
+                ],
+                'profil' => [
+                    'url' => route('fr.mon.profil'),
+                    'text' => 'Mon Profil'
+                ]
+            ],
+            'en' => [
+                'comparator' => [
+                    'url' => route('en.manga.price.comparator'),
+                    'text' => 'Price Comparator'
+                ],
+                'manga_prices' => [
+                    'url' => route('en.manga.prices'),
+                    'text' => 'Manga Prices'
+                ],
+                'save_money' => [
+                    'url' => route('en.save.money.manga'),
+                    'text' => 'Save Money'
+                ],
+                'best_price' => [
+                    'url' => route('en.best.manga.price'),
+                    'text' => 'Best Price'
+                ],
+                'history' => [
+                    'url' => route('en.search.history'),
+                    'text' => 'History'
+                ],
+                'image_search' => [
+                    'url' => route('en.image.search'),
+                    'text' => 'Image Search'
+                ],
+                'profile' => [
+                    'url' => route('en.my.profile'),
+                    'text' => 'My Profile'
+                ]
+            ]
+        ];
+        
+        return $links[$locale] ?? $links['en'];
     }
 } 

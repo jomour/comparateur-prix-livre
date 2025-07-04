@@ -47,16 +47,16 @@
                                     {{ __('messages.date') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ISBN
+                                    {{ __('messages.isbn') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Amazon
+                                    {{ __('messages.amazon') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Cultura
+                                    {{ __('messages.cultura') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Fnac
+                                    {{ __('messages.fnac') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('messages.best_price') }}
@@ -121,7 +121,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($search->estimation_occasion && $search->estimation_occasion !== 'Estimation non disponible')
+                                        @if($search->estimation_occasion && $search->estimation_occasion !== __('messages.estimation_not_available'))
                                             <div class="flex items-center">
                                                 <i class="fas fa-robot text-purple-500 mr-2"></i>
                                                 <span class="text-sm font-semibold text-purple-600">
@@ -152,7 +152,7 @@
                                                title="{{ __('messages.view_fnac') }}">
                                                 <i class="fas fa-shopping-cart"></i>
                                             </a>
-                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}?isbn={{ $search->isbn }}" 
+                                            <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}?isbn={{ $search->isbn }}" 
                                                class="text-indigo-600 hover:text-indigo-900" 
                                                title="{{ __('messages.new_search') }}">
                                                 <i class="fas fa-redo"></i>
@@ -167,7 +167,7 @@
                                             <i class="fas fa-search text-4xl mb-4 text-gray-300"></i>
                                             <p class="text-lg font-medium">{{ __('messages.no_searches_found') }}</p>
                                             <p class="text-sm">{{ __('messages.start_first_search') }}</p>
-                                            <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}" 
+                                            <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" 
                                                class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                                                 <i class="fas fa-search mr-2"></i>
                                                 {{ __('messages.new_search_button') }}

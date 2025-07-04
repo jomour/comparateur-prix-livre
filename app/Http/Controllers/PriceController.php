@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Services\PriceParserService;
+use App\Services\SeoService;
 use App\Models\HistoriqueSearch;
 use OpenAI\Laravel\Facades\OpenAI;
 
@@ -21,7 +22,50 @@ class PriceController extends Controller
     public function index(Request $request)
     {
         $isbn = $request->query('isbn');
-        return view('price.search', compact('isbn'));
+        
+        // Détecter le type de route pour les métadonnées SEO
+        $currentPath = $request->path();
+        $keyword = $this->extractKeywordFromPath($currentPath);
+        
+        // Métadonnées SEO selon le type de route
+        if ($keyword) {
+            $meta = SeoService::getKeywordSpecificMeta($keyword);
+        } else {
+            $meta = SeoService::getSearchMeta($isbn);
+        }
+        
+        $seoType = 'website';
+        
+        return view('price.search', compact('isbn', 'meta', 'seoType'));
+    }
+
+    /**
+     * Extrait le mot-clé SEO de l'URL
+     */
+    private function extractKeywordFromPath($path)
+    {
+        $pathSegments = explode('/', $path);
+        $lastSegment = end($pathSegments);
+        
+        // Mapping des segments vers les mots-clés
+        $keywordMap = [
+            // Français
+            'comparateur-prix-manga' => 'comparateur-prix-manga',
+            'prix-manga' => 'prix-manga',
+            'comparateur-prix-livres' => 'comparateur-prix-livres',
+            'economiser-manga' => 'economiser-manga',
+            'meilleur-prix-manga' => 'meilleur-prix-manga',
+            
+            // Anglais
+            'manga-price-comparator' => 'manga-price-comparator',
+            'manga-prices' => 'manga-prices',
+            'manga-book-price-comparison' => 'manga-book-price-comparison',
+            'save-money-manga' => 'save-money-manga',
+            'best-manga-price' => 'best-manga-price',
+            'manga-price-checker' => 'manga-price-checker'
+        ];
+        
+        return $keywordMap[$lastSegment] ?? null;
     }
 
     public function historique()
@@ -31,7 +75,11 @@ class PriceController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        return view('price.historique', compact('searches'));
+        // Métadonnées SEO
+        $meta = SeoService::getHistoryMeta();
+        $seoType = 'website';
+
+        return view('price.historique', compact('searches', 'meta', 'seoType'));
     }
 
     public function search(Request $request)
@@ -58,7 +106,8 @@ class PriceController extends Controller
         }
 
         // Récupérer les prix et résultats
-        $searchData = $this->searchPrices($isbn, $title, $search->id, $resultsPath);
+        $searchId = $search->getKey();
+        $searchData = $this->searchPrices($isbn, $title, $searchId, $resultsPath);
 
         // Mettre à jour l'historique avec les prix uniquement
         $search->update([
@@ -68,13 +117,25 @@ class PriceController extends Controller
             'estimation_occasion' => $searchData['occasion_price'],
         ]);
 
+        // Métadonnées SEO pour les résultats
+        $meta = SeoService::getResultsMeta($isbn, $title, $searchData['prices']);
+        $seoType = 'product';
+        $structuredData = SeoService::getStructuredData('product', [
+            'title' => $title,
+            'isbn' => $isbn,
+            'prices' => $searchData['prices']
+        ]);
+
         return view('price.results', [
             'isbn' => $isbn,
             'title' => $title,
             'results' => $searchData['results'],
             'prices' => $searchData['prices'],
-            'historique_id' => $search->id,
-            'occasion_price' => $searchData['occasion_price']
+            'historique_id' => $search->getKey(),
+            'occasion_price' => $searchData['occasion_price'],
+            'meta' => $meta,
+            'seoType' => $seoType,
+            'structuredData' => $structuredData
         ]);
     }
 
@@ -208,7 +269,7 @@ class PriceController extends Controller
         if ($id) {
             // Vérifier que l'utilisateur a accès à cette recherche
             $search = HistoriqueSearch::find($id);
-            if (!$search || $search->user_id !== auth()->id()) {
+            if (!$search || $search->getAttribute('user_id') !== auth()->id()) {
                 abort(403, 'Accès non autorisé');
             }
             
@@ -245,7 +306,7 @@ class PriceController extends Controller
         if ($id) {
             // Vérifier que l'utilisateur a accès à cette recherche
             $search = HistoriqueSearch::find($id);
-            if (!$search || $search->user_id !== auth()->id()) {
+            if (!$search || $search->getAttribute('user_id') !== auth()->id()) {
                 abort(403, 'Accès non autorisé');
             }
             
@@ -282,7 +343,7 @@ class PriceController extends Controller
         if ($id) {
             // Vérifier que l'utilisateur a accès à cette recherche
             $search = HistoriqueSearch::find($id);
-            if (!$search || $search->user_id !== auth()->id()) {
+            if (!$search || $search->getAttribute('user_id') !== auth()->id()) {
                 abort(403, 'Accès non autorisé');
             }
             

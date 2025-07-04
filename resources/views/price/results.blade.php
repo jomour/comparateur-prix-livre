@@ -41,7 +41,7 @@
                             <i class="fab fa-amazon text-3xl text-orange-600 mr-3"></i>
                             <h3 class="text-xl font-semibold text-gray-800">{{ __('messages.amazon') }}</h3>
                         </div>
-                        <div class="text-4xl font-bold {{ $prices['amazon'] !== 'Prix non trouvé' ? 'text-green-600' : 'text-red-500' }} mb-2">
+                        <div class="text-4xl font-bold {{ $prices['amazon'] !== __('messages.price_not_found') ? 'text-green-600' : 'text-red-500' }} mb-2">
                             {{ $prices['amazon'] }}
                         </div>
                         <div class="text-sm text-gray-500">
@@ -57,7 +57,7 @@
                             <i class="fas fa-store text-3xl text-blue-600 mr-3"></i>
                             <h3 class="text-xl font-semibold text-gray-800">{{ __('messages.cultura') }}</h3>
                         </div>
-                        <div class="text-4xl font-bold {{ $prices['cultura'] !== 'Prix non trouvé' ? 'text-green-600' : 'text-red-500' }} mb-2">
+                        <div class="text-4xl font-bold {{ $prices['cultura'] !== __('messages.price_not_found') ? 'text-green-600' : 'text-red-500' }} mb-2">
                             {{ $prices['cultura'] }}
                         </div>
                         <div class="text-sm text-gray-500">
@@ -73,7 +73,7 @@
                             <i class="fas fa-shopping-cart text-3xl text-red-600 mr-3"></i>
                             <h3 class="text-xl font-semibold text-gray-800">{{ __('messages.fnac') }}</h3>
                         </div>
-                        <div class="text-4xl font-bold {{ $prices['fnac'] !== 'Prix non trouvé' ? 'text-green-600' : 'text-red-500' }} mb-2">
+                        <div class="text-4xl font-bold {{ $prices['fnac'] !== __('messages.price_not_found') ? 'text-green-600' : 'text-red-500' }} mb-2">
                             {{ $prices['fnac'] }}
                         </div>
                         <div class="text-sm text-gray-500">
@@ -91,7 +91,7 @@
                 
                 // Filtrer les prix valides et calculer le meilleur
                 foreach ($prices as $provider => $price) {
-                    if ($price !== 'Prix non trouvé') {
+                    if ($price !== __('messages.price_not_found')) {
                         $numericPrice = (float) str_replace(['€', ' ', ','], ['', '', '.'], $price);
                         if ($numericPrice > 0) {
                             $validPrices[$provider] = $numericPrice;
@@ -119,7 +119,7 @@
         </div>
 
         <!-- Estimation Prix d'Occasion -->
-        @if(isset($occasion_price) && $occasion_price !== 'Estimation non disponible')
+        @if(isset($occasion_price) && $occasion_price !== __('messages.estimation_not_available'))
             <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
                     <i class="fas fa-handshake text-purple-600 mr-2"></i>
@@ -215,7 +215,7 @@
 
         <!-- Action Buttons -->
         <div class="text-center space-x-4">
-                                    <a href="{{ \App\Helpers\LocalizedRoute::localized('price.search') }}" 
+                                    <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" 
                class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                 <i class="fas fa-search mr-2"></i>
                 {{ __('messages.new_search_button') }}

@@ -4,14 +4,13 @@
         <div class="flex items-center">
             <i class="fas fa-info-circle text-blue-600 mr-2"></i>
             <p class="text-sm text-blue-800">
-                <strong>Accès restreint :</strong> L'enregistrement de nouveaux comptes est désactivé. 
-                Seuls les utilisateurs existants peuvent réinitialiser leur mot de passe.
+                <strong>{{ __('messages.restricted_access') }}</strong>
             </p>
         </div>
     </div>
 
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+        {{ __('messages.forgot_password_description') }}
     </div>
 
     <!-- Session Status -->
@@ -22,14 +21,14 @@
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('messages.email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div class="flex items-center justify-end mt-4">
             <x-primary-button>
-                {{ __('Email Password Reset Link') }}
+                {{ __('messages.email_password_reset_link') }}
             </x-primary-button>
         </div>
     </form>

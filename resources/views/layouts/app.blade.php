@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        {{-- Composant SEO --}}
+        <x-seo-meta :meta="$meta ?? null" :type="$seoType ?? 'website'" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -13,8 +14,19 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        {{-- Analytics --}}
+        <x-analytics />
     </head>
     <body class="font-sans antialiased">
+        {{-- Google Tag Manager (noscript) --}}
+        @if(config('analytics.google_tag_manager.enabled') && config('analytics.google_tag_manager.container_id'))
+            <!-- Google Tag Manager (noscript) -->
+            <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('analytics.google_tag_manager.container_id') }}"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+            <!-- End Google Tag Manager (noscript) -->
+        @endif
+        
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 

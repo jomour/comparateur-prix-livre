@@ -8,6 +8,7 @@ use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\PriceController;
+use App\Services\SeoService;
 
 class ImageController extends Controller
 {
@@ -20,7 +21,11 @@ class ImageController extends Controller
 
     public function index()
     {
-        return view('image.upload');
+        // Métadonnées SEO
+        $meta = SeoService::getImageUploadMeta();
+        $seoType = 'website';
+        
+        return view('image.upload', compact('meta', 'seoType'));
     }
 
     public function upload(Request $request)
@@ -87,7 +92,7 @@ class ImageController extends Controller
                 // Nettoyer l'image après analyse (optionnel, pour économiser l'espace)
                 // unlink($fullPath);
                 
-                return back()->with('success', 'Image analysée avec succès!')
+                return back()->with('success', __('messages.image_analyzed_successfully'))
                             ->with('image', $imageName)
                             ->with('mangas', $mangas);
                             
@@ -181,15 +186,15 @@ class ImageController extends Controller
                 
                 // Stocker les données dans la session pour l'affichage
                 session([
-                    'success' => 'Image analysée avec succès!',
+                    'success' => __('messages.image_analyzed_successfully'),
                     'image' => $imageName,
                     'mangas' => $mangas
                 ]);
                 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Image analysée avec succès!',
-                    'redirect' => route('image.upload.form')
+                    'message' => __('messages.image_analyzed_successfully'),
+                    'redirect' => \App\Helpers\LocalizedRoute::url('image.upload.form')
                 ]);
                             
             } catch (\Exception $e) {
@@ -898,7 +903,7 @@ class ImageController extends Controller
         $totalMangas = session('total_mangas', 0);
 
         if (empty($results)) {
-            return redirect()->route('image.upload.form')->with('error', 'Aucun résultat de recherche trouvé.');
+            return redirect()->to(\App\Helpers\LocalizedRoute::url('image.upload.form'))->with('error', 'Aucun résultat de recherche trouvé.');
         }
 
         return view('image.search-results', compact('results', 'totalPrice', 'foundPrices', 'totalMangas'));
