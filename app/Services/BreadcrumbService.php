@@ -56,7 +56,7 @@ class BreadcrumbService
                     '@type' => 'ListItem',
                     'position' => 2,
                     'name' => $locale === 'fr' ? 'Historique' : 'History',
-                    'item' => $baseUrl . '/' . $locale . '/' . ($locale === 'fr' ? 'prix/historique' : 'price/historique')
+                    'item' => $baseUrl . '/' . $locale . '/' . ($locale === 'fr' ? 'historique-recherches' : 'search-history')
                 ];
                 break;
                 
@@ -64,8 +64,8 @@ class BreadcrumbService
                 $breadcrumbs[] = [
                     '@type' => 'ListItem',
                     'position' => 2,
-                    'name' => $locale === 'fr' ? 'Recherche par Image' : 'Image Search',
-                    'item' => $baseUrl . '/' . $locale . '/image'
+                    'name' => $locale === 'fr' ? 'Estimation de lot de manga' : 'Manga Lot Estimation',
+                    'item' => $baseUrl . '/' . $locale . '/' . ($locale === 'fr' ? 'estimation-lot-manga' : 'manga-lot-estimation')
                 ];
                 break;
         }
@@ -120,15 +120,15 @@ class BreadcrumbService
             case 'history':
                 $breadcrumbs[] = [
                     'name' => $locale === 'fr' ? 'Historique' : 'History',
-                    'url' => url('/' . $locale . '/' . ($locale === 'fr' ? 'prix/historique' : 'price/historique')),
+                    'url' => url('/' . $locale . '/' . ($locale === 'fr' ? 'historique-recherches' : 'search-history')),
                     'active' => true
                 ];
                 break;
                 
             case 'image':
                 $breadcrumbs[] = [
-                    'name' => $locale === 'fr' ? 'Recherche par Image' : 'Image Search',
-                    'url' => url('/' . $locale . '/image'),
+                    'name' => $locale === 'fr' ? 'Estimation de lot de manga' : 'Manga Lot Estimation',
+                    'url' => url('/' . $locale . '/' . ($locale === 'fr' ? 'estimation-lot-manga' : 'manga-lot-estimation')),
                     'active' => true
                 ];
                 break;

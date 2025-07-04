@@ -277,7 +277,7 @@ class SeoService
             'historique-recherches' => 'search-history',
             'historique-prix' => 'price-history',
             'mes-recherches' => 'my-searches',
-            'recherche-image' => 'image-search',
+            'estimation-lot-manga' => 'manga-lot-estimation',
             'recherche-photo' => 'photo-search',
             'mon-profil' => 'my-profile',
             'resultats' => 'results',

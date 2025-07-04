@@ -37,7 +37,7 @@ class SitemapController extends Controller
             '/fr/historique-recherches',
             '/fr/historique-prix',
             '/fr/mes-recherches',
-            '/fr/recherche-image',
+            '/fr/estimation-lot-manga',
             '/fr/recherche-photo',
             '/fr/mon-profil'
         ];
@@ -147,7 +147,7 @@ class SitemapController extends Controller
             '/fr/historique-recherches' => '/en/search-history',
             '/fr/historique-prix' => '/en/price-history',
             '/fr/mes-recherches' => '/en/my-searches',
-            '/fr/recherche-image' => '/en/image-search',
+            '/fr/estimation-lot-manga' => '/en/manga-lot-estimation',
             '/fr/recherche-photo' => '/en/photo-search',
             '/fr/mon-profil' => '/en/my-profile'
         ];
@@ -170,7 +170,7 @@ class SitemapController extends Controller
             '/en/search-history' => '/fr/historique-recherches',
             '/en/price-history' => '/fr/historique-prix',
             '/en/my-searches' => '/fr/mes-recherches',
-            '/en/image-search' => '/fr/recherche-image',
+            '/en/manga-lot-estimation' => '/fr/estimation-lot-manga',
             '/en/photo-search' => '/fr/recherche-photo',
             '/en/my-profile' => '/fr/mon-profil'
         ];

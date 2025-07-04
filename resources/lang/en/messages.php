@@ -4,6 +4,7 @@ return [
     // Navigation
     'dashboard' => 'Dashboard',
     'search' => 'Search',
+    'comparator' => 'Comparator',
     'history' => 'History',
     'profile' => 'Profile',
     'logout' => 'Logout',
@@ -199,6 +200,7 @@ return [
     'manga_count' => 'Manga Count',
     'total_estimated_price' => 'Total Estimated Price',
     'image_analyzed_successfully' => 'Image analyzed successfully!',
+    'manga_lot_estimation' => 'Manga Lot Estimation',
     'average_price' => 'Average Price',
     'no_manga_detected' => 'No Manga Detected',
     'no_manga_detected_explanation' => 'The analysis of your image did not allow us to detect mangas. This may be due to several reasons:',

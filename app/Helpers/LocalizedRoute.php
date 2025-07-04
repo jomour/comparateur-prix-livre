@@ -82,7 +82,7 @@ class LocalizedRoute
             '/fr/historique-recherches' => '/en/search-history',
             '/fr/historique-prix' => '/en/price-history',
             '/fr/mes-recherches' => '/en/my-searches',
-            '/fr/recherche-image' => '/en/image-search',
+            '/fr/estimation-lot-manga' => '/en/manga-lot-estimation',
             '/fr/recherche-photo' => '/en/photo-search',
             '/fr/mon-profil' => '/en/my-profile',
             
@@ -96,7 +96,7 @@ class LocalizedRoute
             '/en/search-history' => '/fr/historique-recherches',
             '/en/price-history' => '/fr/historique-prix',
             '/en/my-searches' => '/fr/mes-recherches',
-            '/en/image-search' => '/fr/recherche-image',
+            '/en/manga-lot-estimation' => '/fr/estimation-lot-manga',
             '/en/photo-search' => '/fr/recherche-photo',
             '/en/my-profile' => '/fr/mon-profil'
         ];
@@ -167,12 +167,12 @@ class LocalizedRoute
                 'en' => 'en.results.fnac'
             ],
             'image.upload.form' => [
-                'fr' => 'fr.recherche.image',
-                'en' => 'en.image.search'
+                'fr' => 'fr.estimation.lot.manga',
+                'en' => 'en.manga.lot.estimation'
             ],
             'image.upload.form.fr' => [
-                'fr' => 'fr.recherche.image',
-                'en' => 'en.image.search'
+                'fr' => 'fr.estimation.lot.manga',
+                'en' => 'en.manga.lot.estimation'
             ],
             'image.upload.process' => [
                 'fr' => 'fr.upload.image',

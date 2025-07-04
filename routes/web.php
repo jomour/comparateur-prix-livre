@@ -66,7 +66,7 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
     Route::get('/resultats/fnac/{id?}', [PriceController::class, 'showFnac'])->name('fr.resultats.fnac')->middleware('auth');
     
     // Recherche par image
-    Route::get('/recherche-image', [ImageController::class, 'index'])->name('fr.recherche.image')->middleware('auth');
+    Route::get('/estimation-lot-manga', [ImageController::class, 'index'])->name('fr.estimation.lot.manga')->middleware('auth');
     Route::get('/recherche-photo', [ImageController::class, 'index'])->name('fr.recherche.photo')->middleware('auth');
     Route::post('/upload-image', [ImageController::class, 'upload'])->name('fr.upload.image')->middleware('auth');
     Route::post('/upload-image-ajax', [ImageController::class, 'uploadAjax'])->name('fr.upload.image.ajax')->middleware('auth');
@@ -136,7 +136,7 @@ Route::prefix('en')->middleware('setlocale')->group(function () {
     Route::get('/results/fnac/{id?}', [PriceController::class, 'showFnac'])->name('en.results.fnac')->middleware('auth');
     
     // Image search
-    Route::get('/image-search', [ImageController::class, 'index'])->name('en.image.search')->middleware('auth');
+    Route::get('/manga-lot-estimation', [ImageController::class, 'index'])->name('en.manga.lot.estimation')->middleware('auth');
     Route::get('/photo-search', [ImageController::class, 'index'])->name('en.photo.search')->middleware('auth');
     Route::post('/upload-image', [ImageController::class, 'upload'])->name('en.upload.image')->middleware('auth');
     Route::post('/upload-image-ajax', [ImageController::class, 'uploadAjax'])->name('en.upload.image.ajax')->middleware('auth');

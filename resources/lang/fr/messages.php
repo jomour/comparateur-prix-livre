@@ -4,6 +4,7 @@ return [
     // Navigation
     'dashboard' => 'Tableau de bord',
     'search' => 'Recherche',
+    'comparator' => 'Comparateur',
     'history' => 'Historique',
     'profile' => 'Profil',
     'logout' => 'Déconnexion',
@@ -199,6 +200,7 @@ return [
     'total_estimated_price' => 'Prix total estimé',
     'average_price' => 'Prix moyen',
     'image_analyzed_successfully' => 'Image analysée avec succès!',
+    'manga_lot_estimation' => 'Estimation de lot de manga',
     'no_manga_detected' => 'Aucun manga détecté',
     'no_manga_detected_explanation' => 'L\'analyse de votre image n\'a pas permis de détecter de mangas. Cela peut être dû à plusieurs raisons :',
     'image_quality_issue' => 'La qualité de l\'image n\'est pas suffisante (floue, sombre, etc.)',
