@@ -12,8 +12,8 @@
                 <x-breadcrumbs page="history" />
             </div>
             <!-- Stats -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
+            <div class="bg-white/10 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20 mb-6">
+                <div class="p-6 text-white">
                     <div class="grid md:grid-cols-4 gap-4 text-center">
                         <div>
                             <div class="text-2xl font-bold text-indigo-600">{{ $searches->total() }}</div>
@@ -42,7 +42,7 @@
             </div>
 
             <!-- Search Table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white/10 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50">

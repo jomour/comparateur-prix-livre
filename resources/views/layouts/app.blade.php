@@ -27,12 +27,31 @@
             <!-- End Google Tag Manager (noscript) -->
         @endif
         
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        <!-- Background animé manga -->
+        <div class="fixed inset-0 bg-gradient-to-br from-purple-900 via-pink-800 to-indigo-900 overflow-hidden z-0">
+            <!-- Éléments décoratifs manga -->
+            <div class="absolute top-20 left-20 w-40 h-40 bg-yellow-400 rounded-full opacity-10 animate-pulse"></div>
+            <div class="absolute top-40 right-32 w-32 h-32 bg-pink-400 rounded-full opacity-15 animate-bounce"></div>
+            <div class="absolute bottom-40 left-1/3 w-24 h-24 bg-blue-400 rounded-full opacity-12 animate-ping"></div>
+            <div class="absolute bottom-20 right-1/4 w-28 h-28 bg-green-400 rounded-full opacity-10 animate-pulse"></div>
+            
+            <!-- Motifs manga subtils -->
+            <div class="absolute inset-0 opacity-3">
+                <div class="absolute top-1/4 left-1/4 text-8xl">⚡</div>
+                <div class="absolute top-1/3 right-1/4 text-6xl">💫</div>
+                <div class="absolute bottom-1/4 left-1/3 text-5xl">🌟</div>
+                <div class="absolute bottom-1/3 right-1/3 text-6xl">✨</div>
+            </div>
+        </div>
+        
+        <div class="relative z-10 min-h-screen">
+            <div class="relative z-20">
+                @include('layouts.navigation')
+            </div>
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
+                <header class="bg-white/10 backdrop-blur-lg border-b border-white/20 shadow-lg">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -40,9 +59,10 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="relative z-10">
                 {{ $slot }}
             </main>
+        </div>
         </div>
     </body>
 </html>

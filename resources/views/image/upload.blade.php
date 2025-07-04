@@ -11,8 +11,8 @@
             <div class="mb-6">
                 <x-breadcrumbs page="image" />
             </div>
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="bg-white/10 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
+                <div class="p-6 text-white">
                     @if(session('success'))
                         <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                             <div class="flex items-center">

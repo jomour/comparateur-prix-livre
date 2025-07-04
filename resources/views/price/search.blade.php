@@ -12,8 +12,8 @@
                 <x-breadcrumbs page="search" />
             </div>
             
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="bg-white/10 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
+                <div class="p-6 text-white">
 
                     <!-- Search Form -->
                     <div class="max-w-2xl mx-auto">
@@ -79,7 +79,7 @@
                     <!-- Features -->
                     <div class="mt-12 grid md:grid-cols-3 gap-8">
                         <!-- Amazon Card -->
-                        <div class="group relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+                        <div class="group relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-orange-300/30">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-transparent"></div>
                             <div class="relative p-8 text-center text-white">
                                 <div class="mb-6">
@@ -93,7 +93,7 @@
                         </div>
                         
                         <!-- Cultura Card -->
-                        <div class="group relative overflow-hidden bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+                        <div class="group relative overflow-hidden bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-blue-300/30">
                             <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
                             <div class="relative p-8 text-center text-white">
                                 <div class="mb-6">
@@ -107,7 +107,7 @@
                         </div>
                         
                         <!-- Fnac Card -->
-                        <div class="group relative overflow-hidden bg-gradient-to-br from-red-400 via-red-500 to-red-600 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+                        <div class="group relative overflow-hidden bg-gradient-to-br from-red-400 via-red-500 to-red-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-red-300/30">
                             <div class="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent"></div>
                             <div class="relative p-8 text-center text-white">
                                 <div class="mb-6">
