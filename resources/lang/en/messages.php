@@ -85,6 +85,7 @@ return [
     'estimation_based_on_isbn' => 'Estimation based on ISBN and market trends',
     'view_result' => 'View result',
     'search_results' => 'Search results',
+    'search_info' => 'Search Information',
     'home' => 'Home',
     
     // Messages généraux

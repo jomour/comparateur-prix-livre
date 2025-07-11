@@ -17,7 +17,6 @@ Un comparateur de prix intelligent pour les mangas, développé avec Laravel, qu
 - **Frontend** : Tailwind CSS, Alpine.js
 - **Base de données** : MySQL
 - **APIs externes** :
-  - [ScraperAPI](https://www.scraperapi.com/) - Récupération des prix
   - [OpenAI GPT-4](https://openai.com/) - Estimation des prix d'occasion
   - [OpenLibrary](https://openlibrary.org/) - Récupération des titres
   - [Google Books API](https://developers.google.com/books) - Fallback pour les titres
@@ -28,7 +27,6 @@ Un comparateur de prix intelligent pour les mangas, développé avec Laravel, qu
 - Composer
 - Node.js et npm
 - Clés API :
-  - ScraperAPI
   - OpenAI
 
 ## 🐳 Installation avec Docker
@@ -55,7 +53,6 @@ DB_USERNAME=root
 DB_PASSWORD=password
 
 # APIs
-SCRAPER_API_KEY=votre_clé_scraperapi
 OPENAI_API_KEY=votre_clé_openai
 
 # Application
@@ -111,11 +108,6 @@ User::create([
 
 ## 🔑 Configuration des APIs
 
-### ScraperAPI
-1. Créer un compte sur [ScraperAPI](https://www.scraperapi.com/)
-2. Récupérer votre clé API
-3. Ajouter dans `.env` : `SCRAPER_API_KEY=votre_clé`
-
 ### OpenAI
 1. Créer un compte sur [OpenAI](https://platform.openai.com/)
 2. Générer une clé API
@@ -158,10 +150,6 @@ User::create([
 
 ### Problèmes courants
 
-**Erreur de timeout ScraperAPI**
-- Vérifier la clé API
-- Augmenter le timeout dans le code si nécessaire
-
 **Erreur OpenAI**
 - Vérifier la clé API
 - Vérifier les crédits disponibles
@@ -203,4 +191,4 @@ Développé pour la comparaison de prix de mangas avec intégration IA.
 
 ---
 
-**Note** : Ce projet utilise des APIs payantes (ScraperAPI, OpenAI). Assurez-vous d'avoir des crédits suffisants pour le fonctionnement.
+**Note** : Ce projet utilise des APIs payantes (OpenAI). Assurez-vous d'avoir des crédits suffisants pour le fonctionnement.

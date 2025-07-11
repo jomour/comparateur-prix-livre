@@ -85,6 +85,7 @@ return [
     'estimation_based_on_isbn' => 'Estimation basée sur l\'ISBN et les tendances du marché',
     'view_result' => 'Voir le résultat',
     'search_results' => 'Résultats de recherche',
+    'search_info' => 'Informations de recherche',
     
     // Messages généraux
     'loading' => 'Chargement...',

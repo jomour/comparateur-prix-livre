@@ -72,31 +72,81 @@ class SeoService
         $locale = App::getLocale();
         
         // Trouver le prix le plus bas
-        $validPrices = array_filter($prices, function($price) {
-            // Nettoie et ne garde que les floats valides
-            if (is_numeric($price)) return $price > 0;
-            if (is_string($price)) {
-                $num = floatval(str_replace(['€', ' '], '', $price));
-                return $num > 0;
+        $validPrices = [];
+        foreach ($prices as $provider => $price) {
+            if (is_array($price)) {
+                // Pour tous les providers qui retournent un tableau, utiliser le prix minimum
+                if (isset($price['min'])) {
+                    $validPrices[] = $price['min'];
+                } elseif (isset($price['average_without_extremes'])) {
+                    $validPrices[] = $price['average_without_extremes'];
+                } elseif (isset($price['average'])) {
+                    $validPrices[] = $price['average'];
+                }
+            } elseif (is_numeric($price)) {
+                $validPrices[] = (float)$price;
+            } elseif (is_string($price)) {
+                $num = floatval(str_replace(['€', ' ', ','], ['', '', '.'], $price));
+                if ($num > 0) {
+                    $validPrices[] = $num;
+                }
             }
-            return false;
-        });
-        $validFloats = array_map(function($price) {
-            if (is_numeric($price)) return (float)$price;
-            if (is_string($price)) return floatval(str_replace(['€', ' '], '', $price));
-            return null;
-        }, $validPrices);
+        }
 
-        $lowestPrice = !empty($validFloats) ? min($validFloats) : null;
+        $lowestPrice = !empty($validPrices) ? min($validPrices) : null;
         $priceText = $lowestPrice ? number_format($lowestPrice, 2) . '€' : '';
         
         $resultsTitle = $locale === 'fr'
             ? "Prix du manga {$title} - À partir de {$priceText} | Comparateur de Prix"
             : "Manga {$title} Price - From {$priceText} | Price Comparator";
             
+        // Gérer le format d'Amazon qui peut être un tableau ou une string
+        $amazonPrice = '';
+        if (isset($prices['amazon'])) {
+            if (is_array($prices['amazon']) && isset($prices['amazon']['formatted_min'])) {
+                $amazonPrice = $prices['amazon']['formatted_min'] . '€';
+            } elseif (is_string($prices['amazon'])) {
+                $amazonPrice = $prices['amazon'];
+            } else {
+                $amazonPrice = 'Prix non disponible';
+            }
+        }
+        
+        // Gérer le format de Fnac qui peut être un tableau ou une string
+        $fnacPrice = '';
+        if (isset($prices['fnac'])) {
+            if (is_array($prices['fnac']) && isset($prices['fnac']['formatted_min'])) {
+                $fnacPrice = $prices['fnac']['formatted_min'] . '€';
+            } elseif (is_array($prices['fnac']) && isset($prices['fnac']['formatted_average'])) {
+                $fnacPrice = $prices['fnac']['formatted_average'] . '€';
+            } elseif (is_string($prices['fnac'])) {
+                $fnacPrice = $prices['fnac'];
+            } else {
+                $fnacPrice = 'Prix non disponible';
+            }
+        } else {
+            $fnacPrice = 'Prix non disponible';
+        }
+        
+        // Gérer le format de Cultura qui peut être un tableau ou une string
+        $culturaPrice = '';
+        if (isset($prices['cultura'])) {
+            if (is_array($prices['cultura']) && isset($prices['cultura']['formatted_min'])) {
+                $culturaPrice = $prices['cultura']['formatted_min'] . '€';
+            } elseif (is_array($prices['cultura']) && isset($prices['cultura']['formatted_average'])) {
+                $culturaPrice = $prices['cultura']['formatted_average'] . '€';
+            } elseif (is_string($prices['cultura'])) {
+                $culturaPrice = $prices['cultura'];
+            } else {
+                $culturaPrice = 'Prix non disponible';
+            }
+        } else {
+            $culturaPrice = 'Prix non disponible';
+        }
+        
         $resultsDescription = $locale === 'fr'
-            ? "Prix du manga {$title} (ISBN: {$isbn}) : Amazon {$prices['amazon']}€, Fnac {$prices['fnac']}€, Cultura {$prices['cultura']}€. Comparez et économisez sur votre achat !"
-            : "Manga {$title} (ISBN: {$isbn}) prices: Amazon {$prices['amazon']}€, Fnac {$prices['fnac']}€, Cultura {$prices['cultura']}€. Compare and save on your purchase!";
+            ? "Prix du manga {$title} (ISBN: {$isbn}) : Amazon {$amazonPrice}, Fnac {$fnacPrice}, Cultura {$culturaPrice}. Comparez et économisez sur votre achat !"
+            : "Manga {$title} (ISBN: {$isbn}) prices: Amazon {$amazonPrice}, Fnac {$fnacPrice}, Cultura {$culturaPrice}. Compare and save on your purchase!";
 
         return self::getBaseMeta($resultsTitle, $resultsDescription);
     }
@@ -232,9 +282,23 @@ class SeoService
 
             if (isset($data['prices']) && !empty($data['prices'])) {
                 $offers = [];
-                $validPrices = array_filter($data['prices'], function($price) {
-                    return $price !== null && $price > 0;
-                });
+                $validPrices = [];
+                
+                // Extraire les prix valides (gérer les PriceStats et les strings)
+                foreach ($data['prices'] as $price) {
+                    if ($price instanceof \App\ValueObjects\PriceStats) {
+                        // Pour les PriceStats, utiliser le prix minimum
+                        if ($price->min > 0) {
+                            $validPrices[] = $price->min;
+                        }
+                    } elseif (is_string($price) && $price !== 'Prix non trouvé' && $price !== 'Prix neuf non trouvé') {
+                        // Pour les strings, extraire le prix numérique
+                        $numericPrice = (float) str_replace(['€', ' ', ','], ['', '', '.'], $price);
+                        if ($numericPrice > 0) {
+                            $validPrices[] = $numericPrice;
+                        }
+                    }
+                }
 
                 if (!empty($validPrices)) {
                     $lowestPrice = min($validPrices);

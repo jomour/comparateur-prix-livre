@@ -7,156 +7,191 @@ use DOMXPath;
 
 class PriceParserService
 {
-    public function parseAmazonPrice($htmlContent)
+    /**
+     * Extrait les prix depuis les données JSON dans le HTML
+     */
+    private function extractPricesFromJson($htmlContent)
     {
         $prices = [];
         
-        // Créer un DOMDocument
-        $dom = new DOMDocument();
-        @$dom->loadHTML($htmlContent, LIBXML_NOERROR | LIBXML_NOWARNING);
-        $xpath = new DOMXPath($dom);
-        
-        // Sélecteurs XPath pour Amazon
-        $xpathSelectors = [
-            "//span[@class='a-price aok-align-center reinventPricePriceToPayMargin priceToPay']",
-            "//span[@class='a-price-whole']",
-            "//span[@class='a-price-fraction']",
-            "//span[@class='a-price-symbol']",
-            "//span[contains(@class, 'a-price-whole')]",
-            "//span[contains(@class, 'a-price-fraction')]",
-            "//span[contains(@class, 'a-price')]//span[@class='a-offscreen']",
-            "//span[contains(@class, 'price')]",
-            "//div[contains(@class, 'price')]"
+        // Pattern pour trouver les scripts JSON contenant des prix
+        $jsonPatterns = [
+            '/<script[^>]*type="application\/json"[^>]*>(.*?)<\/script>/is',
+            '/<script[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/is',
+            '/window\.ue_sip_data\s*=\s*({.*?});/is',
+            '/window\.ue_ue_id\s*=\s*"([^"]+)"/is',
+            '/"price":\s*"([^"]+)"/is',
+            '/"price":\s*(\d+\.?\d*)/is',
+            '/"priceAmount":\s*"([^"]+)"/is',
+            '/"priceAmount":\s*(\d+\.?\d*)/is'
         ];
         
-        // Essayer d'extraire le prix complet d'abord
-        $mainPriceSelector = "//span[@class='a-price aok-align-center reinventPricePriceToPayMargin priceToPay']";
-        $mainNodes = $xpath->query($mainPriceSelector);
-        
-        if ($mainNodes && $mainNodes->length > 0) {
-            foreach ($mainNodes as $node) {
-                $wholeNodes = $xpath->query(".//span[@class='a-price-whole']", $node);
-                $fractionNodes = $xpath->query(".//span[@class='a-price-fraction']", $node);
-                $symbolNodes = $xpath->query(".//span[@class='a-price-symbol']", $node);
-                
-                $whole = '';
-                $fraction = '';
-                $symbol = '';
-                
-                if ($wholeNodes && $wholeNodes->length > 0) {
-                    $whole = trim($wholeNodes->item(0)->textContent);
-                }
-                
-                if ($fractionNodes && $fractionNodes->length > 0) {
-                    $fraction = trim($fractionNodes->item(0)->textContent);
-                }
-                
-                if ($symbolNodes && $symbolNodes->length > 0) {
-                    $symbol = trim($symbolNodes->item(0)->textContent);
-                }
-                
-                if (!empty($whole)) {
-                    $priceText = $whole;
-                    if (!empty($fraction)) {
-                        $priceText .= ',' . $fraction;
-                    }
-                    if (!empty($symbol)) {
-                        $priceText .= ' ' . $symbol;
-                    }
-                    
-                    $prices[] = $priceText;
-                }
-            }
-        }
-        
-        // Extraire les prix des différents formats
-        $formatPriceSelectors = [
-            "//span[@class='slot-price']//span[contains(@aria-label, 'à partir de')]",
-            "//span[@class='slot-price']//span[@aria-label]",
-            "//span[@class='slot-price']",
-            "//span[@class='slot-price']//span[@class='a-size-base a-color-secondary']",
-            "//span[@class='slot-price']//span[@class='a-size-base a-color-price a-color-price']",
-            "//span[@class='slot-price']//span[contains(@aria-label, '€')]",
-            "//span[contains(@class, 'slot-price')]//span[contains(@aria-label, '€')]",
-            "//a[@class='a-button-text a-text-left']//span[@class='slot-price']//span",
-            "//span[contains(@aria-label, 'à partir de')]",
-            "//span[contains(@aria-label, '€')]"
-        ];
-        
-        foreach ($formatPriceSelectors as $selector) {
-            try {
-                $nodes = $xpath->query($selector);
-                
-                if ($nodes && $nodes->length > 0) {
-                    foreach ($nodes as $node) {
-                        $text = trim($node->textContent);
-                        
-                        if (!empty($text) && preg_match('/[\d,]+/', $text)) {
-                            $prices[] = $text;
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-        
-        // Essayer les autres sélecteurs
-        foreach ($xpathSelectors as $selector) {
-            try {
-                $nodes = $xpath->query($selector);
-                
-                if ($nodes && $nodes->length > 0) {
-                    foreach ($nodes as $node) {
-                        $text = trim($node->textContent);
-                        if (!empty($text) && preg_match('/[\d,]+/', $text)) {
-                            $prices[] = $text;
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-        
-        // Regex patterns
-        $regexPatterns = [
-            '/<span[^>]*class="[^"]*a-price[^"]*"[^>]*>.*?<span[^>]*class="[^"]*a-price-whole[^"]*"[^>]*>(\d+)<span[^>]*class="[^"]*a-price-decimal[^"]*"[^>]*>.*?<\/span><\/span><span[^>]*class="[^"]*a-price-fraction[^"]*"[^>]*>(\d+)<\/span>/is',
-            '/<span[^>]*class="[^"]*slot-price[^"]*"[^>]*>.*?<span[^>]*aria-label="[^"]*à partir de (\d+[,\d]*)\s*[€&][^"]*"[^>]*>.*?<\/span>/is',
-            '/<span[^>]*class="[^"]*slot-price[^"]*"[^>]*>.*?<span[^>]*aria-label="[^"]*(\d+[,\d]*)\s*€[^"]*"[^>]*>.*?<\/span>/is',
-            '/<span[^>]*class="[^"]*a-size-base[^"]*"[^>]*>(\d+[,\d]*)\s*€<\/span>/is',
-            '/aria-label="[^"]*(\d+[,\d]*)\s*€[^"]*"/is',
-            '/aria-label="[^"]*à partir de (\d+[,\d]*)\s*[€&][^"]*"/is',
-            '/<span[^>]*class="[^"]*a-price-whole[^"]*"[^>]*>(\d+)<\/span>/is',
-            '/<span[^>]*class="[^"]*a-price-fraction[^"]*"[^>]*>(\d+)<\/span>/is',
-            '/<span[^>]*class="[^"]*price[^"]*"[^>]*>.*?(\d+[,\d]*\s*€).*?<\/span>/is',
-            '/(\d+[,\d]*)\s*€/',
-            '/(\d+[,\d]*)\s*EUR/'
-        ];
-        
-        foreach ($regexPatterns as $pattern) {
+        foreach ($jsonPatterns as $pattern) {
             if (preg_match_all($pattern, $htmlContent, $matches)) {
-                // Vérifier si on a des captures
-                if (isset($matches[0])) {
-                    foreach ($matches[0] as $index => $match) {
-                        // Si on a au moins 2 captures (whole et fraction)
-                        if (isset($matches[1][$index]) && isset($matches[2][$index])) {
-                            $priceText = $matches[1][$index] . ',' . $matches[2][$index] . ' €';
-                            $prices[] = $priceText;
-                        } else {
-                            $prices[] = trim($match);
-                        }
+                foreach ($matches[1] as $match) {
+                    // Essayer de parser le JSON
+                    $jsonData = json_decode($match, true);
+                    if ($jsonData) {
+                        $prices = array_merge($prices, $this->extractPricesFromArray($jsonData));
                     }
                 }
             }
         }
         
-        return $this->getMostLikelyPrice($prices);
+        // Pattern spécifique pour les prix dans les attributs data
+        if (preg_match_all('/data-price="([^"]+)"/is', $htmlContent, $matches)) {
+            foreach ($matches[1] as $price) {
+                if (preg_match('/[\d,]+/', $price)) {
+                    $prices[] = $price;
+                }
+            }
+        }
+        
+        // Pattern pour les prix dans les meta tags
+        if (preg_match_all('/<meta[^>]*property="product:price:amount"[^>]*content="([^"]+)"/is', $htmlContent, $matches)) {
+            foreach ($matches[1] as $price) {
+                if (preg_match('/[\d,]+/', $price)) {
+                    $prices[] = $price;
+                }
+            }
+        }
+        
+        return $prices;
+    }
+
+    /**
+     * Extrait récursivement les prix d'un tableau JSON
+     */
+    private function extractPricesFromArray($array, $prices = [])
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $prices = $this->extractPricesFromArray($value, $prices);
+            } elseif (is_string($value)) {
+                // Chercher des prix dans les chaînes
+                if (preg_match('/(\d+[,\d]*)\s*€/', $value, $matches)) {
+                    $prices[] = $matches[1] . ' €';
+                } elseif (preg_match('/(\d+[,\d]*)\s*EUR/', $value, $matches)) {
+                    $prices[] = $matches[1] . ' EUR';
+                }
+            } elseif (is_numeric($value) && $key === 'price') {
+                // Si c'est un prix numérique
+                $prices[] = number_format($value, 2, ',', ' ') . ' €';
+            }
+        }
+        
+        return $prices;
+    }
+
+    /**
+     * Extrait les prix d'occasion depuis le JSON de la page Cultura
+     */
+    private function extractUsedPricesFromJson($htmlContent)
+    {
+        $usedPrices = [];
+        
+        // Pattern pour trouver le JSON avec les données marketplace
+        $jsonPattern = '/"mp_info":\s*({[^}]+"offers":\s*\[[^\]]+\][^}]+})/is';
+        
+        if (preg_match($jsonPattern, $htmlContent, $matches)) {
+            $jsonData = $matches[1];
+            
+            // Nettoyer le JSON (décoder les entités HTML)
+            $jsonData = html_entity_decode($jsonData);
+            
+            try {
+                $data = json_decode($jsonData, true);
+                
+                if ($data && isset($data['offers'])) {
+                    foreach ($data['offers'] as $offer) {
+                        // Vérifier si c'est une offre d'occasion (state_code = 2)
+                        if (isset($offer['state_code']) && $offer['state_code'] == 2.0) {
+                            if (isset($offer['price']) && is_numeric($offer['price'])) {
+                                $usedPrices[] = number_format($offer['price'], 2, ',', ' ') . ' € (occasion)';
+                            }
+                        }
+                    }
+                }
+                
+                // Extraire aussi les prix résumés d'occasion
+                if (isset($data['lowest_price_used']['value'])) {
+                    $usedPrices[] = number_format($data['lowest_price_used']['value'], 2, ',', ' ') . ' € (occasion min)';
+                }
+                
+                if (isset($data['second_lowest_price_used']['value'])) {
+                    $usedPrices[] = number_format($data['second_lowest_price_used']['value'], 2, ',', ' ') . ' € (occasion 2e)';
+                }
+                
+            } catch (\Exception $e) {
+                // En cas d'erreur de parsing JSON, essayer avec des regex
+                $this->extractUsedPricesWithRegex($htmlContent, $usedPrices);
+            }
+        } else {
+            // Si pas de JSON trouvé, essayer avec des regex
+            $this->extractUsedPricesWithRegex($htmlContent, $usedPrices);
+        }
+        
+        return $usedPrices;
+    }
+
+    /**
+     * Extrait les prix d'occasion avec des regex en fallback
+     */
+    private function extractUsedPricesWithRegex($htmlContent, &$usedPrices)
+    {
+        // Patterns pour les prix d'occasion dans le JSON
+        $patterns = [
+            '/"lowest_price_used":\s*{\s*"value":\s*(\d+\.?\d*)/i',
+            '/"second_lowest_price_used":\s*{\s*"value":\s*(\d+\.?\d*)/i',
+            '/"price":\s*(\d+\.?\d*).*?"state_code":\s*2\.0/i',
+            '/"total_price":\s*(\d+\.?\d*).*?"state_code":\s*2\.0/i'
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match_all($pattern, $htmlContent, $matches)) {
+                foreach ($matches[1] as $price) {
+                    if (is_numeric($price)) {
+                        $usedPrices[] = number_format((float)$price, 2, ',', ' ') . ' € (occasion)';
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Extrait les prix d'occasion depuis le HTML
+     */
+    private function extractUsedPrices($htmlContent)
+    {
+        $prices = [];
+        
+        // Patterns pour les prix d'occasion
+        $usedPricePatterns = [
+            '/D\'occasion[^>]*>.*?(\d+[,\d]*)\s*€/is',
+            '/D\'occasion[^>]*>.*?(\d+[,\d]*)\s*EUR/is',
+            '/occasion[^>]*>.*?(\d+[,\d]*)\s*€/is',
+            '/used[^>]*>.*?(\d+[,\d]*)\s*€/is',
+            '/<span[^>]*class="[^"]*a-price[^"]*"[^>]*>.*?D\'occasion.*?(\d+[,\d]*)\s*€/is',
+            '/<div[^>]*class="[^"]*used[^"]*"[^>]*>.*?(\d+[,\d]*)\s*€/is'
+        ];
+        
+        foreach ($usedPricePatterns as $pattern) {
+            if (preg_match_all($pattern, $htmlContent, $matches)) {
+                foreach ($matches[1] as $price) {
+                    if (preg_match('/[\d,]+/', $price)) {
+                        $prices[] = $price . ' €';
+                    }
+                }
+            }
+        }
+        
+        return $prices;
     }
 
     public function parseCulturaPrice($htmlContent)
     {
         $prices = [];
+        $usedPrices = [];
         
         // Créer un DOMDocument
         $dom = new DOMDocument();
@@ -218,6 +253,14 @@ class PriceParserService
                     }
                 }
             }
+        }
+        
+        // Extraire les prix d'occasion depuis le JSON
+        $usedPrices = $this->extractUsedPricesFromJson($htmlContent);
+        
+        // Si on a trouvé des prix d'occasion, les ajouter au résultat
+        if (!empty($usedPrices)) {
+            $prices = array_merge($prices, $usedPrices);
         }
         
         return $this->getMostLikelyPrice($prices);
