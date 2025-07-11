@@ -86,6 +86,7 @@ return [
     'view_result' => 'View result',
     'search_results' => 'Search results',
     'search_info' => 'Search Information',
+    'view_results' => 'View Results',
     'home' => 'Home',
     
     // Messages généraux

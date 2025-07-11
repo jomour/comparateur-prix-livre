@@ -9,7 +9,7 @@ use App\Models\HistoriqueSearch;
 use OpenAI\Laravel\Facades\OpenAI;
 use App\Services\PriceParserInterface;
 use App\ValueObjects\PriceStats;
-
+use App\Models\HistoriqueSearchProvider;
 class PriceController extends Controller
 {
     protected $amazonPriceParser;
@@ -75,19 +75,7 @@ class PriceController extends Controller
         return $keywordMap[$lastSegment] ?? null;
     }
 
-    public function historique()
-    {
-        $searches = HistoriqueSearch::with('user')
-            ->where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
 
-        // Métadonnées SEO
-        $meta = SeoService::getHistoryMeta();
-        $seoType = 'website';
-
-        return view('price.historique', compact('searches', 'meta', 'seoType'));
-    }
 
     public function search(Request $request)
     {
@@ -105,6 +93,10 @@ class PriceController extends Controller
 
         // Récupérer le titre via l'API OpenLibrary
         $title = $this->isbnService->getTitleFromIsbn($isbn);
+        
+        // Mettre à jour le titre
+        $search->title = $title;
+        $search->save();
 
         // Créer le dossier storage/app/public/results s'il n'existe pas
         $resultsPath = storage_path('app/public/results');
@@ -115,6 +107,23 @@ class PriceController extends Controller
         // Récupérer les prix et résultats
         $searchId = $search->getKey();
         $searchData = $this->searchPrices($isbn, $title, $searchId, $resultsPath);
+
+        foreach (['amazon', 'cultura', 'fnac'] as $provider) {
+            $data = $searchData['prices'][$provider] ?? null;
+            if (is_array($data) && isset($data['min'], $data['max'], $data['amplitude'], $data['average'], $data['count'])) {
+                HistoriqueSearchProvider::create([
+                    'historique_search_id' => $search->id,
+                    'name' => $provider,
+                    'min' => $data['min'],
+                    'max' => $data['max'],
+                    'amplitude' => $data['amplitude'],
+                    'average' => $data['average'],
+                    'nb_offre' => $data['count'],
+                ]);
+            }
+        }
+        $search->estimation_occasion = $searchData['occasion_price'];
+        $search->save();
 
         // Métadonnées SEO pour les résultats
         $meta = SeoService::getResultsMeta($isbn, $title, $searchData['prices']);
@@ -143,7 +152,7 @@ class PriceController extends Controller
         $results = [];
         $prices = [];
 
-                // AMAZON
+        // AMAZON
         $amazonStats = $this->amazonPriceParser->search($isbn, $resultsPath, $searchId);
         $prices['amazon'] = $amazonStats instanceof PriceStats ? $amazonStats->toArray() : $amazonStats;
         
@@ -167,116 +176,7 @@ class PriceController extends Controller
 
 
 
-    public function showAmazon($id = null)
-    {
-        if ($id) {
-            // Vérifier que l'utilisateur a accès à cette recherche
-            $search = HistoriqueSearch::find($id);
-            if (!$search || $search->getAttribute('user_id') !== auth()->id()) {
-                abort(403, 'Accès non autorisé');
-            }
-            
-            // Afficher le fichier HTML d'une recherche spécifique
-            $filePath = storage_path("app/public/results/index_amazon_{$id}.html");
-            
-            if (!file_exists($filePath)) {
-                abort(404, 'Fichier Amazon non trouvé');
-            }
-            
-            $content = file_get_contents($filePath);
-            
-            return response($content)
-                ->header('Content-Type', 'text/html')
-                ->header('Content-Length', strlen($content));
-        }
 
-        // Fallback vers le fichier le plus récent
-        $filePath = storage_path('app/public/results/index_amazon.html');
-        
-        if (!file_exists($filePath)) {
-            abort(404, 'Fichier Amazon non trouvé');
-        }
-        
-        $content = file_get_contents($filePath);
-        
-        return response($content)
-            ->header('Content-Type', 'text/html')
-            ->header('Content-Length', strlen($content));
-    }
-
-    public function showCultura($id = null)
-    {
-        if ($id) {
-            // Vérifier que l'utilisateur a accès à cette recherche
-            $search = HistoriqueSearch::find($id);
-            if (!$search || $search->getAttribute('user_id') !== auth()->id()) {
-                abort(403, 'Accès non autorisé');
-            }
-            
-            // Afficher le fichier HTML d'une recherche spécifique
-            $filePath = storage_path("app/public/results/index_cultura_{$id}.html");
-            
-            if (!file_exists($filePath)) {
-                abort(404, 'Fichier Cultura non trouvé');
-            }
-            
-            $content = file_get_contents($filePath);
-            
-            return response($content)
-                ->header('Content-Type', 'text/html')
-                ->header('Content-Length', strlen($content));
-        }
-
-        // Fallback vers le fichier le plus récent
-        $filePath = storage_path('app/public/results/index_cultura.html');
-        
-        if (!file_exists($filePath)) {
-            abort(404, 'Fichier Cultura non trouvé');
-        }
-        
-        $content = file_get_contents($filePath);
-        
-        return response($content)
-            ->header('Content-Type', 'text/html')
-            ->header('Content-Length', strlen($content));
-    }
-
-    public function showFnac($id = null)
-    {
-        if ($id) {
-            // Vérifier que l'utilisateur a accès à cette recherche
-            $search = HistoriqueSearch::find($id);
-            if (!$search || $search->getAttribute('user_id') !== auth()->id()) {
-                abort(403, 'Accès non autorisé');
-            }
-            
-            // Afficher le fichier HTML d'une recherche spécifique
-            $filePath = storage_path("app/public/results/index_fnac_{$id}.html");
-            
-            if (!file_exists($filePath)) {
-                abort(404, 'Fichier Fnac non trouvé');
-            }
-            
-            $content = file_get_contents($filePath);
-            
-            return response($content)
-                ->header('Content-Type', 'text/html')
-                ->header('Content-Length', strlen($content));
-        }
-
-        // Fallback vers le fichier le plus récent
-        $filePath = storage_path('app/public/results/index_fnac.html');
-        
-        if (!file_exists($filePath)) {
-            abort(404, 'Fichier Fnac non trouvé');
-        }
-        
-        $content = file_get_contents($filePath);
-        
-        return response($content)
-            ->header('Content-Type', 'text/html')
-            ->header('Content-Length', strlen($content));
-    }
 
     private function getOccasionPriceEstimation($isbn, $prices = [])
     {

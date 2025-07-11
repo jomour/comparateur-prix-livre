@@ -86,6 +86,7 @@ return [
     'view_result' => 'Voir le résultat',
     'search_results' => 'Résultats de recherche',
     'search_info' => 'Informations de recherche',
+    'view_results' => 'Voir les résultats',
     
     // Messages généraux
     'loading' => 'Chargement...',

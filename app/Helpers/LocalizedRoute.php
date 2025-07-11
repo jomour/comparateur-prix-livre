@@ -150,6 +150,10 @@ class LocalizedRoute
                 'fr' => 'fr.historique.recherches',
                 'en' => 'en.search.history'
             ],
+            'historique.show' => [
+                'fr' => 'fr.historique.show',
+                'en' => 'en.historique.show'
+            ],
             'price.verify.isbn' => [
                 'fr' => 'fr.verifier.isbn',
                 'en' => 'en.verify.isbn'

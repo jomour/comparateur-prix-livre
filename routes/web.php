@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PriceController;
+use App\Http\Controllers\HistoriqueController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\SitemapController;
 use App\Helpers\LocalizedRoute;
@@ -56,14 +57,12 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
     Route::post('/verifier-isbn', [PriceController::class, 'verifyIsbn'])->name('fr.verifier.isbn')->middleware('auth');
     
     // Historique des recherches
-    Route::get('/historique-recherches', [PriceController::class, 'historique'])->name('fr.historique.recherches')->middleware('auth');
-    Route::get('/historique-prix', [PriceController::class, 'historique'])->name('fr.historique.prix')->middleware('auth');
-    Route::get('/mes-recherches', [PriceController::class, 'historique'])->name('fr.mes.recherches')->middleware('auth');
+    Route::get('/historique-recherches', [HistoriqueController::class, 'index'])->name('fr.historique.recherches')->middleware('auth');
+    Route::get('/historique-prix', [HistoriqueController::class, 'index'])->name('fr.historique.prix')->middleware('auth');
+    Route::get('/mes-recherches', [HistoriqueController::class, 'index'])->name('fr.mes.recherches')->middleware('auth');
+    Route::get('/historique-recherches/{id}', [HistoriqueController::class, 'show'])->name('fr.historique.show')->middleware('auth');
     
-    // Affichage des résultats par site
-    Route::get('/resultats/amazon/{id?}', [PriceController::class, 'showAmazon'])->name('fr.resultats.amazon')->middleware('auth');
-    Route::get('/resultats/cultura/{id?}', [PriceController::class, 'showCultura'])->name('fr.resultats.cultura')->middleware('auth');
-    Route::get('/resultats/fnac/{id?}', [PriceController::class, 'showFnac'])->name('fr.resultats.fnac')->middleware('auth');
+
     
     // Recherche par image
     Route::get('/estimation-lot-manga', [ImageController::class, 'index'])->name('fr.estimation.lot.manga')->middleware('auth');
@@ -126,14 +125,12 @@ Route::prefix('en')->middleware('setlocale')->group(function () {
     Route::post('/verify-isbn', [PriceController::class, 'verifyIsbn'])->name('en.verify.isbn')->middleware('auth');
     
     // Search history
-    Route::get('/search-history', [PriceController::class, 'historique'])->name('en.search.history')->middleware('auth');
-    Route::get('/price-history', [PriceController::class, 'historique'])->name('en.price.history')->middleware('auth');
-    Route::get('/my-searches', [PriceController::class, 'historique'])->name('en.my.searches')->middleware('auth');
+    Route::get('/search-history', [HistoriqueController::class, 'index'])->name('en.search.history')->middleware('auth');
+    Route::get('/price-history', [HistoriqueController::class, 'index'])->name('en.price.history')->middleware('auth');
+    Route::get('/my-searches', [HistoriqueController::class, 'index'])->name('en.my.searches')->middleware('auth');
+    Route::get('/search-history/{id}', [HistoriqueController::class, 'show'])->name('en.historique.show')->middleware('auth');
     
-    // Results display by site
-    Route::get('/results/amazon/{id?}', [PriceController::class, 'showAmazon'])->name('en.results.amazon')->middleware('auth');
-    Route::get('/results/cultura/{id?}', [PriceController::class, 'showCultura'])->name('en.results.cultura')->middleware('auth');
-    Route::get('/results/fnac/{id?}', [PriceController::class, 'showFnac'])->name('en.results.fnac')->middleware('auth');
+
     
     // Image search
     Route::get('/manga-lot-estimation', [ImageController::class, 'index'])->name('en.manga.lot.estimation')->middleware('auth');

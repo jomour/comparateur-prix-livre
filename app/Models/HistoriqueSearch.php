@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class HistoriqueSearch extends Model
 {
@@ -21,9 +22,7 @@ class HistoriqueSearch extends Model
     protected $fillable = [
         'user_id',
         'isbn',
-        'prix_amazon',
-        'prix_cultura',
-        'prix_fnac',
+        'title',
         'estimation_occasion',
     ];
 
@@ -41,6 +40,38 @@ class HistoriqueSearch extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relation avec les providers de prix.
+     */
+    public function providers(): HasMany
+    {
+        return $this->hasMany(HistoriqueSearchProvider::class, 'historique_search_id');
+    }
+
+    /**
+     * Obtenir le provider Amazon.
+     */
+    public function amazonProvider()
+    {
+        return $this->providers()->where('name', 'amazon')->first();
+    }
+
+    /**
+     * Obtenir le provider Cultura.
+     */
+    public function culturaProvider()
+    {
+        return $this->providers()->where('name', 'cultura')->first();
+    }
+
+    /**
+     * Obtenir le provider Fnac.
+     */
+    public function fnacProvider()
+    {
+        return $this->providers()->where('name', 'fnac')->first();
     }
 
     /**
@@ -149,20 +180,16 @@ class HistoriqueSearch extends Model
     }
 
     /**
-     * Obtenir le meilleur prix parmi les trois fournisseurs.
+     * Obtenir le meilleur prix parmi les providers.
      */
     public function getBestPriceAttribute()
     {
         $prices = [];
         
-        if ($this->prix_amazon !== 'Prix non trouvé') {
-            $prices['amazon'] = (float) str_replace(['€', ' '], '', $this->prix_amazon);
-        }
-        if ($this->prix_cultura !== 'Prix non trouvé') {
-            $prices['cultura'] = (float) str_replace(['€', ' '], '', $this->prix_cultura);
-        }
-        if ($this->prix_fnac !== 'Prix non trouvé') {
-            $prices['fnac'] = (float) str_replace(['€', ' '], '', $this->prix_fnac);
+        foreach ($this->providers as $provider) {
+            if ($provider->min > 0) {
+                $prices[$provider->name] = $provider->min;
+            }
         }
 
         if (empty($prices)) {
@@ -170,11 +197,11 @@ class HistoriqueSearch extends Model
         }
 
         $minPrice = min($prices);
-        $provider = array_search($minPrice, $prices);
+        $providerName = array_search($minPrice, $prices);
 
         return [
             'price' => number_format($minPrice, 2) . '€',
-            'provider' => $provider
+            'provider' => $providerName
         ];
     }
 
@@ -183,9 +210,7 @@ class HistoriqueSearch extends Model
      */
     public function getHasAllPricesAttribute()
     {
-        return $this->prix_amazon !== 'Prix non trouvé' && 
-               $this->prix_cultura !== 'Prix non trouvé' && 
-               $this->prix_fnac !== 'Prix non trouvé';
+        return $this->providers()->where('min', '>', 0)->count() === 3;
     }
 
     /**
@@ -193,10 +218,6 @@ class HistoriqueSearch extends Model
      */
     public function getPricesFoundAttribute()
     {
-        $count = 0;
-        if ($this->prix_amazon !== 'Prix non trouvé') $count++;
-        if ($this->prix_cultura !== 'Prix non trouvé') $count++;
-        if ($this->prix_fnac !== 'Prix non trouvé') $count++;
-        return $count;
+        return $this->providers()->where('min', '>', 0)->count();
     }
 }
