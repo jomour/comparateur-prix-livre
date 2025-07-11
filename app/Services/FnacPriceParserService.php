@@ -29,9 +29,9 @@ class FnacPriceParserService implements PriceParserInterface
     {
         // Parser le texte de la description du premier article
         $descriptionText = $this->parseFirstArticleDescription($htmlContent);
-        
+       
         if(!$this->verifyTitleMatch($descriptionText, $title)){
-            throw new \Exception("Référence du livre non trouvée");
+            return [];
         }
         
         // Récupérer les prix d'occasion via le popup
