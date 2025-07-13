@@ -13,6 +13,26 @@
                 <x-breadcrumbs page="results" />
             </div>
 
+            @guest
+            <div class="mb-8">
+                <div class="bg-gradient-to-r from-pink-500 via-yellow-400 to-orange-400 border-2 border-yellow-300 shadow-xl rounded-2xl p-6 flex items-center gap-4">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-star text-4xl text-white drop-shadow-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-xl md:text-2xl font-bold text-white mb-1">Rejoins la communauté MangaValueCheck !</h3>
+                        <p class="text-white/90 text-base md:text-lg mb-2">
+                            <span class="font-semibold text-yellow-100">Garde ton historique de recherches</span>, <span class="font-semibold text-yellow-100">estime des lots à partir d'une image</span> et découvre plein d'autres fonctionnalités exclusives en créant un compte gratuit !
+                        </p>
+                        <div class="flex flex-wrap gap-3 mt-2">
+                            <a href="{{ route('login') }}" class="bg-white text-pink-600 font-bold px-5 py-2 rounded-lg shadow hover:bg-yellow-100 transition">Connexion</a>
+                            <a href="{{ route('register') }}" class="bg-yellow-400 text-pink-900 font-bold px-5 py-2 rounded-lg shadow hover:bg-white transition">Inscription</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endguest
+
             <!-- Search Info Card -->
             <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-6 mb-8">
                 <div class="text-center text-white">

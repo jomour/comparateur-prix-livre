@@ -110,6 +110,9 @@ return [
     'forgot_password' => 'Mot de passe oublié ?',
     'register' => 'S\'inscrire',
     'registration_disabled' => 'L\'enregistrement de nouveaux comptes est désactivé. Veuillez contacter l\'administrateur.',
+    'name' => 'Nom',
+    'create_account' => 'Créer un compte',
+    'comparator_de_prix_manga' => 'Comparateur de Prix Manga',
     
     // Messages de profil
     'profile_information' => 'Informations du profil',

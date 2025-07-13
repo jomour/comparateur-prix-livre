@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('historique_search', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('isbn', 13)->index();
             $table->string('prix_fnac')->nullable();
             $table->string('prix_amazon')->nullable();

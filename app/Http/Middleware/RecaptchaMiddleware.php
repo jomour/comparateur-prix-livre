@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,11 @@ class RecaptchaMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Skip reCAPTCHA verification for authenticated users
+        if (Auth::check()) {
+            return $next($request);
+        }
+        
         if ($request->isMethod('POST')) {
             $recaptchaToken = $request->input('g-recaptcha-response');
             
@@ -58,38 +64,15 @@ class RecaptchaMiddleware
                         'ip' => $request->ip()
                     ]);
                     
-                    // Gérer spécifiquement l'erreur timeout-or-duplicate
+                    // Gérer spécifiquement l'erreur timeout-or-duplicate pour reCAPTCHA v2
                     if (isset($result['error-codes']) && in_array('timeout-or-duplicate', $result['error-codes'])) {
                         Log::info('reCAPTCHA timeout-or-duplicate error - allowing request to proceed');
                         
-                        // Pour timeout-or-duplicate, permettre la requête de continuer
-                        if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
-                            return response()->json([
-                                'success' => true,
-                                'message' => 'Request allowed despite reCAPTCHA timeout'
-                            ]);
-                        }
-                        
+                        // Pour reCAPTCHA v2, cette erreur signifie que le token a déjà été utilisé
+                        // mais la requête est valide, donc on peut la laisser passer
+                        // Cela évite les problèmes de double soumission
                         return $next($request);
                     }
-                    
-                    // Retourner une réponse JSON au lieu d'une redirection
-                    if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
-                        return response()->json([
-                            'success' => false,
-                            'message' => __('messages.recaptcha_failed')
-                        ], 422);
-                    }
-                    
-                    return back()->withErrors(['recaptcha' => __('messages.recaptcha_failed')]);
-                }
-                
-                // Pour reCAPTCHA v3, vérifier le score (0.0 = bot, 1.0 = humain)
-                if (isset($result['score']) && $result['score'] < 0.5) {
-                    Log::warning('reCAPTCHA score too low', [
-                        'score' => $result['score'],
-                        'ip' => $request->ip()
-                    ]);
                     
                     // Retourner une réponse JSON au lieu d'une redirection
                     if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {

@@ -11,12 +11,8 @@ use App\Helpers\LocalizedRoute;
 
 // Routes d'authentification (sans préfixe de langue)
 Route::get('/', function () {
-    if (Auth::check()) {
-        $locale = config('languages.default');
-        return redirect('/' . $locale . '/' . ($locale === 'fr' ? 'comparateur-prix-manga' : 'manga-price-comparator'));
-    } else {
-        return redirect()->route('login');
-    }
+    $locale = config('languages.default');
+    return redirect('/' . $locale . '/' . ($locale === 'fr' ? 'comparateur-prix-manga' : 'manga-price-comparator'));
 });
 
 Route::get('/login', function () {
@@ -32,63 +28,63 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
     
     // Route racine française
     Route::get('/', function () {
+        return redirect()->route('fr.comparateur.prix');
+    });
+    
+    // Routes principales françaises avec URLs SEO (publiques)
+    Route::get('/dashboard', function () {
         if (Auth::check()) {
             return redirect()->route('fr.comparateur.prix');
         } else {
-            return redirect()->route('login');
+            return redirect()->route('fr.comparateur.prix');
         }
-    });
+    })->name('fr.dashboard');
     
-    // Routes principales françaises avec URLs SEO
-    Route::get('/dashboard', function () {
-        return redirect()->route('fr.comparateur.prix');
-    })->middleware(['auth', 'verified'])->name('fr.dashboard');
+    // Comparateur de prix manga - URLs SEO françaises (publiques)
+    Route::get('/comparateur-prix-manga', [PriceController::class, 'index'])->name('fr.comparateur.prix');
+    Route::get('/prix-manga', [PriceController::class, 'index'])->name('fr.prix.manga');
+    Route::get('/comparateur-prix-livres', [PriceController::class, 'index'])->name('fr.comparateur.livres');
+    Route::get('/economiser-manga', [PriceController::class, 'index'])->name('fr.economiser.manga');
+    Route::get('/meilleur-prix-manga', [PriceController::class, 'index'])->name('fr.meilleur.prix');
     
-    // Comparateur de prix manga - URLs SEO françaises
-    Route::get('/comparateur-prix-manga', [PriceController::class, 'index'])->name('fr.comparateur.prix')->middleware('auth');
-    Route::get('/prix-manga', [PriceController::class, 'index'])->name('fr.prix.manga')->middleware('auth');
-    Route::get('/comparateur-prix-livres', [PriceController::class, 'index'])->name('fr.comparateur.livres')->middleware('auth');
-    Route::get('/economiser-manga', [PriceController::class, 'index'])->name('fr.economiser.manga')->middleware('auth');
-    Route::get('/meilleur-prix-manga', [PriceController::class, 'index'])->name('fr.meilleur.prix')->middleware('auth');
-    
-    // Actions de recherche
-    Route::post('/comparateur-prix-manga/recherche', [PriceController::class, 'search'])->name('fr.comparateur.recherche')->middleware(['auth', 'recaptcha']);
-    Route::post('/prix-manga/recherche', [PriceController::class, 'search'])->name('fr.prix.recherche')->middleware(['auth', 'recaptcha']);
-    Route::post('/verifier-isbn', [PriceController::class, 'verifyIsbn'])->name('fr.verifier.isbn')->middleware(['auth']);
-    Route::get('/prix-manga/resultats', [PriceController::class, 'showResults'])->name('fr.prix.resultats')->middleware('auth');
+    // Actions de recherche (publiques avec reCAPTCHA)
+    Route::post('/comparateur-prix-manga/recherche', [PriceController::class, 'search'])->name('fr.comparateur.recherche')->middleware('recaptcha');
+    Route::post('/prix-manga/recherche', [PriceController::class, 'search'])->name('fr.prix.recherche')->middleware('recaptcha');
+    Route::post('/verifier-isbn', [PriceController::class, 'verifyIsbn'])->name('fr.verifier.isbn');
+    Route::get('/prix-manga/resultats', [PriceController::class, 'showResults'])->name('fr.prix.resultats');
     
     // Routes anglaises pour les résultats
-    Route::get('/manga-prices/results', [PriceController::class, 'showResults'])->name('en.manga.prices.results')->middleware('auth');
+    Route::get('/manga-prices/results', [PriceController::class, 'showResults'])->name('en.manga.prices.results');
     
-    // Historique des recherches
-    Route::get('/historique-recherches', [HistoriqueController::class, 'index'])->name('fr.historique.recherches')->middleware('auth');
-    Route::get('/historique-prix', [HistoriqueController::class, 'index'])->name('fr.historique.prix')->middleware('auth');
-    Route::get('/mes-recherches', [HistoriqueController::class, 'index'])->name('fr.mes.recherches')->middleware('auth');
-    Route::get('/historique-recherches/{id}', [HistoriqueController::class, 'show'])->name('fr.historique.show')->middleware('auth');
-    Route::get('/historique-lots/{lotId}', [HistoriqueController::class, 'showLot'])->name('fr.historique.show.lot')->middleware('auth');
-    
-
-    
-    // Recherche par image
-    Route::get('/estimation-lot-manga', [MangaLotEstimationController::class, 'index'])->name('fr.estimation.lot.manga')->middleware('auth');
-Route::get('/recherche-photo', [MangaLotEstimationController::class, 'index'])->name('fr.recherche.photo')->middleware('auth');
-Route::post('/upload-image', [MangaLotEstimationController::class, 'upload'])->name('fr.upload.image')->middleware('auth');
-Route::post('/upload-image-ajax', [MangaLotEstimationController::class, 'uploadAjax'])->name('fr.upload.image.ajax')->middleware('auth');
-Route::post('/recherche-isbn-image', [MangaLotEstimationController::class, 'searchIsbnByTitle'])->name('fr.recherche.isbn.image')->middleware('auth');
-Route::post('/recherche-prix-image', [MangaLotEstimationController::class, 'searchPrice'])->name('fr.recherche.prix.image')->middleware('auth');
-Route::post('/recherche-tous-prix', [MangaLotEstimationController::class, 'searchAllPrices'])->name('fr.recherche.tous.prix')->middleware('auth');
-Route::post('/mettre-a-jour-isbn', [MangaLotEstimationController::class, 'updateMangaIsbn'])->name('fr.mettre.a.jour.isbn')->middleware('auth');
-Route::post('/supprimer-manga', [MangaLotEstimationController::class, 'removeManga'])->name('fr.supprimer.manga')->middleware('auth');
-Route::get('/afficher-image/{filename}', [MangaLotEstimationController::class, 'show'])->name('fr.afficher.image');
-Route::get('/resultats-recherche-image', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.recherche.image')->middleware('auth');
-Route::get('/resultats-estimation-lot', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.estimation.lot')->middleware('auth');
-    
-    // Profil utilisateur
+    // Historique des recherches (authentifiées)
     Route::middleware('auth')->group(function () {
+        Route::get('/historique-recherches', [HistoriqueController::class, 'index'])->name('fr.historique.recherches');
+        Route::get('/historique-prix', [HistoriqueController::class, 'index'])->name('fr.historique.prix');
+        Route::get('/mes-recherches', [HistoriqueController::class, 'index'])->name('fr.mes.recherches');
+        Route::get('/historique-recherches/{id}', [HistoriqueController::class, 'show'])->name('fr.historique.show');
+        Route::get('/historique-lots/{lotId}', [HistoriqueController::class, 'showLot'])->name('fr.historique.show.lot');
+        
+        // Recherche par image (authentifiée)
+        Route::get('/estimation-lot-manga', [MangaLotEstimationController::class, 'index'])->name('fr.estimation.lot.manga');
+        Route::get('/recherche-photo', [MangaLotEstimationController::class, 'index'])->name('fr.recherche.photo');
+        Route::post('/upload-image', [MangaLotEstimationController::class, 'upload'])->name('fr.upload.image');
+        Route::post('/upload-image-ajax', [MangaLotEstimationController::class, 'uploadAjax'])->name('fr.upload.image.ajax');
+        Route::post('/recherche-isbn-image', [MangaLotEstimationController::class, 'searchIsbnByTitle'])->name('fr.recherche.isbn.image');
+        Route::post('/recherche-prix-image', [MangaLotEstimationController::class, 'searchPrice'])->name('fr.recherche.prix.image');
+        Route::post('/recherche-tous-prix', [MangaLotEstimationController::class, 'searchAllPrices'])->name('fr.recherche.tous.prix');
+        Route::post('/mettre-a-jour-isbn', [MangaLotEstimationController::class, 'updateMangaIsbn'])->name('fr.mettre.a.jour.isbn');
+        Route::post('/supprimer-manga', [MangaLotEstimationController::class, 'removeManga'])->name('fr.supprimer.manga');
+        Route::get('/resultats-recherche-image', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.recherche.image');
+        Route::get('/resultats-estimation-lot', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.estimation.lot');
+        
+        // Profil utilisateur
         Route::get('/mon-profil', [ProfileController::class, 'edit'])->name('fr.mon.profil');
         Route::patch('/mon-profil', [ProfileController::class, 'update'])->name('fr.mon.profil.update');
         Route::delete('/mon-profil', [ProfileController::class, 'destroy'])->name('fr.mon.profil.destroy');
     });
+    
+    // Route publique pour afficher les images
+    Route::get('/afficher-image/{filename}', [MangaLotEstimationController::class, 'show'])->name('fr.afficher.image');
     
     // Redirections
     Route::get('/register', function () {
@@ -105,60 +101,60 @@ Route::prefix('en')->middleware('setlocale')->group(function () {
     
     // Route racine anglaise
     Route::get('/', function () {
+        return redirect()->route('en.manga.price.comparator');
+    });
+    
+    // Routes principales anglaises avec URLs SEO (publiques)
+    Route::get('/dashboard', function () {
         if (Auth::check()) {
             return redirect()->route('en.manga.price.comparator');
         } else {
-            return redirect()->route('login');
+            return redirect()->route('en.manga.price.comparator');
         }
-    });
+    })->name('en.dashboard');
     
-    // Routes principales anglaises avec URLs SEO
-    Route::get('/dashboard', function () {
-        return redirect()->route('en.manga.price.comparator');
-    })->middleware(['auth', 'verified'])->name('en.dashboard');
+    // Manga price comparator - URLs SEO anglaises (publiques)
+    Route::get('/manga-price-comparator', [PriceController::class, 'index'])->name('en.manga.price.comparator');
+    Route::get('/manga-prices', [PriceController::class, 'index'])->name('en.manga.prices');
+    Route::get('/manga-book-price-comparison', [PriceController::class, 'index'])->name('en.manga.book.comparison');
+    Route::get('/save-money-manga', [PriceController::class, 'index'])->name('en.save.money.manga');
+    Route::get('/best-manga-price', [PriceController::class, 'index'])->name('en.best.manga.price');
+    Route::get('/manga-price-checker', [PriceController::class, 'index'])->name('en.manga.price.checker');
     
-    // Manga price comparator - URLs SEO anglaises
-    Route::get('/manga-price-comparator', [PriceController::class, 'index'])->name('en.manga.price.comparator')->middleware('auth');
-    Route::get('/manga-prices', [PriceController::class, 'index'])->name('en.manga.prices')->middleware('auth');
-    Route::get('/manga-book-price-comparison', [PriceController::class, 'index'])->name('en.manga.book.comparison')->middleware('auth');
-    Route::get('/save-money-manga', [PriceController::class, 'index'])->name('en.save.money.manga')->middleware('auth');
-    Route::get('/best-manga-price', [PriceController::class, 'index'])->name('en.best.manga.price')->middleware('auth');
-    Route::get('/manga-price-checker', [PriceController::class, 'index'])->name('en.manga.price.checker')->middleware('auth');
+    // Search actions (publiques avec reCAPTCHA)
+    Route::post('/manga-price-comparator/search', [PriceController::class, 'search'])->name('en.manga.price.search')->middleware('recaptcha');
+    Route::post('/manga-prices/search', [PriceController::class, 'search'])->name('en.manga.prices.search')->middleware('recaptcha');
+    Route::post('/verify-isbn', [PriceController::class, 'verifyIsbn'])->name('en.verify.isbn');
     
-    // Search actions
-    Route::post('/manga-price-comparator/search', [PriceController::class, 'search'])->name('en.manga.price.search')->middleware(['auth', 'recaptcha']);
-    Route::post('/manga-prices/search', [PriceController::class, 'search'])->name('en.manga.prices.search')->middleware(['auth', 'recaptcha']);
-    Route::post('/verify-isbn', [PriceController::class, 'verifyIsbn'])->name('en.verify.isbn')->middleware(['auth']);
-    
-    // Search history
-    Route::get('/search-history', [HistoriqueController::class, 'index'])->name('en.search.history')->middleware('auth');
-    Route::get('/price-history', [HistoriqueController::class, 'index'])->name('en.price.history')->middleware('auth');
-    Route::get('/my-searches', [HistoriqueController::class, 'index'])->name('en.my.searches')->middleware('auth');
-    Route::get('/search-history/{id}', [HistoriqueController::class, 'show'])->name('en.historique.show')->middleware('auth');
-    Route::get('/search-lots/{lotId}', [HistoriqueController::class, 'showLot'])->name('en.historique.show.lot')->middleware('auth');
-    
-
-    
-    // Image search
-    Route::get('/manga-lot-estimation', [MangaLotEstimationController::class, 'index'])->name('en.manga.lot.estimation')->middleware('auth');
-Route::get('/photo-search', [MangaLotEstimationController::class, 'index'])->name('en.photo.search')->middleware('auth');
-Route::post('/upload-image', [MangaLotEstimationController::class, 'upload'])->name('en.upload.image')->middleware('auth');
-Route::post('/upload-image-ajax', [MangaLotEstimationController::class, 'uploadAjax'])->name('en.upload.image.ajax')->middleware('auth');
-Route::post('/search-isbn-image', [MangaLotEstimationController::class, 'searchIsbnByTitle'])->name('en.search.isbn.image')->middleware('auth');
-Route::post('/search-price-image', [MangaLotEstimationController::class, 'searchPrice'])->name('en.search.price.image')->middleware('auth');
-Route::post('/search-all-prices', [MangaLotEstimationController::class, 'searchAllPrices'])->name('en.search.all.prices')->middleware('auth');
-Route::post('/update-isbn', [MangaLotEstimationController::class, 'updateMangaIsbn'])->name('en.update.isbn')->middleware('auth');
-Route::post('/remove-manga', [MangaLotEstimationController::class, 'removeManga'])->name('en.remove.manga')->middleware('auth');
-Route::get('/show-image/{filename}', [MangaLotEstimationController::class, 'show'])->name('en.show.image');
-Route::get('/image-search-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.image.search.results')->middleware('auth');
-Route::get('/lot-estimation-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.lot.estimation.results')->middleware('auth');
-    
-    // User profile
+    // Search history (authentifiée)
     Route::middleware('auth')->group(function () {
+        Route::get('/search-history', [HistoriqueController::class, 'index'])->name('en.search.history');
+        Route::get('/price-history', [HistoriqueController::class, 'index'])->name('en.price.history');
+        Route::get('/my-searches', [HistoriqueController::class, 'index'])->name('en.my.searches');
+        Route::get('/search-history/{id}', [HistoriqueController::class, 'show'])->name('en.historique.show');
+        Route::get('/search-lots/{lotId}', [HistoriqueController::class, 'showLot'])->name('en.historique.show.lot');
+        
+        // Image search (authentifiée)
+        Route::get('/manga-lot-estimation', [MangaLotEstimationController::class, 'index'])->name('en.manga.lot.estimation');
+        Route::get('/photo-search', [MangaLotEstimationController::class, 'index'])->name('en.photo.search');
+        Route::post('/upload-image', [MangaLotEstimationController::class, 'upload'])->name('en.upload.image');
+        Route::post('/upload-image-ajax', [MangaLotEstimationController::class, 'uploadAjax'])->name('en.upload.image.ajax');
+        Route::post('/search-isbn-image', [MangaLotEstimationController::class, 'searchIsbnByTitle'])->name('en.search.isbn.image');
+        Route::post('/search-price-image', [MangaLotEstimationController::class, 'searchPrice'])->name('en.search.price.image');
+        Route::post('/search-all-prices', [MangaLotEstimationController::class, 'searchAllPrices'])->name('en.search.all.prices');
+        Route::post('/update-isbn', [MangaLotEstimationController::class, 'updateMangaIsbn'])->name('en.update.isbn');
+        Route::post('/remove-manga', [MangaLotEstimationController::class, 'removeManga'])->name('en.remove.manga');
+        Route::get('/image-search-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.image.search.results');
+        Route::get('/lot-estimation-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.lot.estimation.results');
+        
+        // User profile
         Route::get('/my-profile', [ProfileController::class, 'edit'])->name('en.my.profile');
         Route::patch('/my-profile', [ProfileController::class, 'update'])->name('en.my.profile.update');
         Route::delete('/my-profile', [ProfileController::class, 'destroy'])->name('en.my.profile.destroy');
     });
+    
+    // Route publique pour afficher les images
+    Route::get('/show-image/{filename}', [MangaLotEstimationController::class, 'show'])->name('en.show.image');
     
     // Redirects
     Route::get('/register', function () {

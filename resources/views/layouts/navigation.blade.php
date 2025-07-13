@@ -19,6 +19,7 @@
                         <i class="fas fa-search mr-2"></i>
                         {{ __('messages.comparator') }}
                     </x-nav-link>
+                    @auth
                     <x-nav-link :href="\App\Helpers\LocalizedRoute::url('price.historique')" :active="request()->routeIs('fr.historique.recherches') || request()->routeIs('en.search.history')" class="text-white hover:text-yellow-300 transition-colors duration-200">
                         <i class="fas fa-history mr-2"></i>
                         {{ __('messages.history') }}
@@ -27,6 +28,7 @@
                         <i class="fas fa-camera mr-2"></i>
                         {{ __('messages.manga_lot_estimation') }}
                     </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
@@ -35,6 +37,7 @@
                 <!-- Language Switcher -->
                 <x-language-switcher />
                 
+                @auth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-sm leading-4 font-medium rounded-xl text-white hover:bg-white/20 hover:text-yellow-300 focus:outline-none transition-all duration-200">
@@ -73,6 +76,14 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                @else
+                <div class="flex items-center space-x-4">
+                    <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-sm leading-4 font-medium rounded-xl text-white hover:bg-white/20 hover:text-yellow-300 focus:outline-none transition-all duration-200">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        {{ __('messages.login') }}
+                    </a>
+                </div>
+                @endauth
             </div>
         </div>
     </div>
@@ -90,6 +101,7 @@
                 <span class="text-xs font-medium">{{ __('messages.comparator') }}</span>
             </a>
 
+            @auth
             <!-- Historique -->
             <a href="{{ \App\Helpers\LocalizedRoute::url('price.historique') }}" 
                class="flex flex-col items-center justify-center flex-1 py-2 {{ request()->routeIs('fr.historique.recherches') || request()->routeIs('en.search.history') ? 'text-yellow-300' : 'text-white' }} transition-colors duration-200">
@@ -167,6 +179,14 @@
                     </div>
                 </div>
             </div>
+            @else
+            <!-- Login pour utilisateurs non authentifiés -->
+            <a href="{{ route('login') }}" 
+               class="flex flex-col items-center justify-center flex-1 py-2 text-white hover:text-yellow-300 transition-colors duration-200">
+                <i class="fas fa-sign-in-alt text-lg mb-1"></i>
+                <span class="text-xs font-medium">{{ __('messages.login') }}</span>
+            </a>
+            @endauth
         </div>
     </div>
 </div>

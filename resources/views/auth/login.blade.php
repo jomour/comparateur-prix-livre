@@ -45,7 +45,7 @@
                     MangaValueCheck
                 </h1>
                 <p class="text-purple-200 text-lg font-medium">
-                    {{ __('messages.comparator') }} de Prix Manga
+                    {{ __('messages.comparator_de_prix_manga') }}
                 </p>
             </div>
 

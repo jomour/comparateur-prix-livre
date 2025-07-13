@@ -111,6 +111,9 @@ return [
     'forgot_password' => 'Forgot your password?',
     'register' => 'Register',
     'registration_disabled' => 'Registration of new accounts is disabled. Please contact the administrator.',
+    'name' => 'Name',
+    'create_account' => 'Create account',
+    'comparator_de_prix_manga' => 'Manga Price Comparator',
     
     // Messages de profil
     'profile_information' => 'Profile Information',
