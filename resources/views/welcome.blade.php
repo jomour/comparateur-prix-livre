@@ -86,7 +86,7 @@
                         <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-lg">
                             {{ __('messages.manga_price_search') }}
                         </a>
-                        <a href="{{ \App\Helpers\LocalizedRoute::url('image.upload.form') }}" class="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/20 transition-all duration-300">
+                        <a href="{{ \App\Helpers\LocalizedRoute::url('manga.lot.estimation.upload.form') }}" class="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/20 transition-all duration-300">
                             {{ __('messages.manga_lot_estimation') }}
                         </a>
                     </div>
@@ -248,7 +248,7 @@
                     <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6">
                         <h3 class="text-xl font-semibold text-white mb-4">{{ __('messages.manga_price_analysis_tool') }}</h3>
                         <p class="text-purple-200 mb-4">{{ __('messages.manga_price_research_tool') }} {{ __('messages.manga_price_study_tool') }} {{ __('messages.manga_price_investigation_tool') }} {{ __('messages.manga_price_statistics_tool') }}.</p>
-                        <a href="{{ \App\Helpers\LocalizedRoute::url('image.upload.form') }}" class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all duration-300">
+                        <a href="{{ \App\Helpers\LocalizedRoute::url('manga.lot.estimation.upload.form') }}" class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all duration-300">
                             {{ __('messages.manga_lot_estimation') }}
                         </a>
                     </div>

@@ -170,15 +170,15 @@ class SeoService
     }
 
     /**
-     * Génère les métadonnées pour la page d'upload d'image
+     * Génère les métadonnées pour la page d'estimation de lot de manga
      */
-    public static function getImageUploadMeta()
+    public static function getMangaLotEstimationMeta()
     {
         $locale = App::getLocale();
         
         $uploadTitle = $locale === 'fr' 
-            ? 'Recherche par Image - Comparateur de Prix Manga'
-            : 'Image Search - Manga Price Comparator';
+            ? 'Estimation de Lot de Manga - Comparateur de Prix Manga'
+            : 'Manga Lot Estimation - Manga Price Comparator';
             
         $uploadDescription = $locale === 'fr'
             ? 'Recherchez des mangas par image. Uploadez une photo de couverture pour identifier le manga et comparer les prix automatiquement. Recherche intelligente par reconnaissance d\'image.'

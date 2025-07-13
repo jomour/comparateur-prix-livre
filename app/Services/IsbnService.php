@@ -244,4 +244,223 @@ class IsbnService
         
         return null;
     }
+
+    /**
+     * Retrouve l'ISBN d'un livre à partir de son titre
+     */
+    public function findIsbnByTitle($title, $tomeNumber = null)
+    {
+        $title = $this->cleanTitleForSearch($title);
+        
+        // Essayer plusieurs variations du titre
+        $variations = $this->generateTitleVariations($title, $tomeNumber);
+        
+        foreach ($variations as $variation) {
+            // Recherche Google Books
+            $isbn = $this->searchGoogleBooks($variation['title'], $variation['tome']);
+            if ($isbn) {
+                return $isbn;
+            }
+            
+            // Recherche Open Library
+            $isbn = $this->searchOpenLibrary($variation['title'], $variation['tome']);
+            if ($isbn) {
+                return $isbn;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Génère des variations du titre pour améliorer la recherche
+     */
+    private function generateTitleVariations($title, $tomeNumber = null)
+    {
+        $variations = [];
+        
+        // Extraire le tome du titre si présent
+        $cleanTitle = $title;
+        $extractedTome = $tomeNumber;
+        
+        if (preg_match('/\s*-?\s*tome\s*(\d+)/i', $title, $matches)) {
+            $cleanTitle = preg_replace('/\s*-?\s*tome\s*\d+/i', '', $title);
+            $extractedTome = $matches[1];
+        }
+        
+        // Titre original
+        $variations[] = ['title' => $cleanTitle, 'tome' => $extractedTome];
+        
+        // Titre avec "manga" ajouté
+        if (!stripos($cleanTitle, 'manga')) {
+            $variations[] = ['title' => $cleanTitle . ' manga', 'tome' => $extractedTome];
+        }
+        
+        // Titre avec "édition française"
+        $variations[] = ['title' => $cleanTitle . ' édition française', 'tome' => $extractedTome];
+        
+        // Titre avec "Glénat" (éditeur français)
+        $variations[] = ['title' => $cleanTitle . ' Glénat', 'tome' => $extractedTome];
+        
+        // Titre avec "bande dessinée"
+        $variations[] = ['title' => $cleanTitle . ' bande dessinée', 'tome' => $extractedTome];
+        
+        return $variations;
+    }
+
+    /**
+     * Nettoie le titre pour la recherche
+     */
+    private function cleanTitleForSearch($title)
+    {
+        // Supprimer les caractères spéciaux et normaliser
+        $title = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $title);
+        $title = preg_replace('/\s+/', ' ', $title);
+        $title = trim($title);
+        
+        return $title;
+    }
+
+    /**
+     * Recherche l'ISBN via Google Books API
+     */
+    private function searchGoogleBooks($title, $tomeNumber = null)
+    {
+        try {
+            $query = urlencode($title . ' manga');
+            if ($tomeNumber) {
+                $query .= urlencode(' tome ' . $tomeNumber);
+            }
+            
+            $response = Http::timeout(10)->get("https://www.googleapis.com/books/v1/volumes", [
+                'q' => $query,
+                'langRestrict' => 'fr',
+                'maxResults' => 5
+            ]);
+            
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                if (isset($data['items'])) {
+                    foreach ($data['items'] as $item) {
+                        if (isset($item['volumeInfo']['industryIdentifiers'])) {
+                            foreach ($item['volumeInfo']['industryIdentifiers'] as $identifier) {
+                                if ($identifier['type'] === 'ISBN_10' || $identifier['type'] === 'ISBN_13') {
+                                    $isbn = $identifier['identifier'];
+                                    
+                                    // Vérifier que c'est bien un manga
+                                    if ($this->isMangaBook($item['volumeInfo'])) {
+                                        return $isbn;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Log silencieux pour éviter de polluer les logs
+        }
+        
+        return null;
+    }
+
+    /**
+     * Recherche l'ISBN via Open Library API
+     */
+    private function searchOpenLibrary($title, $tomeNumber = null)
+    {
+        try {
+            $query = urlencode($title . ' manga');
+            if ($tomeNumber) {
+                $query .= urlencode(' tome ' . $tomeNumber);
+            }
+            
+            $response = Http::timeout(10)->get("https://openlibrary.org/search.json", [
+                'q' => $query,
+                'language' => 'fre',
+                'limit' => 5
+            ]);
+            
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                if (isset($data['docs'])) {
+                    foreach ($data['docs'] as $doc) {
+                        if (isset($doc['isbn'])) {
+                            $isbn = is_array($doc['isbn']) ? $doc['isbn'][0] : $doc['isbn'];
+                            
+                            // Vérifier que c'est bien un manga
+                            if ($this->isMangaBook($doc)) {
+                                return $isbn;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Log silencieux pour éviter de polluer les logs
+        }
+        
+        return null;
+    }
+
+    /**
+     * Vérifie si un livre est un manga
+     */
+    private function isMangaBook($bookInfo)
+    {
+        // Vérifier les sujets/catégories
+        if (isset($bookInfo['subjects'])) {
+            foreach ($bookInfo['subjects'] as $subject) {
+                if (stripos($subject, 'manga') !== false || 
+                    stripos($subject, 'bande dessinée') !== false ||
+                    stripos($subject, 'comic') !== false) {
+                    return true;
+                }
+            }
+        }
+        
+        // Vérifier le titre
+        if (isset($bookInfo['title'])) {
+            $title = strtolower($bookInfo['title']);
+            if (stripos($title, 'manga') !== false || 
+                stripos($title, 'bande dessinée') !== false ||
+                stripos($title, 'comic') !== false) {
+                return true;
+            }
+        }
+        
+        // Vérifier la description
+        if (isset($bookInfo['description'])) {
+            $desc = strtolower($bookInfo['description']);
+            if (stripos($desc, 'manga') !== false || 
+                stripos($desc, 'bande dessinée') !== false ||
+                stripos($desc, 'comic') !== false) {
+                return true;
+            }
+        }
+        
+        // Si on a un ISBN français (978-2-), considérer que c'est probablement un manga
+        if (isset($bookInfo['industryIdentifiers'])) {
+            foreach ($bookInfo['industryIdentifiers'] as $identifier) {
+                if (isset($identifier['identifier']) && strpos($identifier['identifier'], '978-2-') === 0) {
+                    return true;
+                }
+            }
+        }
+        
+        // Plus permissif : accepter les livres avec des éditeurs français connus
+        if (isset($bookInfo['publisher'])) {
+            $publisher = strtolower($bookInfo['publisher']);
+            if (stripos($publisher, 'glénat') !== false ||
+                stripos($publisher, 'kana') !== false ||
+                stripos($publisher, 'ki-oon') !== false ||
+                stripos($publisher, 'pika') !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 } 

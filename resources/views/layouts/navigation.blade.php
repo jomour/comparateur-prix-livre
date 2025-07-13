@@ -23,7 +23,7 @@
                         <i class="fas fa-history mr-2"></i>
                         {{ __('messages.history') }}
                     </x-nav-link>
-                    <x-nav-link :href="\App\Helpers\LocalizedRoute::url('image.upload.form')" :active="request()->routeIs('fr.estimation.lot.manga') || request()->routeIs('en.manga.lot.estimation')" class="text-white hover:text-yellow-300 transition-colors duration-200">
+                    <x-nav-link :href="\App\Helpers\LocalizedRoute::url('manga.lot.estimation.upload.form')" :active="request()->routeIs('fr.estimation.lot.manga') || request()->routeIs('en.manga.lot.estimation')" class="text-white hover:text-yellow-300 transition-colors duration-200">
                         <i class="fas fa-camera mr-2"></i>
                         {{ __('messages.manga_lot_estimation') }}
                     </x-nav-link>
@@ -98,7 +98,7 @@
             </a>
 
             <!-- Estimation -->
-            <a href="{{ \App\Helpers\LocalizedRoute::url('image.upload.form') }}" 
+            <a href="{{ \App\Helpers\LocalizedRoute::url('manga.lot.estimation.upload.form') }}" 
                class="flex flex-col items-center justify-center flex-1 py-2 {{ request()->routeIs('fr.estimation.lot.manga') || request()->routeIs('en.manga.lot.estimation') ? 'text-yellow-300' : 'text-white' }} transition-colors duration-200">
                 <i class="fas fa-camera text-lg mb-1"></i>
                 <span class="text-xs font-medium">{{ __('messages.manga_lot_estimation') }}</span>

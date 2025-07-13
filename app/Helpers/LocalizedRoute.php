@@ -154,6 +154,10 @@ class LocalizedRoute
                 'fr' => 'fr.historique.show',
                 'en' => 'en.historique.show'
             ],
+            'historique.show.lot' => [
+                'fr' => 'fr.historique.show.lot',
+                'en' => 'en.historique.show.lot'
+            ],
             'price.verify.isbn' => [
                 'fr' => 'fr.verifier.isbn',
                 'en' => 'en.verify.isbn'
@@ -170,50 +174,50 @@ class LocalizedRoute
                 'fr' => 'fr.resultats.fnac',
                 'en' => 'en.results.fnac'
             ],
-            'image.upload.form' => [
-                'fr' => 'fr.estimation.lot.manga',
-                'en' => 'en.manga.lot.estimation'
-            ],
-            'image.upload.form.fr' => [
-                'fr' => 'fr.estimation.lot.manga',
-                'en' => 'en.manga.lot.estimation'
-            ],
-            'image.upload.process' => [
-                'fr' => 'fr.upload.image',
-                'en' => 'en.upload.image'
-            ],
-            'image.upload.ajax' => [
-                'fr' => 'fr.upload.image.ajax',
-                'en' => 'en.upload.image.ajax'
-            ],
-            'image.search.isbn' => [
-                'fr' => 'fr.recherche.isbn.image',
-                'en' => 'en.search.isbn.image'
-            ],
-            'image.search.price' => [
-                'fr' => 'fr.recherche.prix.image',
-                'en' => 'en.search.price.image'
-            ],
-            'image.search.all.prices' => [
-                'fr' => 'fr.recherche.tous.prix',
-                'en' => 'en.search.all.prices'
-            ],
-            'image.update.isbn' => [
-                'fr' => 'fr.mettre.a.jour.isbn',
-                'en' => 'en.update.isbn'
-            ],
-            'image.remove.manga' => [
-                'fr' => 'fr.supprimer.manga',
-                'en' => 'en.remove.manga'
-            ],
-            'image.show' => [
-                'fr' => 'fr.afficher.image',
-                'en' => 'en.show.image'
-            ],
-            'image.search.results' => [
-                'fr' => 'fr.resultats.recherche.image',
-                'en' => 'en.image.search.results'
-            ],
+            'manga.lot.estimation.upload.form' => [
+    'fr' => 'fr.estimation.lot.manga',
+    'en' => 'en.manga.lot.estimation'
+],
+'manga.lot.estimation.upload.form.fr' => [
+    'fr' => 'fr.estimation.lot.manga',
+    'en' => 'en.manga.lot.estimation'
+],
+'manga.lot.estimation.upload.process' => [
+    'fr' => 'fr.upload.image',
+    'en' => 'en.upload.image'
+],
+'manga.lot.estimation.upload.ajax' => [
+    'fr' => 'fr.upload.image.ajax',
+    'en' => 'en.upload.image.ajax'
+],
+'manga.lot.estimation.search.isbn' => [
+    'fr' => 'fr.recherche.isbn.image',
+    'en' => 'en.search.isbn.image'
+],
+'manga.lot.estimation.search.price' => [
+    'fr' => 'fr.recherche.prix.image',
+    'en' => 'en.search.price.image'
+],
+'manga.lot.estimation.search.all.prices' => [
+    'fr' => 'fr.recherche.tous.prix',
+    'en' => 'en.search.all.prices'
+],
+'manga.lot.estimation.update.isbn' => [
+    'fr' => 'fr.mettre.a.jour.isbn',
+    'en' => 'en.update.isbn'
+],
+'manga.lot.estimation.remove.manga' => [
+    'fr' => 'fr.supprimer.manga',
+    'en' => 'en.remove.manga'
+],
+'manga.lot.estimation.show' => [
+    'fr' => 'fr.afficher.image',
+    'en' => 'en.show.image'
+],
+'resultats.recherche.image' => [
+    'fr' => 'fr.resultats.recherche.image',
+    'en' => 'en.image.search.results'
+],
             'profile.edit' => [
                 'fr' => 'fr.mon.profil',
                 'en' => 'en.my.profile'

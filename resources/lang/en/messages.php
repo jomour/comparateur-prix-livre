@@ -145,6 +145,11 @@ return [
     'remove_manga' => 'Remove from list',
     'remove_manga_tooltip' => 'Remove from list',
     'duplicate_isbn_warning' => 'Warning: Duplicate ISBN on several different mangas',
+    'valid_isbn' => 'Valid ISBN',
+    'invalid_isbn' => 'Invalid ISBN',
+    'isbn_not_found' => 'ISBN not found',
+    'search_isbn' => 'Search ISBN',
+    'connection_error_analysis' => 'Connection error during analysis. Please try again.',
     'global_estimation' => 'Global Batch Estimation',
     'no_mangas_detected' => 'No mangas detected',
     'no_mangas_detected_description' => 'The analysis of your image did not allow us to detect mangas. This may be due to several reasons:',
@@ -243,6 +248,8 @@ return [
     'sending_mangas_to_server' => 'Sending',
     'mangas' => 'mangas',
     'unknown_error' => 'Unknown error',
+    'manga_count_simple' => 'Manga Count',
+    'prices_found_for_mangas_count' => 'Prices found for :count mangas',
     'server_communication_error' => 'Server communication error',
     'connection_error_search' => 'Connection error during search',
     'price_found' => 'Price found',
@@ -265,6 +272,7 @@ return [
     'validated' => 'Validated',
     'all_mangas_validated_global_search_available' => 'All mangas are validated! Global search available.',
     'not_found_isbn' => 'Not found',
+    'auto_found_isbn' => 'ISBN found automatically',
     
     // SEO - Manga keywords and estimation
     'manga_price_comparator' => 'Manga price comparator',

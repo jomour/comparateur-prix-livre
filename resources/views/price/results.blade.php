@@ -214,21 +214,21 @@
                                 <div class="mb-6">
                                     <div class="text-center mb-4">
                                         <div class="text-sm text-purple-200 mb-1">Prix estimé en bon état</div>
-                                        <div class="text-4xl font-bold text-yellow-300">{{ $rarity['value_estimation']['bon'] }}</div>
+                                        <div class="text-4xl font-bold text-yellow-300">{{ $rarity['value_estimation']['bon'] ?? 'N/A' }}</div>
                                     </div>
                                     
                                     <div class="grid grid-cols-3 gap-3">
                                         <div class="bg-white/10 rounded-lg p-3 text-center">
                                             <div class="text-xs text-purple-200 mb-1">État Correct</div>
-                                            <div class="text-lg font-bold text-yellow-300">{{ $rarity['value_estimation']['correct'] }}</div>
+                                            <div class="text-lg font-bold text-yellow-300">{{ $rarity['value_estimation']['correct'] ?? 'N/A' }}</div>
                                         </div>
                                         <div class="bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 rounded-lg p-3 text-center border border-yellow-300/30">
                                             <div class="text-xs text-purple-200 mb-1">État Bon</div>
-                                            <div class="text-lg font-bold text-yellow-300">{{ $rarity['value_estimation']['bon'] }}</div>
+                                            <div class="text-lg font-bold text-yellow-300">{{ $rarity['value_estimation']['bon'] ?? 'N/A' }}</div>
                                         </div>
                                         <div class="bg-white/10 rounded-lg p-3 text-center">
                                             <div class="text-xs text-purple-200 mb-1">État Excellent</div>
-                                            <div class="text-lg font-bold text-yellow-300">{{ $rarity['value_estimation']['excellent'] }}</div>
+                                            <div class="text-lg font-bold text-yellow-300">{{ $rarity['value_estimation']['excellent'] ?? 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -247,15 +247,15 @@
                                     <i class="fas fa-gem text-5xl text-amber-200 mr-4"></i>
                                     <div>
                                         <h3 class="text-2xl font-semibold text-white">Analyse de Rareté</h3>
-                                        <p class="text-sm text-amber-200">Score: {{ $rarity['score'] }}/10</p>
+                                        <p class="text-sm text-amber-200">Score: {{ $rarity['score'] ?? 'N/A' }}/10</p>
                                     </div>
                                 </div>
                                 
                                 <!-- Score de rareté -->
                                 <div class="mb-6">
-                                    <div class="text-4xl font-bold text-yellow-300 mb-2">{{ $rarity['score'] }}/10</div>
+                                    <div class="text-4xl font-bold text-yellow-300 mb-2">{{ $rarity['score'] ?? 'N/A' }}/10</div>
                                     <div class="w-full bg-white/20 rounded-full h-3 mb-4">
-                                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-3 rounded-full" style="width: {{ ($rarity['score'] / 10) * 100 }}%"></div>
+                                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-3 rounded-full" style="width: {{ (($rarity['score'] ?? 0) / 10) * 100 }}%"></div>
                                     </div>
                                 </div>
                                 
@@ -263,12 +263,14 @@
                                 <div class="text-left">
                                     <h4 class="text-lg font-semibold text-white mb-3">Facteurs de rareté:</h4>
                                     <div class="space-y-2">
-                                        @foreach($rarity['factors'] as $factor)
-                                            <div class="flex items-center text-sm text-amber-100">
-                                                <i class="fas fa-check-circle text-green-400 mr-2"></i>
-                                                {{ $factor }}
-                                            </div>
-                                        @endforeach
+                                        @if(isset($rarity['factors']) && is_array($rarity['factors']))
+                                                @foreach($rarity['factors'] as $factor)
+                                                <div class="flex items-center text-sm text-amber-100">
+                                                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                                                    {{ $factor }}
+                                                </div>
+                                            @endforeach
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -289,7 +291,7 @@
             @endif
 
             <!-- Popularité -->
-            @if(isset($popularity))
+            @if(isset($popularity) && is_array($popularity))
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8 mb-8">
                     <h2 class="text-3xl font-bold text-white mb-8 text-center">
                         <i class="fas fa-chart-line text-blue-400 mr-3"></i>
@@ -298,32 +300,32 @@
                     
                     <div class="text-center">
                         <div class="bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-2xl p-8 border border-blue-300/30 shadow-2xl">
-                            @if($popularity['success'])
+                            @if(isset($popularity['success']) && $popularity['success'])
                                 <div class="flex items-center justify-center mb-6">
                                     <i class="fas fa-star text-5xl text-blue-200 mr-4"></i>
                                     <div>
                                         <h3 class="text-2xl font-semibold text-white">Popularité AniList</h3>
-                                        <p class="text-sm text-blue-200">Score: {{ $popularity['popularity_score'] }}</p>
+                                        <p class="text-sm text-blue-200">Score: {{ $popularity['popularity_score'] ?? 'N/A' }}</p>
                                     </div>
                                 </div>
                                 
                                 <div class="grid md:grid-cols-4 gap-6 mb-6">
                                     <div class="bg-white/10 rounded-lg p-4">
                                         <div class="text-sm text-blue-200 mb-1">Score de Popularité</div>
-                                        <div class="text-2xl font-bold text-yellow-300">{{ $popularity['popularity_score'] }}</div>
+                                        <div class="text-2xl font-bold text-yellow-300">{{ $popularity['popularity_score'] ?? 'N/A' }}</div>
                                     </div>
                                     <div class="bg-white/10 rounded-lg p-4">
                                         <div class="text-sm text-blue-200 mb-1">Note</div>
-                                        <div class="text-2xl font-bold text-yellow-300">{{ $popularity['rating'] }}/100</div>
+                                        <div class="text-2xl font-bold text-yellow-300">{{ $popularity['rating'] ?? 'N/A' }}/100</div>
                                     </div>
                                     <div class="bg-white/10 rounded-lg p-4">
                                         <div class="text-sm text-blue-200 mb-1">Niveau</div>
-                                        <div class="text-2xl font-bold text-yellow-300">{{ $popularity['popularity_level'] }}</div>
+                                        <div class="text-2xl font-bold text-yellow-300">{{ $popularity['popularity_level'] ?? 'N/A' }}</div>
                                     </div>
                                     <div class="bg-white/10 rounded-lg p-4">
                                         <div class="text-sm text-blue-200 mb-1">Statut</div>
                                         <div class="text-2xl font-bold text-yellow-300">
-                                            @switch($popularity['status'])
+                                            @switch($popularity['status'] ?? 'UNKNOWN')
                                                 @case('FINISHED')
                                                     <span class="text-green-400">Terminé</span>
                                                     @break
@@ -340,7 +342,7 @@
                                                     <span class="text-orange-400">En pause</span>
                                                     @break
                                                 @default
-                                                    <span class="text-gray-400">{{ $popularity['status'] }}</span>
+                                                    <span class="text-gray-400">{{ $popularity['status'] ?? 'Inconnu' }}</span>
                                             @endswitch
                                         </div>
                                     </div>
@@ -355,7 +357,7 @@
                                     <i class="fas fa-exclamation-triangle text-5xl text-yellow-400 mr-4"></i>
                                     <div>
                                         <h3 class="text-2xl font-semibold text-white">Popularité Non Disponible</h3>
-                                        <p class="text-sm text-blue-200">{{ $popularity['error'] }}</p>
+                                        <p class="text-sm text-blue-200">{{ $popularity['error'] ?? 'Erreur lors de la récupération des données de popularité' }}</p>
                                     </div>
                                 </div>
                                 

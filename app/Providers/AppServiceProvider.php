@@ -8,6 +8,7 @@ use App\Services\AmazonPriceParserService;
 use App\Services\CulturaPriceParserService;
 use App\Services\FnacPriceParserService;
 use App\Services\AnilistService;
+use App\Actions\EstimateMangaPrice;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
         
         // Bind AnilistService
         $this->app->bind(AnilistService::class, AnilistService::class);
+        
+        // Bind EstimateMangaPrice Action
+        $this->app->bind(EstimateMangaPrice::class, EstimateMangaPrice::class);
     }
 
     /**

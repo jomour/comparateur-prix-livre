@@ -36,7 +36,7 @@
                     @if(session('image'))
                         <div class="mt-6">
                             <h3 class="text-lg font-semibold mb-4">{{ __('messages.analyzed_image') }} :</h3>
-                            <img src="{{ \App\Helpers\LocalizedRoute::localized('image.show', session('image')) }}" alt="Image uploadée" class="max-w-full h-auto rounded-lg shadow-md">
+                            <img src="{{ \App\Helpers\LocalizedRoute::localized('manga.lot.estimation.show', session('image')) }}" alt="Image uploadée" class="max-w-full h-auto rounded-lg shadow-md">
                         </div>
                     @endif
 
@@ -50,12 +50,48 @@
                                         </div>
                                         <h3 class="text-lg font-semibold text-white">{{ __('messages.detected_mangas') }} :</h3>
                                     </div>
-                                    <button onclick="searchAllPrices()" id="searchAllButton" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-xl flex items-center cursor-not-allowed border border-purple-500/30 shadow-lg transform hover:scale-105 transition-all duration-300" disabled>
-                                        <div class="bg-purple-600/30 rounded-full p-2 mr-3 border border-purple-500/30">
-                                            <i class="fas fa-lock mr-2" id="searchAllIcon"></i>
+                                    <form method="POST" action="{{ route('fr.recherche.tous.prix') }}" id="searchAllForm">
+                                        @csrf
+                                        @foreach(session('mangas') as $index => $manga)
+                                            <input type="hidden" name="mangas[{{ $index }}][title]" value="{{ $manga['title'] }}">
+                                            <input type="hidden" name="mangas[{{ $index }}][isbn]" value="{{ $manga['isbn'] ?? '' }}">
+                                        @endforeach
+                                        <button type="submit" id="searchAllButton" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-xl flex items-center border border-purple-500/30 shadow-lg transform hover:scale-105 transition-all duration-300">
+                                            <div class="bg-purple-600/30 rounded-full p-2 mr-3 border border-purple-500/30">
+                                                <i class="fas fa-search mr-2" id="searchAllIcon"></i>
+                                            </div>
+                                            <span id="searchAllText">{{ __('messages.validate_all_mangas') }}</span>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Loading overlay pour la recherche globale -->
+                                    <div id="searchAllLoadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+                                        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
+                                            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                                            <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.searching_prices') }}</h3>
+                                            <p class="text-gray-600 mb-4">{{ __('messages.retrieving_prices_for_all_mangas') }}</p>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center justify-center">
+                                                    <i class="fab fa-amazon text-orange-500 mr-2"></i>
+                                                    <span class="text-sm text-gray-600">{{ __('messages.amazon') }}</span>
+                                                </div>
+                                                <div class="flex items-center justify-center">
+                                                    <i class="fas fa-store text-blue-500 mr-2"></i>
+                                                    <span class="text-sm text-gray-600">{{ __('messages.cultura') }}</span>
+                                                </div>
+                                                <div class="flex items-center justify-center">
+                                                    <i class="fas fa-shopping-cart text-red-500 mr-2"></i>
+                                                    <span class="text-sm text-gray-600">{{ __('messages.fnac') }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="mt-4">
+                                                <div class="flex items-center justify-center">
+                                                    <i class="fas fa-clock text-purple-500 mr-2"></i>
+                                                    <span class="text-sm text-gray-600">{{ __('messages.estimated_time_30_60') }}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span id="searchAllText">{{ __('messages.validate_all_mangas') }}</span>
-                                    </button>
+                                    </div>
                                 </div>
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full border-2 border-purple-400/40 rounded-lg shadow-2xl">
@@ -73,12 +109,7 @@
                                                         {{ __('messages.isbn') }}
                                                     </div>
                                                 </th>
-                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
-                                                    <div class="flex items-center">
-                                                        <i class="fas fa-euro-sign mr-2 text-purple-200"></i>
-                                                        {{ __('messages.estimated_price') }}
-                                                    </div>
-                                                </th>
+
                                                 <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
                                                     <div class="flex items-center">
                                                         <i class="fas fa-cogs mr-2 text-purple-200"></i>
@@ -97,27 +128,49 @@
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
                                                         <div class="flex items-center">
-                                                            <div class="bg-purple-700/50 px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
-                                                                <span class="font-mono font-semibold">{{ $manga['isbn'] }}</span>
-                                                            </div>
-                                                            @if($manga['isDuplicate'])
-                                                                <span class="inline-block ml-3 text-red-200 cursor-help bg-red-700/60 px-3 py-2 rounded-lg border-2 border-red-400/50 shadow-md font-bold" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
+                                                            @if(!empty($manga['isbn']))
+                                                                <div class="bg-purple-700/50 px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
+                                                                    <span class="font-mono font-semibold">{{ $manga['isbn'] }}</span>
+                                                                    @if(isset($manga['isbn_auto_found']) && $manga['isbn_auto_found'])
+                                                                        <span class="inline-block ml-2 text-blue-300" title="{{ __('messages.auto_found_isbn') }}">
+                                                                            <i class="fas fa-magic"></i>
+                                                                        </span>
+                                                                    @elseif(isset($manga['isbn_valid']) && $manga['isbn_valid'])
+                                                                        <span class="inline-block ml-2 text-green-300" title="{{ __('messages.valid_isbn') }}">
+                                                                            <i class="fas fa-check-circle"></i>
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="inline-block ml-2 text-yellow-300" title="{{ __('messages.invalid_isbn') }}">
+                                                                            <i class="fas fa-exclamation-triangle"></i>
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+                                                                @if(isset($manga['duplicate_isbn']) && $manga['duplicate_isbn'])
+                                                                    <span class="inline-block ml-3 text-red-200 cursor-help bg-red-700/60 px-3 py-2 rounded-lg border-2 border-red-400/50 shadow-md font-bold" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
+                                                                @endif
+                                                            @else
+                                                                <div class="bg-gray-700/50 px-4 py-2 rounded-lg border-2 border-gray-400/50 shadow-md">
+                                                                    <span class="font-mono font-semibold text-gray-300">{{ __('messages.isbn_not_found') }}</span>
+                                                                </div>
                                                             @endif
                                                         </div>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white" id="price-{{ $loop->index }}">
-                                                        <span class="text-purple-200 bg-purple-700/50 px-3 py-2 rounded-lg border-2 border-purple-400/50 shadow-md font-medium">-</span>
-                                                    </td>
+
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
                                                         <div class="flex space-x-3">
-                                                            @if($manga['isbn'] === __('messages.not_found_isbn'))
+                                                            @if(empty($manga['isbn']))
                                                                 <button onclick="searchIsbn('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-blue-400/50 shadow-lg">
                                                                     <i class="fas fa-search mr-1"></i>
-                                                                    {{ __('messages.search') }}
+                                                                    {{ __('messages.search_isbn') }}
+                                                                </button>
+                                                            @elseif(isset($manga['isbn_valid']) && $manga['isbn_valid'])
+                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-green-400/50 shadow-lg" title="{{ __('messages.verify_isbn_tooltip') }}">
+                                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                                    {{ __('messages.verify_isbn') }}
                                                                 </button>
                                                             @else
-                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-blue-400/50 shadow-lg" title="{{ __('messages.verify_isbn_tooltip') }}">
-                                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/50 shadow-lg" title="{{ __('messages.verify_isbn_tooltip') }}">
+                                                                    <i class="fas fa-exclamation-triangle mr-1"></i>
                                                                     {{ __('messages.verify_isbn') }}
                                                                 </button>
                                                             @endif
@@ -236,7 +289,7 @@
                         @endif
                     @endif
 
-                    <form action="{{ \App\Helpers\LocalizedRoute::localized('image.upload.process') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
+                    <form action="{{ \App\Helpers\LocalizedRoute::localized('manga.lot.estimation.upload.process') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
                         @csrf
                         
                         <div>
@@ -543,8 +596,8 @@
                 }
             }
             
-            // Gestion du formulaire avec upload AJAX
-            if (form) {
+            // Gestion du formulaire d'upload d'image avec AJAX
+            if (form && form.id === 'uploadForm') {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
@@ -584,7 +637,7 @@
                     formData.append('_token', '{{ csrf_token() }}');
                     
                     // Upload AJAX
-                    fetch('{{ \App\Helpers\LocalizedRoute::localized("image.upload.ajax") }}', {
+                    fetch('{{ \App\Helpers\LocalizedRoute::localized("manga.lot.estimation.upload.ajax") }}', {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest'
@@ -613,8 +666,8 @@
                     })
                     .catch(error => {
                         console.error('Erreur lors de l\'upload:', error);
-                        resetUploadButton();
-                        showTemporaryMessage('{{ __('messages.connection_error_analysis') }}', 'error');
+                        // resetUploadButton();
+                        // showTemporaryMessage('{{ __('messages.connection_error_analysis') }}', 'error');
                     });
                 });
             }
@@ -636,27 +689,40 @@
         });
 
         function searchIsbn(title) {
-            fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.isbn") }}', {
+            // Extraire le tome du titre si présent
+            let cleanTitle = title;
+            let tome = null;
+            
+            if (title.match(/\\s*-?\\s*tome\\s*(\\d+)/i)) {
+                const matches = title.match(/\\s*-?\\s*tome\\s*(\\d+)/i);
+                cleanTitle = title.replace(/\\s*-?\\s*tome\\s*\\d+/i, '').trim();
+                tome = matches[1];
+            }
+            
+            fetch('{{ \App\Helpers\LocalizedRoute::localized("fr.recherche.isbn.image") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({
-                    title: title
+                    title: cleanTitle,
+                    tome: tome
                 })
             })
             .then(response => response.json())
             .then(data => {
-                if (data.found) {
-                    alert(`{{ __('messages.isbn_found_for') }} "${title}": ${data.isbn}`);
+                if (data.success && data.isbn) {
+                    // Mettre à jour l'ISBN dans le tableau
+                    updateMangaInTable(title, data.isbn);
+                    alert('ISBN trouvé pour "' + title + '": ' + data.isbn);
                 } else {
-                    alert(`{{ __('messages.no_isbn_found_for') }} "${title}"`);
+                    alert('Aucun ISBN trouvé pour "' + title + '"');
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('{{ __('messages.error_searching_isbn') }}');
+                alert('Erreur lors de la recherche d\'ISBN');
             });
         }
 
@@ -730,101 +796,153 @@
             rows.forEach((row, index) => {
                 const titleCell = row.querySelector('td:first-child');
                 if (titleCell && titleCell.textContent.trim() === title) {
-                    const isbnCell = row.querySelector('td:nth-child(2)');
-                    if (isbnCell) {
-                        // Mettre à jour l'ISBN
-                        isbnCell.innerHTML = newIsbn;
-                        
-                        // Trouver la cellule des boutons
-                        const buttonCell = row.querySelector('td:nth-child(4)');
-                        if (buttonCell) {
-                            // Vider complètement la cellule des boutons
-                            buttonCell.innerHTML = '';
-                            
-                            // Échapper les caractères spéciaux
-                            const escapedTitle = title.replace(/'/g, "\\'");
-                            const escapedIsbn = newIsbn.replace(/'/g, "\\'");
-                            
-                            // Créer le bon bouton selon l'ISBN
-                            if (newIsbn === '{{ __('messages.not_found_isbn') }}') {
-                                // Bouton "Rechercher"
-                                const searchButton = document.createElement('button');
-                                searchButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
-                                searchButton.innerHTML = '{{ __('messages.search') }}';
-                                searchButton.setAttribute('data-row-index', index);
-                                searchButton.addEventListener('click', function() {
-                                    searchIsbn(title);
-                                });
-                                buttonCell.appendChild(searchButton);
-                            } else {
-                                // Bouton "Vérifier l'ISBN"
-                                const verifyButton = document.createElement('button');
-                                verifyButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
-                                verifyButton.title = '{{ __('messages.verify_isbn_tooltip') }}';
-                                verifyButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>{{ __('messages.verify_isbn') }}';
-                                verifyButton.setAttribute('data-row-index', index);
-                                verifyButton.addEventListener('click', function() {
-                                    verifyMangaIsbn(newIsbn, title);
-                                });
-                                buttonCell.appendChild(verifyButton);
+                    // Appeler l'API pour mettre à jour l'ISBN dans la session
+                    fetch('{{ \App\Helpers\LocalizedRoute::localized("manga.lot.estimation.update.isbn") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            index: index,
+                            isbn: newIsbn
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const isbnCell = row.querySelector('td:nth-child(2)');
+                            if (isbnCell) {
+                                // Mettre à jour l'ISBN
+                                isbnCell.innerHTML = newIsbn;
+                                
+                                // Trouver la cellule des boutons
+                                const buttonCell = row.querySelector('td:nth-child(4)');
+                                if (buttonCell) {
+                                    // Vider complètement la cellule des boutons
+                                    buttonCell.innerHTML = '';
+                                    
+                                    // Échapper les caractères spéciaux
+                                    const escapedTitle = title.replace(/'/g, "\\'");
+                                    const escapedIsbn = newIsbn.replace(/'/g, "\\'");
+                                    
+                                    // Créer le bon bouton selon l'ISBN
+                                    if (newIsbn === '{{ __('messages.not_found_isbn') }}') {
+                                        // Bouton "Rechercher"
+                                        const searchButton = document.createElement('button');
+                                        searchButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
+                                        searchButton.innerHTML = '{{ __('messages.search') }}';
+                                        searchButton.setAttribute('data-row-index', index);
+                                        searchButton.addEventListener('click', function() {
+                                            searchIsbn(title);
+                                        });
+                                        buttonCell.appendChild(searchButton);
+                                    } else {
+                                        // Bouton "Vérifier l'ISBN"
+                                        const verifyButton = document.createElement('button');
+                                        verifyButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2';
+                                        verifyButton.title = '{{ __('messages.verify_isbn_tooltip') }}';
+                                        verifyButton.innerHTML = '<i class="fas fa-check-circle mr-1"></i>{{ __('messages.verify_isbn') }}';
+                                        verifyButton.setAttribute('data-row-index', index);
+                                        verifyButton.addEventListener('click', function() {
+                                            verifyMangaIsbn(newIsbn, title);
+                                        });
+                                        buttonCell.appendChild(verifyButton);
+                                    }
+                                    
+                                    // Ajouter le bouton d'édition
+                                    const editButton = document.createElement('button');
+                                    editButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2';
+                                    editButton.title = '{{ __('messages.edit_isbn_tooltip') }}';
+                                    editButton.innerHTML = '✏️';
+                                    editButton.setAttribute('data-row-index', index);
+                                    editButton.addEventListener('click', function() {
+                                        editIsbn(title, newIsbn);
+                                    });
+                                    buttonCell.appendChild(editButton);
+                                    
+                                    // Ajouter le bouton de suppression
+                                    const deleteButton = document.createElement('button');
+                                    deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
+                                    deleteButton.title = '{{ __('messages.remove_manga_tooltip') }}';
+                                    deleteButton.innerHTML = '🗑️';
+                                    deleteButton.setAttribute('data-row-index', index);
+                                    deleteButton.addEventListener('click', function() {
+                                        removeManga(title);
+                                    });
+                                    buttonCell.appendChild(deleteButton);
+                                }
+                                
+                                // Vérifier s'il y a des doublons
+                                checkForDuplicates();
+                                
+                                // Mettre à jour le formulaire de recherche globale
+                                updateSearchAllForm();
+                                
+                                // Afficher un message de succès temporaire
+                                showTemporaryMessage('{{ __('messages.isbn_updated_successfully') }}', 'success');
                             }
-                            
-                            // Ajouter le bouton d'édition
-                            const editButton = document.createElement('button');
-                            editButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2';
-                            editButton.title = '{{ __('messages.edit_isbn_tooltip') }}';
-                            editButton.innerHTML = '✏️';
-                            editButton.setAttribute('data-row-index', index);
-                            editButton.addEventListener('click', function() {
-                                editIsbn(title, newIsbn);
-                            });
-                            buttonCell.appendChild(editButton);
-                            
-                            // Ajouter le bouton de suppression
-                            const deleteButton = document.createElement('button');
-                            deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
-                            deleteButton.title = '{{ __('messages.remove_manga_tooltip') }}';
-                            deleteButton.innerHTML = '🗑️';
-                            deleteButton.setAttribute('data-row-index', index);
-                            deleteButton.addEventListener('click', function() {
-                                removeManga(title);
-                            });
-                            buttonCell.appendChild(deleteButton);
+                        } else {
+                            showTemporaryMessage('Erreur lors de la mise à jour: ' + data.message, 'error');
                         }
-                        
-                        // Vérifier s'il y a des doublons
-                        checkForDuplicates();
-                    }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la mise à jour:', error);
+                        showTemporaryMessage('Erreur lors de la mise à jour de l\'ISBN', 'error');
+                    });
+                    
                     updated = true;
                 }
             });
-            
-            if (updated) {
-                // Afficher un message de succès temporaire
-                showTemporaryMessage('{{ __('messages.isbn_updated_successfully') }}', 'success');
-            }
         }
 
         function removeMangaFromTable(title) {
             // Trouver et supprimer la ligne du tableau
             const rows = document.querySelectorAll('tbody tr');
             
-            rows.forEach(row => {
+            rows.forEach((row, index) => {
                 const titleCell = row.querySelector('td:first-child');
                 if (titleCell && titleCell.textContent.trim() === title) {
-                    row.remove();
+                    // Appeler l'API pour supprimer le manga de la session
+                    fetch('{{ \App\Helpers\LocalizedRoute::localized("manga.lot.estimation.remove.manga") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            index: index
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Supprimer la ligne du tableau
+                            row.remove();
+                            
+                            // Mettre à jour tous les data-row-index après suppression
+                            updateRowIndices();
+                            
+                            // Vérifier s'il y a des doublons après suppression
+                            checkForDuplicates();
+                            
+                            // Mettre à jour le compteur du bouton de recherche globale
+                            checkAllMangasValidated();
+                            
+                            // Mettre à jour le formulaire de recherche globale
+                            updateSearchAllForm();
+                            
+                            // Afficher un message de succès temporaire
+                            showTemporaryMessage('{{ __('messages.manga_removed_from_list') }}', 'success');
+                        } else {
+                            showTemporaryMessage('Erreur lors de la suppression: ' + data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la suppression:', error);
+                        showTemporaryMessage('Erreur lors de la suppression du manga', 'error');
+                    });
                     
-                    // Mettre à jour tous les data-row-index après suppression
-                    updateRowIndices();
-                    
-                    // Vérifier s'il y a des doublons après suppression
-                    checkForDuplicates();
-                    
-                    // Mettre à jour le compteur du bouton de recherche globale
-                    checkAllMangasValidated();
-                    
-                    // Afficher un message de succès temporaire
-                    showTemporaryMessage('{{ __('messages.manga_removed_from_list') }}', 'success');
                     return;
                 }
             });
@@ -841,6 +959,61 @@
                     button.setAttribute('data-row-index', newIndex);
                 });
             });
+        }
+
+        function updateSearchAllForm() {
+            const form = document.getElementById('searchAllForm');
+            if (!form) return;
+            
+            // Supprimer tous les champs cachés existants
+            const existingInputs = form.querySelectorAll('input[name^="mangas["]');
+            existingInputs.forEach(input => input.remove());
+            
+            // Récupérer les mangas restants du tableau
+            const rows = document.querySelectorAll('tbody tr');
+            const remainingMangas = [];
+            
+            rows.forEach((row, index) => {
+                const titleCell = row.querySelector('td:first-child');
+                const isbnCell = row.querySelector('td:nth-child(2)');
+                
+                if (titleCell && isbnCell) {
+                    const title = titleCell.textContent.trim();
+                    let isbn = isbnCell.textContent.trim();
+                    
+                    // Nettoyer l'ISBN (enlever les indicateurs visuels)
+                    isbn = isbn.replace(/⚠️/g, '').replace(/[🔍✅❌]/g, '').trim();
+                    
+                    // Si l'ISBN est "Non trouvé" ou vide, le laisser vide
+                    if (isbn === '{{ __('messages.isbn_not_found') }}' || isbn === '{{ __('messages.not_found') }}') {
+                        isbn = '';
+                    }
+                    
+                    remainingMangas.push({
+                        title: title,
+                        isbn: isbn
+                    });
+                }
+            });
+            
+            // Ajouter les nouveaux champs cachés pour les mangas restants
+            remainingMangas.forEach((manga, index) => {
+                // Champ caché pour le titre
+                const titleInput = document.createElement('input');
+                titleInput.type = 'hidden';
+                titleInput.name = `mangas[${index}][title]`;
+                titleInput.value = manga.title;
+                form.appendChild(titleInput);
+                
+                // Champ caché pour l'ISBN
+                const isbnInput = document.createElement('input');
+                isbnInput.type = 'hidden';
+                isbnInput.name = `mangas[${index}][isbn]`;
+                isbnInput.value = manga.isbn;
+                form.appendChild(isbnInput);
+            });
+            
+            console.log(`Formulaire mis à jour avec ${remainingMangas.length} mangas`);
         }
 
         function checkForDuplicates() {
@@ -893,103 +1066,7 @@
             }, 3000);
         }
 
-        async function searchAllPrices() {
-            // Vérification de sécurité : s'assurer que tous les mangas sont validés
-            const rows = document.querySelectorAll('tbody tr');
-            let totalMangas = 0;
-            let validatedMangas = 0;
-            
-            rows.forEach(row => {
-                const isbnCell = row.querySelector('td:nth-child(2)');
-                const isbn = isbnCell.textContent.trim().replace(/⚠️/g, '').trim();
-                
-                if (isbn && isbn !== 'Non trouvé' && isbn !== 'Erreur de recherche') {
-                    totalMangas++;
-                    if (row.classList.contains('bg-green-50')) {
-                        validatedMangas++;
-                    }
-                }
-            });
-            
-            if (validatedMangas !== totalMangas) {
-                showTemporaryMessage('{{ __('messages.all_mangas_must_be_validated') }}', 'error');
-                return;
-            }
-            
-            const searchAllButton = document.getElementById('searchAllButton');
-            const searchAllIcon = document.getElementById('searchAllIcon');
-            const searchAllText = document.getElementById('searchAllText');
-            const searchAllOverlay = document.getElementById('searchAllOverlay');
-            const searchProgress = document.getElementById('searchProgress');
-            
-            // Désactiver le bouton et afficher la popup
-            searchAllButton.disabled = true;
-            searchAllButton.classList.add('opacity-75', 'cursor-not-allowed');
-            searchAllIcon.className = 'fas fa-spinner fa-spin mr-2';
-            searchAllText.textContent = '{{ __('messages.search_in_progress') }}';
-            searchAllOverlay.style.display = 'flex';
-            
-            // Récupérer tous les mangas validés
-            const validMangas = [];
-            
-            rows.forEach((row, index) => {
-                const isbnCell = row.querySelector('td:nth-child(2)');
-                const isbn = isbnCell.textContent.trim().replace(/⚠️/g, '').trim();
-                
-                if (isbn && isbn !== '{{ __('messages.not_found_isbn') }}' && isbn !== '{{ __('messages.search_error') }}' && row.classList.contains('bg-green-50')) {
-                    validMangas.push({
-                        title: row.querySelector('td:first-child').textContent.trim(),
-                        isbn: isbn
-                    });
-                }
-            });
-            
-            if (validMangas.length === 0) {
-                showTemporaryMessage('{{ __('messages.no_validated_manga_found') }}', 'error');
-                resetSearchButton();
-                searchAllOverlay.style.display = 'none';
-                return;
-            }
-            
-            // Mettre à jour le progrès
-            searchProgress.textContent = `{{ __('messages.sending_mangas_to_server') }} ${validMangas.length} {{ __('messages.mangas') }}...`;
-            
-            try {
-                // Envoyer les données au backend
-                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.all.prices") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        mangas: validMangas
-                    })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        // Rediriger vers la page de résultats
-                        window.location.href = data.redirect_url;
-                    } else {
-                        showTemporaryMessage('{{ __('messages.search_error') }}: ' + (data.error || '{{ __('messages.unknown_error') }}'), 'error');
-                        resetSearchButton();
-                        searchAllOverlay.style.display = 'none';
-                    }
-                } else {
-                    showTemporaryMessage('{{ __('messages.server_communication_error') }}', 'error');
-                    resetSearchButton();
-                    searchAllOverlay.style.display = 'none';
-                }
-                
-            } catch (error) {
-                console.error('Erreur lors de la recherche:', error);
-                showTemporaryMessage('{{ __('messages.connection_error_search') }}', 'error');
-                resetSearchButton();
-                searchAllOverlay.style.display = 'none';
-            }
-        }
+
 
         function showSearchResults(results, totalPrice, foundPrices) {
             const modal = document.getElementById('searchResultsModal');
@@ -1064,7 +1141,7 @@
 
         async function searchPriceForIsbn(isbn) {
             try {
-                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.price") }}', {
+                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("manga.lot.estimation.search.price") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1187,7 +1264,7 @@
 
         async function loadMangaPrices(isbn) {
             try {
-                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("image.search.price") }}', {
+                const response = await fetch('{{ \App\Helpers\LocalizedRoute::localized("manga.lot.estimation.search.price") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1429,6 +1506,38 @@
             setTimeout(() => {
                 checkAllMangasValidated();
             }, 100);
+            
+            // Gestion du formulaire de recherche globale
+            const searchAllForm = document.getElementById('searchAllForm');
+            const searchAllLoadingOverlay = document.getElementById('searchAllLoadingOverlay');
+            
+            if (searchAllForm) {
+                searchAllForm.addEventListener('submit', function(e) {
+                    // Afficher le loading overlay
+                    if (searchAllLoadingOverlay) {
+                        searchAllLoadingOverlay.style.display = 'flex';
+                    }
+                    
+                    // Désactiver le bouton pour éviter les soumissions multiples
+                    const searchAllButton = document.getElementById('searchAllButton');
+                    if (searchAllButton) {
+                        searchAllButton.disabled = true;
+                        searchAllButton.classList.add('opacity-75', 'cursor-not-allowed');
+                    }
+                    
+                    // Changer l'icône et le texte du bouton
+                    const searchAllIcon = document.getElementById('searchAllIcon');
+                    const searchAllText = document.getElementById('searchAllText');
+                    
+                    if (searchAllIcon) {
+                        searchAllIcon.className = 'fas fa-spinner fa-spin mr-2';
+                    }
+                    
+                    if (searchAllText) {
+                        searchAllText.textContent = '{{ __('messages.searching_prices') }}';
+                    }
+                });
+            }
         });
     </script>
 </x-app-layout> 

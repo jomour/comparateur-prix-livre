@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\HistoriqueController;
-use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MangaLotEstimationController;
 use App\Http\Controllers\SitemapController;
 use App\Helpers\LocalizedRoute;
 
@@ -61,21 +61,23 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
     Route::get('/historique-prix', [HistoriqueController::class, 'index'])->name('fr.historique.prix')->middleware('auth');
     Route::get('/mes-recherches', [HistoriqueController::class, 'index'])->name('fr.mes.recherches')->middleware('auth');
     Route::get('/historique-recherches/{id}', [HistoriqueController::class, 'show'])->name('fr.historique.show')->middleware('auth');
+    Route::get('/historique-lots/{lotId}', [HistoriqueController::class, 'showLot'])->name('fr.historique.show.lot')->middleware('auth');
     
 
     
     // Recherche par image
-    Route::get('/estimation-lot-manga', [ImageController::class, 'index'])->name('fr.estimation.lot.manga')->middleware('auth');
-    Route::get('/recherche-photo', [ImageController::class, 'index'])->name('fr.recherche.photo')->middleware('auth');
-    Route::post('/upload-image', [ImageController::class, 'upload'])->name('fr.upload.image')->middleware('auth');
-    Route::post('/upload-image-ajax', [ImageController::class, 'uploadAjax'])->name('fr.upload.image.ajax')->middleware('auth');
-    Route::post('/recherche-isbn-image', [ImageController::class, 'searchIsbnByTitle'])->name('fr.recherche.isbn.image')->middleware('auth');
-    Route::post('/recherche-prix-image', [ImageController::class, 'searchPrice'])->name('fr.recherche.prix.image')->middleware('auth');
-    Route::post('/recherche-tous-prix', [ImageController::class, 'searchAllPrices'])->name('fr.recherche.tous.prix')->middleware('auth');
-    Route::post('/mettre-a-jour-isbn', [ImageController::class, 'updateMangaIsbn'])->name('fr.mettre.a.jour.isbn')->middleware('auth');
-    Route::post('/supprimer-manga', [ImageController::class, 'removeManga'])->name('fr.supprimer.manga')->middleware('auth');
-    Route::get('/afficher-image/{filename}', [ImageController::class, 'show'])->name('fr.afficher.image');
-    Route::get('/resultats-recherche-image', [ImageController::class, 'showSearchResults'])->name('fr.resultats.recherche.image')->middleware('auth');
+    Route::get('/estimation-lot-manga', [MangaLotEstimationController::class, 'index'])->name('fr.estimation.lot.manga')->middleware('auth');
+Route::get('/recherche-photo', [MangaLotEstimationController::class, 'index'])->name('fr.recherche.photo')->middleware('auth');
+Route::post('/upload-image', [MangaLotEstimationController::class, 'upload'])->name('fr.upload.image')->middleware('auth');
+Route::post('/upload-image-ajax', [MangaLotEstimationController::class, 'uploadAjax'])->name('fr.upload.image.ajax')->middleware('auth');
+Route::post('/recherche-isbn-image', [MangaLotEstimationController::class, 'searchIsbnByTitle'])->name('fr.recherche.isbn.image')->middleware('auth');
+Route::post('/recherche-prix-image', [MangaLotEstimationController::class, 'searchPrice'])->name('fr.recherche.prix.image')->middleware('auth');
+Route::post('/recherche-tous-prix', [MangaLotEstimationController::class, 'searchAllPrices'])->name('fr.recherche.tous.prix')->middleware('auth');
+Route::post('/mettre-a-jour-isbn', [MangaLotEstimationController::class, 'updateMangaIsbn'])->name('fr.mettre.a.jour.isbn')->middleware('auth');
+Route::post('/supprimer-manga', [MangaLotEstimationController::class, 'removeManga'])->name('fr.supprimer.manga')->middleware('auth');
+Route::get('/afficher-image/{filename}', [MangaLotEstimationController::class, 'show'])->name('fr.afficher.image');
+Route::get('/resultats-recherche-image', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.recherche.image')->middleware('auth');
+Route::get('/resultats-estimation-lot', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.estimation.lot')->middleware('auth');
     
     // Profil utilisateur
     Route::middleware('auth')->group(function () {
@@ -129,21 +131,23 @@ Route::prefix('en')->middleware('setlocale')->group(function () {
     Route::get('/price-history', [HistoriqueController::class, 'index'])->name('en.price.history')->middleware('auth');
     Route::get('/my-searches', [HistoriqueController::class, 'index'])->name('en.my.searches')->middleware('auth');
     Route::get('/search-history/{id}', [HistoriqueController::class, 'show'])->name('en.historique.show')->middleware('auth');
+    Route::get('/search-lots/{lotId}', [HistoriqueController::class, 'showLot'])->name('en.historique.show.lot')->middleware('auth');
     
 
     
     // Image search
-    Route::get('/manga-lot-estimation', [ImageController::class, 'index'])->name('en.manga.lot.estimation')->middleware('auth');
-    Route::get('/photo-search', [ImageController::class, 'index'])->name('en.photo.search')->middleware('auth');
-    Route::post('/upload-image', [ImageController::class, 'upload'])->name('en.upload.image')->middleware('auth');
-    Route::post('/upload-image-ajax', [ImageController::class, 'uploadAjax'])->name('en.upload.image.ajax')->middleware('auth');
-    Route::post('/search-isbn-image', [ImageController::class, 'searchIsbnByTitle'])->name('en.search.isbn.image')->middleware('auth');
-    Route::post('/search-price-image', [ImageController::class, 'searchPrice'])->name('en.search.price.image')->middleware('auth');
-    Route::post('/search-all-prices', [ImageController::class, 'searchAllPrices'])->name('en.search.all.prices')->middleware('auth');
-    Route::post('/update-isbn', [ImageController::class, 'updateMangaIsbn'])->name('en.update.isbn')->middleware('auth');
-    Route::post('/remove-manga', [ImageController::class, 'removeManga'])->name('en.remove.manga')->middleware('auth');
-    Route::get('/show-image/{filename}', [ImageController::class, 'show'])->name('en.show.image');
-    Route::get('/image-search-results', [ImageController::class, 'showSearchResults'])->name('en.image.search.results')->middleware('auth');
+    Route::get('/manga-lot-estimation', [MangaLotEstimationController::class, 'index'])->name('en.manga.lot.estimation')->middleware('auth');
+Route::get('/photo-search', [MangaLotEstimationController::class, 'index'])->name('en.photo.search')->middleware('auth');
+Route::post('/upload-image', [MangaLotEstimationController::class, 'upload'])->name('en.upload.image')->middleware('auth');
+Route::post('/upload-image-ajax', [MangaLotEstimationController::class, 'uploadAjax'])->name('en.upload.image.ajax')->middleware('auth');
+Route::post('/search-isbn-image', [MangaLotEstimationController::class, 'searchIsbnByTitle'])->name('en.search.isbn.image')->middleware('auth');
+Route::post('/search-price-image', [MangaLotEstimationController::class, 'searchPrice'])->name('en.search.price.image')->middleware('auth');
+Route::post('/search-all-prices', [MangaLotEstimationController::class, 'searchAllPrices'])->name('en.search.all.prices')->middleware('auth');
+Route::post('/update-isbn', [MangaLotEstimationController::class, 'updateMangaIsbn'])->name('en.update.isbn')->middleware('auth');
+Route::post('/remove-manga', [MangaLotEstimationController::class, 'removeManga'])->name('en.remove.manga')->middleware('auth');
+Route::get('/show-image/{filename}', [MangaLotEstimationController::class, 'show'])->name('en.show.image');
+Route::get('/image-search-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.image.search.results')->middleware('auth');
+Route::get('/lot-estimation-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.lot.estimation.results')->middleware('auth');
     
     // User profile
     Route::middleware('auth')->group(function () {

@@ -13,7 +13,7 @@ L'erreur `Call to undefined method App\Helpers\LocalizedRoute::localizedWithLang
 
 ### 2. Correction des Vues
 - **`price/search.blade.php`** : `localizedWithLanguageSpecificRoute()` → `url()`
-- **`image/search-results.blade.php`** : Mise à jour des liens
+- **`manga-lot-estimation/search-results.blade.php`** : Mise à jour des liens
 - **`layouts/navigation.blade.php`** : Correction des liens de navigation
 - **`price/results.blade.php`** : Mise à jour des liens
 - **`price/historique.blade.php`** : Correction des liens d'historique

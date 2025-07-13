@@ -32,6 +32,7 @@ class HistoriqueSearch extends Model
         'anilist_popularite',
         'anilist_note',
         'anilist_statut',
+        'lot',
     ];
 
     /**
@@ -54,6 +55,14 @@ class HistoriqueSearch extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relation avec le lot.
+     */
+    public function lot(): BelongsTo
+    {
+        return $this->belongsTo(HistoriqueSearchLot::class, 'lot');
     }
 
     /**
