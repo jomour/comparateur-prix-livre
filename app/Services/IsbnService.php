@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use App\Services\HttpRequestService;
 
 class IsbnService
 {
@@ -37,6 +38,14 @@ class IsbnService
             // En cas d'erreur, retourner un titre par défaut
             return "Livre ISBN: {$isbn}";
         }
+    }
+
+    /**
+     * Nettoie l'ISBN en supprimant les espaces, tirets et underscores
+     */
+    public function cleanIsbn($isbn)
+    {
+        return preg_replace('/[\s\-_]/', '', $isbn);
     }
 
     /**
@@ -87,27 +96,28 @@ class IsbnService
 
             if (isset($data["ISBN:{$isbn}"])) {
                 $book = $data["ISBN:{$isbn}"];
-                return [
+                $bookInfo = [
                     'title' => $book['title'] ?? 'Titre inconnu',
                     'author' => isset($book['authors'][0]['name']) ? $book['authors'][0]['name'] : null,
                     'publisher' => isset($book['publishers'][0]['name']) ? $book['publishers'][0]['name'] : null,
                     'published_date' => $book['publish_date'] ?? null
                 ];
+                
+                // Si des données sont manquantes, essayer Google Books
+                if ($this->hasNullValues($bookInfo)) {
+                    $googleInfo = $this->getGoogleBooksInfo($isbn);
+                    if ($googleInfo) {
+                        $bookInfo = array_merge($bookInfo, $googleInfo);
+                    }
+                }
+                
+                return $bookInfo;
             }
 
             // Fallback: Google Books API
-            $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:{$isbn}";
-            $response = Http::timeout(10)->get($url);
-            $data = $response->json();
-
-            if (isset($data['items'][0]['volumeInfo'])) {
-                $book = $data['items'][0]['volumeInfo'];
-                return [
-                    'title' => $book['title'] ?? 'Titre inconnu',
-                    'author' => isset($book['authors'][0]) ? $book['authors'][0] : null,
-                    'publisher' => $book['publisher'] ?? null,
-                    'published_date' => $book['publishedDate'] ?? null
-                ];
+            $googleInfo = $this->getGoogleBooksInfo($isbn);
+            if ($googleInfo) {
+                return $googleInfo;
             }
 
             return null;
@@ -115,6 +125,82 @@ class IsbnService
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    /**
+     * Récupère les informations détaillées via Google Books API
+     */
+    private function getGoogleBooksInfo($isbn)
+    {
+        try {
+            // Recherche initiale
+            $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:{$isbn}";
+            $response = Http::timeout(10)->get($url);
+            $data = $response->json();
+
+            if (!isset($data['items'][0])) {
+                return null;
+            }
+
+            $item = $data['items'][0];
+            $volumeInfo = $item['volumeInfo'];
+            
+            $bookInfo = [
+                'title' => $volumeInfo['title'] ?? 'Titre inconnu',
+                'author' => isset($volumeInfo['authors'][0]) ? $volumeInfo['authors'][0] : null,
+                'publisher' => $volumeInfo['publisher'] ?? null,
+                'published_date' => $volumeInfo['publishedDate'] ?? null,
+                'page_count' => $volumeInfo['pageCount'] ?? null,
+                'language' => $volumeInfo['language'] ?? null
+            ];
+
+            // Si des données sont manquantes, essayer avec le selfLink pour plus de détails
+            if ($this->hasNullValues($bookInfo) && isset($item['selfLink'])) {
+                $detailedResponse = Http::timeout(10)->get($item['selfLink']);
+                $detailedData = $detailedResponse->json();
+                
+                if (isset($detailedData['volumeInfo'])) {
+                    $detailedVolumeInfo = $detailedData['volumeInfo'];
+                    
+                    // Compléter les données manquantes
+                    if (!$bookInfo['author'] && isset($detailedVolumeInfo['authors'][0])) {
+                        $bookInfo['author'] = $detailedVolumeInfo['authors'][0];
+                    }
+                    if (!$bookInfo['publisher'] && isset($detailedVolumeInfo['publisher'])) {
+                        $bookInfo['publisher'] = $detailedVolumeInfo['publisher'];
+                    }
+                    if (!$bookInfo['published_date'] && isset($detailedVolumeInfo['publishedDate'])) {
+                        $bookInfo['published_date'] = $detailedVolumeInfo['publishedDate'];
+                    }
+                    if (!$bookInfo['page_count'] && isset($detailedVolumeInfo['pageCount'])) {
+                        $bookInfo['page_count'] = $detailedVolumeInfo['pageCount'];
+                    }
+                    if (!$bookInfo['language'] && isset($detailedVolumeInfo['language'])) {
+                        $bookInfo['language'] = $detailedVolumeInfo['language'];
+                    }
+                }
+            }
+
+
+
+            return $bookInfo;
+
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Vérifie si un tableau contient des valeurs null
+     */
+    private function hasNullValues($array)
+    {
+        foreach ($array as $value) {
+            if ($value === null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

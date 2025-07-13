@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Services\IsbnService;
 use App\Services\SeoService;
+use App\Services\AnilistService;
 use App\Models\HistoriqueSearch;
 use OpenAI\Laravel\Facades\OpenAI;
 use App\Services\PriceParserInterface;
@@ -16,14 +18,17 @@ class PriceController extends Controller
     protected $culturaPriceParser;
     protected $fnacPriceParser;
     protected $isbnService;
+    protected $anilistService;
 
     public function __construct(
-        IsbnService $isbnService
+        IsbnService $isbnService,
+        AnilistService $anilistService
     ) {
         $this->amazonPriceParser = app(PriceParserInterface::class . '.amazon');
         $this->culturaPriceParser = app(PriceParserInterface::class . '.cultura');
         $this->fnacPriceParser = app(PriceParserInterface::class . '.fnac');
         $this->isbnService = $isbnService;
+        $this->anilistService = $anilistService;
     }
 
     public function index(Request $request)
@@ -75,19 +80,17 @@ class PriceController extends Controller
         return $keywordMap[$lastSegment] ?? null;
     }
 
-
-
     public function search(Request $request)
     {
         $request->validate([
             'isbn' => 'required|string|max:20',
         ]);
 
-        $isbn = $request->input('isbn');
+        $isbn = $this->isbnService->cleanIsbn($request->input('isbn'));
         
         // Créer l'enregistrement de recherche
         $search = new HistoriqueSearch();
-        $search->user_id = auth()->id();
+        $search->user_id = Auth::check() ? Auth::id() : null;
         $search->isbn = $isbn;
         $search->save();
 
@@ -122,8 +125,6 @@ class PriceController extends Controller
                 ]);
             }
         }
-        $search->estimation_occasion = $searchData['occasion_price'];
-        $search->save();
 
         // Métadonnées SEO pour les résultats
         $meta = SeoService::getResultsMeta($isbn, $title, $searchData['prices']);
@@ -134,13 +135,23 @@ class PriceController extends Controller
             'prices' => $searchData['prices']
         ]);
 
+        // Appel à AniList pour récupérer la popularité et les notes
+        $popularity = $this->anilistService->getMangaPopularity($title, $isbn);
+
+        // Appel à OpenAI pour définir la rareté du manga (avec les données de popularité)
+        $rarity = $this->getMangaRarityFromOpenAI($title, $isbn, $searchData['prices'], $popularity);
+        
+        // Sauvegarder les données d'estimation et d'analyse
+        $this->saveEstimationData($search, $rarity, $popularity, $searchData['occasion_price']);
+        
         return view('price.results', [
             'isbn' => $isbn,
             'title' => $title,
             'results' => $searchData['results'],
             'prices' => $searchData['prices'],
             'historique_id' => $search->getKey(),
-            'occasion_price' => $searchData['occasion_price'],
+            'rarity' => $rarity,
+            'popularity' => $popularity,
             'meta' => $meta,
             'seoType' => $seoType,
             'structuredData' => $structuredData
@@ -172,11 +183,56 @@ class PriceController extends Controller
             'occasion_price' => $occasionPrice
         ];
     }
-    
 
+    private function saveEstimationData($search, $rarity, $popularity, $occasionPrice)
+    {
+        // Extraire les valeurs numériques des estimations d'occasion
+        $correctPrice = $this->extractPriceFromString($rarity['value_estimation']['correct']);
+        $bonPrice = $this->extractPriceFromString($rarity['value_estimation']['bon']);
+        $excellentPrice = $this->extractPriceFromString($rarity['value_estimation']['excellent']);
+        
+        // Mettre à jour les données d'estimation
+        $search->estimation_occasion_correct = $correctPrice;
+        $search->estimation_occasion_bon = $bonPrice;
+        $search->estimation_occasion_excellent = $excellentPrice;
+        $search->rarete = $rarity['explanation'];
+        $search->score_rarete = $rarity['score'];
+        
+        // Sauvegarder les données AniList
+        if ($popularity['success']) {
+            $search->anilist_popularite = $popularity['popularity_score'];
+            $search->anilist_note = $popularity['rating'];
+            $search->anilist_statut = $popularity['status'];
+        }
+        
+        $search->save();
+        
+        // Sauvegarder les facteurs de rareté
+        if (isset($rarity['factors']) && is_array($rarity['factors'])) {
+            foreach ($rarity['factors'] as $factor) {
+                \App\Models\HistoriqueSearchRarityFactor::create([
+                    'historique_search_id' => $search->id,
+                    'factor' => $factor
+                ]);
+            }
+        }
+    }
 
-
-
+    private function extractPriceFromString($priceString)
+    {
+        if (is_numeric($priceString)) {
+            return (float)$priceString;
+        }
+        
+        // Extraire le prix d'une chaîne comme "12.50€" ou "Non disponible"
+        $price = preg_replace('/[^0-9.]/', '', $priceString);
+        
+        if (is_numeric($price) && $price > 0) {
+            return (float)$price;
+        }
+        
+        return null;
+    }
 
     private function getOccasionPriceEstimation($isbn, $prices = [])
     {
@@ -256,6 +312,137 @@ class PriceController extends Controller
         }
     }
 
+    private function getMangaRarityFromOpenAI($title, $isbn, $prices = [], $popularity = null)
+    {
+        try {
+            // Récupérer les informations complètes du livre
+            $bookInfo = $this->isbnService->getBookInfo($isbn);
+
+            // Préparer les données de prix pour l'analyse
+            $priceData = [];
+            $occasionData = [];
+            
+            foreach (['amazon', 'cultura', 'fnac'] as $provider) {
+                if (isset($prices[$provider])) {
+                    $data = $prices[$provider];
+                    if (is_array($data)) {
+                        // Vérifier si c'est un prix d'occasion (contient des données structurées)
+                        if (isset($data['formatted_min']) && !empty($data['formatted_min'])) {
+                            $occasionData[] = ucfirst($provider) . " occasion: " . 
+                                "Min: " . ($data['formatted_min'] ?? 'N/A') . 
+                                ", Max: " . ($data['formatted_max'] ?? 'N/A') . 
+                                ", Moyenne: " . ($data['formatted_average'] ?? 'N/A') . 
+                                ", Offres: " . ($data['count'] ?? 'N/A');
+                        } else {
+                            $priceData[] = ucfirst($provider) . " neuf: " . ($data['formatted_min'] ?? 'N/A');
+                        }
+                    } elseif (is_string($data) && $data !== 'Prix non trouvé') {
+                        $priceData[] = ucfirst($provider) . " neuf: " . $data;
+                    }
+                }
+            }
+            
+            // Construire le texte des prix
+            $priceTextParts = [];
+            if (!empty($priceData)) {
+                $priceTextParts[] = "Prix neufs: " . implode(" | ", $priceData);
+            }
+            if (!empty($occasionData)) {
+                $priceTextParts[] = "Prix d'occasion: " . implode(" | ", $occasionData);
+            }
+            
+            $priceText = !empty($priceTextParts) ? implode(". ", $priceTextParts) : "Aucun prix disponible";
+            
+            // Préparer les informations du livre
+            $bookInfoText = "";
+            if ($bookInfo) {
+                $bookInfoText = "Informations du livre: " .
+                    "Titre: " . ($bookInfo['title'] ?? $title) . ", " .
+                    "Auteur: " . ($bookInfo['author'] ?? 'Inconnu') . ", " .
+                    "Éditeur: " . ($bookInfo['publisher'] ?? 'Inconnu') . ", " .
+                    "Date de publication: " . ($bookInfo['published_date'] ?? 'Inconnue') . ". ";
+            }
+
+            // Préparer les données de popularité AniList
+            $popularityText = "";
+            if ($popularity && $popularity['success']) {
+                $popularityText = "Données AniList: " .
+                    "Score de popularité: " . ($popularity['popularity_score'] ?? 'N/A') . "/100, " .
+                    "Note moyenne: " . ($popularity['rating'] ?? 'N/A') . "/100, " .
+                    "Niveau de popularité: " . ($popularity['popularity_level'] ?? 'N/A') . ", " .
+                    "Statut: " . ($popularity['status'] ?? 'N/A') . ". ";
+            }
+
+            $response = OpenAI::chat()->create([
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'Tu es un expert en évaluation de rareté et de valeur de mangas. Analyse les informations du livre, les prix fournis ET les données de popularité AniList pour donner un score de rareté de 1 à 10 (1 = très commun, 10 = très rare) et estimer la valeur du manga selon trois états: correct, bon, excellent. CRITIQUE: L\'estimation de rareté doit se baser à 90% sur les prix d\'occasion disponibles. Si des prix d\'occasion élevés sont disponibles avec peu d\'offres, cela indique une forte rareté. Si les prix d\'occasion sont bas avec beaucoup d\'offres, cela indique une faible rareté. Les autres facteurs (ancienneté, éditeur, auteur, popularité AniList) ne représentent que 10% de l\'évaluation. Pour l\'estimation de valeur, base-toi EXCLUSIVEMENT sur les prix d\'occasion disponibles. IMPORTANT: Tes estimations de valeur doivent être RÉALISTES par rapport aux prix d\'occasion trouvés. Si le prix minimum d\'occasion est 1.61€ et le maximum 12.70€, tes estimations ne doivent pas dépasser cette fourchette. Utilise les prix d\'occasion réels comme référence absolue. Si l\'auteur est inconnu ou non spécifié, ne pas en tenir compte dans l\'évaluation et ne pas le mentionner dans l\'explication. Réponds au format JSON: {"score": X, "explanation": "texte", "factors": ["facteur1", "facteur2", "facteur3"], "value_estimation": {"correct": float, "bon": float, "excellent": float}} où les valeurs dans value_estimation sont des nombres décimaux (exemple: 12.50, 15.75, 20.00).'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => "Analyse la rareté du manga '{$title}' (ISBN: {$isbn}). {$bookInfoText}{$popularityText}Prix du marché: {$priceText}. Donne un score de rareté, une explication détaillée et liste les facteurs principaux qui influencent cette rareté."
+                    ]
+                ],
+                'max_tokens' => 400,
+                'temperature' => 0.3
+            ]);
+
+            $content = trim($response->choices[0]->message->content);
+            
+            // Essayer de parser le JSON
+            $decoded = json_decode($content, true);
+            if ($decoded && isset($decoded['score']) && isset($decoded['explanation'])) {
+                // Traiter les valeurs d'estimation pour les convertir en float et ajouter le symbole euros
+                $valueEstimation = $decoded['value_estimation'] ?? [
+                    'correct' => 0.0,
+                    'bon' => 0.0,
+                    'excellent' => 0.0
+                ];
+                
+                // Convertir en float et formater avec euros
+                foreach (['correct', 'bon', 'excellent'] as $condition) {
+                    if (isset($valueEstimation[$condition])) {
+                        $value = (float)$valueEstimation[$condition];
+                        $valueEstimation[$condition] = $value > 0 ? number_format($value, 2) . '€' : 'Non disponible';
+                    }
+                }
+                
+                return [
+                    'score' => (int)$decoded['score'],
+                    'explanation' => $decoded['explanation'],
+                    'factors' => $decoded['factors'] ?? [],
+                    'value_estimation' => $valueEstimation
+                ];
+            }
+            
+            // Fallback si le JSON n'est pas valide
+            return [
+                'score' => 5,
+                'explanation' => 'Analyse de rareté non disponible',
+                'factors' => [],
+                'value_estimation' => [
+                    'correct' => 0.0,
+                    'bon' => 0.0,
+                    'excellent' => 0.0
+                ]
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'score' => 5,
+                'explanation' => 'Erreur lors de l\'analyse de rareté',
+                'factors' => [],
+                'value_estimation' => [
+                    'correct' => 0.0,
+                    'bon' => 0.0,
+                    'excellent' => 0.0
+                ]
+            ];
+        }
+    }
+
     public function verifyIsbn(Request $request)
     {
         $request->validate([
@@ -296,7 +483,6 @@ class PriceController extends Controller
         ]);
     }
 
-
     public function searchPricesOnly($isbn)
     {
         $title = $this->isbnService->getTitleFromIsbn($isbn);
@@ -333,6 +519,4 @@ class PriceController extends Controller
             'title' => $title
         ];
     }
-
-
 } 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class HistoriqueSearch extends Model
 {
@@ -23,7 +24,14 @@ class HistoriqueSearch extends Model
         'user_id',
         'isbn',
         'title',
-        'estimation_occasion',
+        'estimation_occasion_correct',
+        'estimation_occasion_bon',
+        'estimation_occasion_excellent',
+        'rarete',
+        'score_rarete',
+        'anilist_popularite',
+        'anilist_note',
+        'anilist_statut',
     ];
 
     /**
@@ -32,6 +40,12 @@ class HistoriqueSearch extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'estimation_occasion_correct' => 'decimal:2',
+        'estimation_occasion_bon' => 'decimal:2',
+        'estimation_occasion_excellent' => 'decimal:2',
+        'score_rarete' => 'integer',
+        'anilist_popularite' => 'decimal:2',
+        'anilist_note' => 'decimal:2',
     ];
 
     /**
@@ -48,6 +62,14 @@ class HistoriqueSearch extends Model
     public function providers(): HasMany
     {
         return $this->hasMany(HistoriqueSearchProvider::class, 'historique_search_id');
+    }
+
+    /**
+     * Relation avec les facteurs de rareté.
+     */
+    public function rarityFactors(): HasMany
+    {
+        return $this->hasMany(HistoriqueSearchRarityFactor::class, 'historique_search_id');
     }
 
     /**
@@ -219,5 +241,49 @@ class HistoriqueSearch extends Model
     public function getPricesFoundAttribute()
     {
         return $this->providers()->where('min', '>', 0)->count();
+    }
+
+    /**
+     * Obtenir les estimations d'occasion formatées.
+     */
+    public function getEstimationOccasionFormattedAttribute()
+    {
+        return [
+            'correct' => $this->estimation_occasion_correct ? number_format($this->estimation_occasion_correct, 2) . '€' : 'Non disponible',
+            'bon' => $this->estimation_occasion_bon ? number_format($this->estimation_occasion_bon, 2) . '€' : 'Non disponible',
+            'excellent' => $this->estimation_occasion_excellent ? number_format($this->estimation_occasion_excellent, 2) . '€' : 'Non disponible',
+        ];
+    }
+
+    /**
+     * Obtenir les données AniList formatées.
+     */
+    public function getAnilistDataFormattedAttribute()
+    {
+        return [
+            'popularite' => $this->anilist_popularite ? number_format($this->anilist_popularite, 1) : 'Non disponible',
+            'note' => $this->anilist_note ? number_format($this->anilist_note, 1) . '/100' : 'Non disponible',
+            'statut' => $this->anilist_statut ?: 'Non disponible',
+        ];
+    }
+
+    /**
+     * Vérifier si les données d'estimation sont disponibles.
+     */
+    public function getHasEstimationDataAttribute()
+    {
+        return !is_null($this->estimation_occasion_correct) || 
+               !is_null($this->estimation_occasion_bon) || 
+               !is_null($this->estimation_occasion_excellent);
+    }
+
+    /**
+     * Vérifier si les données AniList sont disponibles.
+     */
+    public function getHasAnilistDataAttribute()
+    {
+        return !is_null($this->anilist_popularite) || 
+               !is_null($this->anilist_note) || 
+               !is_null($this->anilist_statut);
     }
 }
