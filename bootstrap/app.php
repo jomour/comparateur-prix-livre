@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'setlocale' => \App\Http\Middleware\SetLocale::class,
+            'recaptcha' => \App\Http\Middleware\RecaptchaMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

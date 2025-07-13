@@ -26,6 +26,8 @@
                                 <x-input-error :messages="$errors->get('isbn')" class="mt-2" />
                             </div>
 
+                            <x-recaptcha action="search" />
+
                             <div class="flex items-center justify-end mt-4">
                                 <x-primary-button class="ml-3">
                                     {{ __('messages.search') }}

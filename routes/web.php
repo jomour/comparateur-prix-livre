@@ -52,9 +52,13 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
     Route::get('/meilleur-prix-manga', [PriceController::class, 'index'])->name('fr.meilleur.prix')->middleware('auth');
     
     // Actions de recherche
-    Route::post('/comparateur-prix-manga/recherche', [PriceController::class, 'search'])->name('fr.comparateur.recherche')->middleware('auth');
-    Route::post('/prix-manga/recherche', [PriceController::class, 'search'])->name('fr.prix.recherche')->middleware('auth');
-    Route::post('/verifier-isbn', [PriceController::class, 'verifyIsbn'])->name('fr.verifier.isbn')->middleware('auth');
+    Route::post('/comparateur-prix-manga/recherche', [PriceController::class, 'search'])->name('fr.comparateur.recherche')->middleware(['auth', 'recaptcha']);
+    Route::post('/prix-manga/recherche', [PriceController::class, 'search'])->name('fr.prix.recherche')->middleware(['auth', 'recaptcha']);
+    Route::post('/verifier-isbn', [PriceController::class, 'verifyIsbn'])->name('fr.verifier.isbn')->middleware(['auth']);
+    Route::get('/prix-manga/resultats', [PriceController::class, 'showResults'])->name('fr.prix.resultats')->middleware('auth');
+    
+    // Routes anglaises pour les résultats
+    Route::get('/manga-prices/results', [PriceController::class, 'showResults'])->name('en.manga.prices.results')->middleware('auth');
     
     // Historique des recherches
     Route::get('/historique-recherches', [HistoriqueController::class, 'index'])->name('fr.historique.recherches')->middleware('auth');
@@ -122,9 +126,9 @@ Route::prefix('en')->middleware('setlocale')->group(function () {
     Route::get('/manga-price-checker', [PriceController::class, 'index'])->name('en.manga.price.checker')->middleware('auth');
     
     // Search actions
-    Route::post('/manga-price-comparator/search', [PriceController::class, 'search'])->name('en.manga.price.search')->middleware('auth');
-    Route::post('/manga-prices/search', [PriceController::class, 'search'])->name('en.manga.prices.search')->middleware('auth');
-    Route::post('/verify-isbn', [PriceController::class, 'verifyIsbn'])->name('en.verify.isbn')->middleware('auth');
+    Route::post('/manga-price-comparator/search', [PriceController::class, 'search'])->name('en.manga.price.search')->middleware(['auth', 'recaptcha']);
+    Route::post('/manga-prices/search', [PriceController::class, 'search'])->name('en.manga.prices.search')->middleware(['auth', 'recaptcha']);
+    Route::post('/verify-isbn', [PriceController::class, 'verifyIsbn'])->name('en.verify.isbn')->middleware(['auth']);
     
     // Search history
     Route::get('/search-history', [HistoriqueController::class, 'index'])->name('en.search.history')->middleware('auth');

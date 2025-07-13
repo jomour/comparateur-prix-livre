@@ -162,6 +162,10 @@ class LocalizedRoute
                 'fr' => 'fr.verifier.isbn',
                 'en' => 'en.verify.isbn'
             ],
+            'price.results' => [
+                'fr' => 'fr.prix.resultats',
+                'en' => 'en.manga.prices.results'
+            ],
             'price.show.amazon' => [
                 'fr' => 'fr.resultats.amazon',
                 'en' => 'en.results.amazon'

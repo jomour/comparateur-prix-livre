@@ -288,6 +288,11 @@ return [
     'manga_price_monitoring' => 'Surveillance des prix manga',
     'manga_price_alert' => 'Alerte de prix manga',
     'manga_price_trend' => 'Tendance des prix manga',
+    
+    // reCAPTCHA
+    'recaptcha_required' => 'Veuillez compléter le reCAPTCHA.',
+    'recaptcha_failed' => 'Vérification reCAPTCHA échouée. Veuillez réessayer.',
+    'recaptcha_error' => 'Erreur lors de la vérification reCAPTCHA.',
     'manga_price_guide' => 'Guide des prix manga',
     'manga_price_database' => 'Base de données des prix manga',
     'manga_price_calculator' => 'Calculateur de prix manga',

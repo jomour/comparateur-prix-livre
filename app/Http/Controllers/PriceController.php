@@ -106,6 +106,53 @@ class PriceController extends Controller
             'prices' => $searchData['prices']
         ]);
         
+        // Si c'est une requête AJAX, retourner JSON
+        if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'redirect' => \App\Helpers\LocalizedRoute::url('price.results', ['isbn' => $isbn])
+            ]);
+        }
+        
+        return view('price.results', [
+            'isbn' => $isbn,
+            'title' => $search->title,
+            'results' => $searchData['results'],
+            'prices' => $searchData['prices'],
+            'historique_id' => $search->getKey(),
+            'rarity' => $rarity,
+            'popularity' => $popularity,
+            'meta' => $meta,
+            'seoType' => $seoType,
+            'structuredData' => $structuredData
+        ]);
+    }
+
+    public function showResults(Request $request)
+    {
+        $isbn = $request->query('isbn');
+        
+        if (!$isbn) {
+            return redirect()->route('fr.comparateur.prix');
+        }
+        
+        // Utiliser l'Action EstimateMangaPrice
+        $result = $this->estimateMangaPriceAction->execute($isbn);
+
+        $search = $result['search'];
+        $searchData = $result['searchData'];
+        $popularity = $result['popularity'];
+        $rarity = $result['rarity'];
+
+        // Métadonnées SEO pour les résultats
+        $meta = SeoService::getResultsMeta($isbn, $search->title, $searchData['prices']);
+        $seoType = 'product';
+        $structuredData = SeoService::getStructuredData('product', [
+            'title' => $search->title,
+            'isbn' => $isbn,
+            'prices' => $searchData['prices']
+        ]);
+        
         return view('price.results', [
             'isbn' => $isbn,
             'title' => $search->title,
