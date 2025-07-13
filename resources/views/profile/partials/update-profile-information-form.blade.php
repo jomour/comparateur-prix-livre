@@ -52,9 +52,9 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border border-purple-500/30 shadow-lg transform hover:scale-105 transition-all duration-300">
-                <i class="fas fa-save mr-2"></i>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+            <x-primary-button class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border border-purple-500/30 shadow-lg transform hover:scale-105 transition-all duration-300 text-sm">
+                <i class="fas fa-save mr-1 sm:mr-2"></i>
                 {{ __('Save') }}
             </x-primary-button>
 

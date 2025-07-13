@@ -6,14 +6,14 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {{-- Breadcrumbs --}}
             <div class="mb-6">
                 <x-breadcrumbs page="search" />
             </div>
             
             <div class="bg-white/10 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
-                <div class="p-6 text-white">
+                <div class="p-4 sm:p-6 text-white">
 
                     <!-- Search Form -->
                     <div class="max-w-2xl mx-auto">
@@ -50,8 +50,8 @@
                     </div>
 
                     <!-- Loading Overlay (caché par défaut) -->
-                    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
-                        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
+                    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="display: none;">
+                        <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full text-center mx-4">
                             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.search_in_progress') }}</h3>
                             <p class="text-gray-600 mb-4">{{ __('messages.search_description') }}</p>
@@ -79,11 +79,11 @@
                     </div>
 
                     <!-- Features -->
-                    <div class="mt-12 grid md:grid-cols-3 gap-8">
+                    <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                         <!-- Amazon Card -->
                         <div class="group relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-orange-300/30">
                             <div class="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-transparent"></div>
-                            <div class="relative p-8 text-center text-white">
+                            <div class="relative p-4 sm:p-6 lg:p-8 text-center text-white">
                                 <div class="mb-6">
                                     <i class="fab fa-amazon text-6xl mb-4 block group-hover:scale-110 transition-transform duration-300"></i>
                                     <div class="w-16 h-1 bg-white/30 mx-auto rounded-full"></div>
@@ -97,7 +97,7 @@
                         <!-- Cultura Card -->
                         <div class="group relative overflow-hidden bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-blue-300/30">
                             <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                            <div class="relative p-8 text-center text-white">
+                            <div class="relative p-4 sm:p-6 lg:p-8 text-center text-white">
                                 <div class="mb-6">
                                     <i class="fas fa-store text-6xl mb-4 block group-hover:scale-110 transition-transform duration-300"></i>
                                     <div class="w-16 h-1 bg-white/30 mx-auto rounded-full"></div>
@@ -111,7 +111,7 @@
                         <!-- Fnac Card -->
                         <div class="group relative overflow-hidden bg-gradient-to-br from-red-400 via-red-500 to-red-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-red-300/30">
                             <div class="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent"></div>
-                            <div class="relative p-8 text-center text-white">
+                            <div class="relative p-4 sm:p-6 lg:p-8 text-center text-white">
                                 <div class="mb-6">
                                     <i class="fas fa-shopping-cart text-6xl mb-4 block group-hover:scale-110 transition-transform duration-300"></i>
                                     <div class="w-16 h-1 bg-white/30 mx-auto rounded-full"></div>
@@ -124,7 +124,7 @@
                     </div>
 
                     <!-- Section explicative -->
-                    <div class="mt-12 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-2xl p-8 border border-purple-300/20">
+                    <div class="mt-12 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-2xl p-4 sm:p-6 lg:p-8 border border-purple-300/20">
                         <div class="text-center mb-6">
                             <h3 class="text-2xl font-bold text-white mb-4">{{ __('messages.comparator_estimation_analysis') }}</h3>
                             <p class="text-purple-200 text-lg leading-relaxed">
@@ -132,29 +132,29 @@
                             </p>
                         </div>
                         
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
                                 <h4 class="text-xl font-semibold text-yellow-300 mb-3">{{ __('messages.price_estimation_title') }}</h4>
                                 <p class="text-purple-200 text-sm leading-relaxed">
                                     {{ __('messages.price_estimation_description') }}
                                 </p>
                             </div>
                             
-                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                            <div class="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
                                 <h4 class="text-xl font-semibold text-pink-300 mb-3">{{ __('messages.used_price_comparison_title') }}</h4>
                                 <p class="text-purple-200 text-sm leading-relaxed">
                                     {{ __('messages.used_price_comparison_description') }}
                                 </p>
                             </div>
                             
-                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                            <div class="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
                                 <h4 class="text-xl font-semibold text-blue-300 mb-3">{{ __('messages.estimation_history_title') }}</h4>
                                 <p class="text-purple-200 text-sm leading-relaxed">
                                     {{ __('messages.estimation_history_description') }}
                                 </p>
                             </div>
                             
-                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                            <div class="bg-white/5 rounded-xl p-4 sm:p-6 border border-white/10">
                                 <h4 class="text-xl font-semibold text-green-300 mb-3">{{ __('messages.lot_estimation_title') }}</h4>
                                 <p class="text-purple-200 text-sm leading-relaxed">
                                     {{ __('messages.lot_estimation_description') }}
@@ -170,8 +170,8 @@
                     </div>
 
                     <!-- Modal de confirmation ISBN -->
-                    <div id="isbnModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                        <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
+                    <div id="isbnModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+                        <div class="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full mx-4">
                             <div class="flex items-center mb-4">
                                 <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
                                 <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.confirm_book') }}</h3>
@@ -198,17 +198,17 @@
                                 </div>
                             </div>
                             
-                            <div class="flex space-x-3">
+                            <div class="flex flex-col sm:flex-row gap-2 sm:space-x-3">
                                 <button type="button" 
                                         id="confirmIsbn"
-                                        class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                                    <i class="fas fa-check mr-2"></i>
+                                        class="flex-1 bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                                    <i class="fas fa-check mr-1 sm:mr-2"></i>
                                     {{ __('messages.confirm') }}
                                 </button>
                                 <button type="button" 
                                         id="cancelIsbn"
-                                        class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                                    <i class="fas fa-times mr-2"></i>
+                                        class="flex-1 bg-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors text-sm">
+                                    <i class="fas fa-times mr-1 sm:mr-2"></i>
                                     {{ __('messages.cancel') }}
                                 </button>
                             </div>

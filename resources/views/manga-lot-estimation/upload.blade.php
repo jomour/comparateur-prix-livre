@@ -6,13 +6,13 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {{-- Breadcrumbs --}}
             <div class="mb-6">
                 <x-breadcrumbs page="image" />
             </div>
             <div class="bg-white/10 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
-                <div class="p-6 text-white">
+                <div class="p-4 sm:p-6 text-white">
                     @if(session('success'))
                         <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                             <div class="flex items-center">
@@ -65,8 +65,8 @@
                                     </form>
                                     
                                     <!-- Loading overlay pour la recherche globale -->
-                                    <div id="searchAllLoadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
-                                        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
+                                    <div id="searchAllLoadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="display: none;">
+                                        <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full text-center mx-4">
                                             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
                                             <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.searching_prices') }}</h3>
                                             <p class="text-gray-600 mb-4">{{ __('messages.retrieving_prices_for_all_mangas') }}</p>
@@ -97,23 +97,26 @@
                                     <table class="min-w-full border-2 border-purple-400/40 rounded-lg shadow-2xl">
                                         <thead class="bg-gradient-to-r from-purple-700/70 to-pink-700/70">
                                             <tr>
-                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
                                                     <div class="flex items-center">
-                                                        <i class="fas fa-book mr-2 text-purple-200"></i>
-                                                        {{ __('messages.title') }}
+                                                        <i class="fas fa-book mr-1 sm:mr-2 text-purple-200"></i>
+                                                        <span class="hidden sm:inline">{{ __('messages.title') }}</span>
+                                                        <span class="sm:hidden">Titre</span>
                                                     </div>
                                                 </th>
-                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
                                                     <div class="flex items-center">
-                                                        <i class="fas fa-barcode mr-2 text-purple-200"></i>
-                                                        {{ __('messages.isbn') }}
+                                                        <i class="fas fa-barcode mr-1 sm:mr-2 text-purple-200"></i>
+                                                        <span class="hidden sm:inline">{{ __('messages.isbn') }}</span>
+                                                        <span class="sm:hidden">ISBN</span>
                                                     </div>
                                                 </th>
 
-                                                <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
+                                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-white uppercase tracking-wider border-b-2 border-purple-300/50">
                                                     <div class="flex items-center">
-                                                        <i class="fas fa-cogs mr-2 text-purple-200"></i>
-                                                        {{ __('messages.actions') }}
+                                                        <i class="fas fa-cogs mr-1 sm:mr-2 text-purple-200"></i>
+                                                        <span class="hidden sm:inline">{{ __('messages.actions') }}</span>
+                                                        <span class="sm:hidden">Actions</span>
                                                     </div>
                                                 </th>
                                             </tr>
@@ -121,66 +124,71 @@
                                         <tbody class="divide-y-2 divide-purple-400/30">
                                             @foreach(session('mangas') as $manga)
                                                 <tr class="hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-pink-600/20 transition-all duration-300 group">
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
-                                                        <div class="bg-purple-700/50 px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
-                                                            <span class="font-semibold">{{ $manga['title'] }}</span>
+                                                    <td class="px-3 sm:px-6 py-3 sm:py-4 text-sm text-white">
+                                                        <div class="bg-purple-700/50 px-2 sm:px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
+                                                            <span class="font-semibold text-xs sm:text-sm break-words">{{ $manga['title'] }}</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                                    <td class="px-3 sm:px-6 py-3 sm:py-4 text-sm text-white">
                                                         <div class="flex items-center">
                                                             @if(!empty($manga['isbn']))
-                                                                <div class="bg-purple-700/50 px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
-                                                                    <span class="font-mono font-semibold">{{ $manga['isbn'] }}</span>
+                                                                <div class="bg-purple-700/50 px-2 sm:px-4 py-2 rounded-lg border-2 border-purple-400/50 shadow-md">
+                                                                    <span class="font-mono font-semibold text-xs sm:text-sm break-all">{{ $manga['isbn'] }}</span>
                                                                     @if(isset($manga['isbn_auto_found']) && $manga['isbn_auto_found'])
-                                                                        <span class="inline-block ml-2 text-blue-300" title="{{ __('messages.auto_found_isbn') }}">
-                                                                            <i class="fas fa-magic"></i>
+                                                                        <span class="inline-block ml-1 sm:ml-2 text-blue-300" title="{{ __('messages.auto_found_isbn') }}">
+                                                                            <i class="fas fa-magic text-xs sm:text-sm"></i>
                                                                         </span>
                                                                     @elseif(isset($manga['isbn_valid']) && $manga['isbn_valid'])
-                                                                        <span class="inline-block ml-2 text-green-300" title="{{ __('messages.valid_isbn') }}">
-                                                                            <i class="fas fa-check-circle"></i>
+                                                                        <span class="inline-block ml-1 sm:ml-2 text-green-300" title="{{ __('messages.valid_isbn') }}">
+                                                                            <i class="fas fa-check-circle text-xs sm:text-sm"></i>
                                                                         </span>
                                                                     @else
-                                                                        <span class="inline-block ml-2 text-yellow-300" title="{{ __('messages.invalid_isbn') }}">
-                                                                            <i class="fas fa-exclamation-triangle"></i>
+                                                                        <span class="inline-block ml-1 sm:ml-2 text-yellow-300" title="{{ __('messages.invalid_isbn') }}">
+                                                                            <i class="fas fa-exclamation-triangle text-xs sm:text-sm"></i>
                                                                         </span>
                                                                     @endif
                                                                 </div>
                                                                 @if(isset($manga['duplicate_isbn']) && $manga['duplicate_isbn'])
-                                                                    <span class="inline-block ml-3 text-red-200 cursor-help bg-red-700/60 px-3 py-2 rounded-lg border-2 border-red-400/50 shadow-md font-bold" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
+                                                                    <span class="inline-block ml-2 sm:ml-3 text-red-200 cursor-help bg-red-700/60 px-2 sm:px-3 py-1 sm:py-2 rounded-lg border-2 border-red-400/50 shadow-md font-bold text-xs" title="{{ __('messages.duplicate_isbn_warning') }}">⚠️</span>
                                                                 @endif
                                                             @else
-                                                                <div class="bg-gray-700/50 px-4 py-2 rounded-lg border-2 border-gray-400/50 shadow-md">
-                                                                    <span class="font-mono font-semibold text-gray-300">{{ __('messages.isbn_not_found') }}</span>
+                                                                <div class="bg-gray-700/50 px-2 sm:px-4 py-2 rounded-lg border-2 border-gray-400/50 shadow-md">
+                                                                    <span class="font-mono font-semibold text-xs sm:text-sm text-gray-300">{{ __('messages.isbn_not_found') }}</span>
                                                                 </div>
                                                             @endif
                                                         </div>
                                                     </td>
 
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
-                                                        <div class="flex space-x-3">
+                                                    <td class="px-3 sm:px-6 py-3 sm:py-4 text-sm text-white">
+                                                        <div class="flex flex-col sm:flex-row gap-2 sm:space-x-3">
                                                             @if(empty($manga['isbn']))
-                                                                <button onclick="searchIsbn('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-blue-400/50 shadow-lg">
+                                                                <button onclick="searchIsbn('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-blue-400/50 shadow-lg text-xs sm:text-sm">
                                                                     <i class="fas fa-search mr-1"></i>
-                                                                    {{ __('messages.search_isbn') }}
+                                                                    <span class="hidden sm:inline">{{ __('messages.search_isbn') }}</span>
+                                                                    <span class="sm:hidden">Rechercher</span>
                                                                 </button>
                                                             @elseif(isset($manga['isbn_valid']) && $manga['isbn_valid'])
-                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-green-400/50 shadow-lg" title="{{ __('messages.verify_isbn_tooltip') }}">
+                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-green-400/50 shadow-lg text-xs sm:text-sm" title="{{ __('messages.verify_isbn_tooltip') }}">
                                                                     <i class="fas fa-check-circle mr-1"></i>
-                                                                    {{ __('messages.verify_isbn') }}
+                                                                    <span class="hidden sm:inline">{{ __('messages.verify_isbn') }}</span>
+                                                                    <span class="sm:hidden">Vérifier</span>
                                                                 </button>
                                                             @else
-                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/50 shadow-lg" title="{{ __('messages.verify_isbn_tooltip') }}">
+                                                                <button onclick="verifyMangaIsbn('{{ addslashes($manga['isbn']) }}', '{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/50 shadow-lg text-xs sm:text-sm" title="{{ __('messages.verify_isbn_tooltip') }}">
                                                                     <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                                    {{ __('messages.verify_isbn') }}
+                                                                    <span class="hidden sm:inline">{{ __('messages.verify_isbn') }}</span>
+                                                                    <span class="sm:hidden">Vérifier</span>
                                                                 </button>
                                                             @endif
-                                                            <button onclick="editIsbn('{{ addslashes($manga['title']) }}', '{{ addslashes($manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/50 shadow-lg" title="{{ __('messages.edit_isbn_tooltip') }}">
+                                                            <button onclick="editIsbn('{{ addslashes($manga['title']) }}', '{{ addslashes($manga['isbn']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/50 shadow-lg text-xs sm:text-sm" title="{{ __('messages.edit_isbn_tooltip') }}">
                                                                 <i class="fas fa-edit mr-1"></i>
-                                                                ✏️
+                                                                <span class="hidden sm:inline">✏️</span>
+                                                                <span class="sm:hidden">Modifier</span>
                                                             </button>
-                                                            <button onclick="removeManga('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-red-400/50 shadow-lg" title="{{ __('messages.remove_manga_tooltip') }}">
+                                                            <button onclick="removeManga('{{ addslashes($manga['title']) }}')" data-row-index="{{ $loop->index }}" class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 transform hover:scale-105 border-2 border-red-400/50 shadow-lg text-xs sm:text-sm" title="{{ __('messages.remove_manga_tooltip') }}">
                                                                 <i class="fas fa-trash mr-1"></i>
-                                                                🗑️
+                                                                <span class="hidden sm:inline">🗑️</span>
+                                                                <span class="sm:hidden">Supprimer</span>
                                                             </button>
                                                         </div>
                                                     </td>
@@ -198,42 +206,42 @@
                                         </div>
                                         <h4 class="text-xl font-bold text-white drop-shadow-lg">{{ __('messages.global_lot_estimation') }}</h4>
                                     </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                                         <div class="group transform hover:scale-105 transition-all duration-300">
-                                            <div class="bg-gradient-to-br from-blue-700/50 to-cyan-700/50 rounded-xl p-5 border-2 border-blue-400/50 backdrop-blur-sm shadow-xl">
+                                            <div class="bg-gradient-to-br from-blue-700/50 to-cyan-700/50 rounded-xl p-4 sm:p-5 border-2 border-blue-400/50 backdrop-blur-sm shadow-xl">
                                                 <div class="flex items-center">
-                                                    <div class="bg-gradient-to-br from-blue-500/70 to-cyan-500/70 rounded-full p-3 mr-4 border-2 border-blue-300/50 shadow-lg">
-                                                        <i class="fas fa-books text-white"></i>
+                                                    <div class="bg-gradient-to-br from-blue-500/70 to-cyan-500/70 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-blue-300/50 shadow-lg">
+                                                        <i class="fas fa-books text-white text-sm sm:text-base"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="text-sm text-blue-100 font-medium">{{ __('messages.manga_count') }}</div>
-                                                        <div id="totalMangas" class="text-3xl font-bold text-white drop-shadow-lg">0</div>
+                                                        <div class="text-xs sm:text-sm text-blue-100 font-medium">{{ __('messages.manga_count') }}</div>
+                                                        <div id="totalMangas" class="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">0</div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="group transform hover:scale-105 transition-all duration-300">
-                                            <div class="bg-gradient-to-br from-green-700/50 to-emerald-700/50 rounded-xl p-5 border-2 border-green-400/50 backdrop-blur-sm shadow-xl">
+                                            <div class="bg-gradient-to-br from-green-700/50 to-emerald-700/50 rounded-xl p-4 sm:p-5 border-2 border-green-400/50 backdrop-blur-sm shadow-xl">
                                                 <div class="flex items-center">
-                                                    <div class="bg-gradient-to-br from-green-500/70 to-emerald-500/70 rounded-full p-3 mr-4 border-2 border-green-300/50 shadow-lg">
-                                                        <i class="fas fa-euro-sign text-white"></i>
+                                                    <div class="bg-gradient-to-br from-green-500/70 to-emerald-500/70 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-green-300/50 shadow-lg">
+                                                        <i class="fas fa-euro-sign text-white text-sm sm:text-base"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="text-sm text-green-100 font-medium">{{ __('messages.total_estimated_price') }}</div>
-                                                        <div id="totalPrice" class="text-3xl font-bold text-white drop-shadow-lg">0,00 €</div>
+                                                        <div class="text-xs sm:text-sm text-green-100 font-medium">{{ __('messages.total_estimated_price') }}</div>
+                                                        <div id="totalPrice" class="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">0,00 €</div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="group transform hover:scale-105 transition-all duration-300">
-                                            <div class="bg-gradient-to-br from-purple-700/50 to-pink-700/50 rounded-xl p-5 border-2 border-purple-400/50 backdrop-blur-sm shadow-xl">
+                                        <div class="group transform hover:scale-105 transition-all duration-300 sm:col-span-2 lg:col-span-1">
+                                            <div class="bg-gradient-to-br from-purple-700/50 to-pink-700/50 rounded-xl p-4 sm:p-5 border-2 border-purple-400/50 backdrop-blur-sm shadow-xl">
                                                 <div class="flex items-center">
-                                                    <div class="bg-gradient-to-br from-purple-500/70 to-pink-500/70 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-lg">
-                                                        <i class="fas fa-calculator text-white"></i>
+                                                    <div class="bg-gradient-to-br from-purple-500/70 to-pink-500/70 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-purple-300/50 shadow-lg">
+                                                        <i class="fas fa-calculator text-white text-sm sm:text-base"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="text-sm text-purple-100 font-medium">{{ __('messages.average_price') }}</div>
-                                                        <div id="averagePrice" class="text-3xl font-bold text-white drop-shadow-lg">0,00 €</div>
+                                                        <div class="text-xs sm:text-sm text-purple-100 font-medium">{{ __('messages.average_price') }}</div>
+                                                        <div id="averagePrice" class="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">0,00 €</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -307,118 +315,118 @@
                     </form>
 
                     <!-- Loading Overlay (caché par défaut) -->
-                    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
-                        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
-                            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.loading') }}</h3>
-                            <p class="text-gray-600 mb-4">{{ __('messages.ai_analysis_description') }}</p>
-                            <div class="space-y-2">
+                    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="display: none;">
+                        <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full text-center mx-4">
+                            <div class="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-indigo-600 mx-auto mb-3 sm:mb-4"></div>
+                            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">{{ __('messages.loading') }}</h3>
+                            <p class="text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm">{{ __('messages.ai_analysis_description') }}</p>
+                            <div class="space-y-1 sm:space-y-2">
                                 <div class="flex items-center justify-center">
-                                    <i class="fas fa-eye text-blue-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">{{ __('messages.auto_isbn_search') }}</span>
+                                    <i class="fas fa-eye text-blue-500 mr-1 sm:mr-2 text-xs sm:text-sm"></i>
+                                    <span class="text-xs sm:text-sm text-gray-600">{{ __('messages.auto_isbn_search') }}</span>
                                 </div>
                                 <div class="flex items-center justify-center">
-                                    <i class="fas fa-robot text-purple-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">{{ __('messages.ai_analysis_description') }}</span>
+                                    <i class="fas fa-robot text-purple-500 mr-1 sm:mr-2 text-xs sm:text-sm"></i>
+                                    <span class="text-xs sm:text-sm text-gray-600">{{ __('messages.ai_analysis_description') }}</span>
                                 </div>
                                 <div class="flex items-center justify-center">
-                                    <i class="fas fa-search text-green-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">{{ __('messages.auto_isbn_search') }}</span>
+                                    <i class="fas fa-search text-green-500 mr-1 sm:mr-2 text-xs sm:text-sm"></i>
+                                    <span class="text-xs sm:text-sm text-gray-600">{{ __('messages.auto_isbn_search') }}</span>
                                 </div>
                             </div>
-                            <div class="mt-4">
+                            <div class="mt-3 sm:mt-4">
                                 <div class="flex items-center justify-center">
-                                    <i class="fas fa-clock text-orange-500 mr-2"></i>
-                                    <span class="text-sm text-gray-600">{{ __('messages.estimated_wait_time') }}</span>
+                                    <i class="fas fa-clock text-orange-500 mr-1 sm:mr-2 text-xs sm:text-sm"></i>
+                                    <span class="text-xs sm:text-sm text-gray-600">{{ __('messages.estimated_wait_time') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-8 bg-gradient-to-br from-purple-900/60 via-pink-900/60 to-yellow-900/60 backdrop-blur-lg rounded-xl p-6 border-2 border-purple-400/40 shadow-2xl">
+                    <div class="mt-8 bg-gradient-to-br from-purple-900/60 via-pink-900/60 to-yellow-900/60 backdrop-blur-lg rounded-xl p-4 sm:p-6 border-2 border-purple-400/40 shadow-2xl">
                         <div class="flex items-center mb-6">
                             <div class="bg-gradient-to-br from-purple-500/50 to-pink-500/50 rounded-full p-4 mr-4 border-2 border-purple-300/50 shadow-lg">
                                 <i class="fas fa-info-circle text-white text-xl"></i>
                             </div>
                             <h3 class="text-xl font-bold text-white drop-shadow-lg">{{ __('messages.information') }} :</h3>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-3 border border-purple-400/50 shadow-md">
-                                    <div class="bg-purple-500/60 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-md">
-                                        <i class="fas fa-image text-white"></i>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="space-y-3 sm:space-y-4">
+                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-2 sm:p-3 border border-purple-400/50 shadow-md">
+                                    <div class="bg-purple-500/60 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-purple-300/50 shadow-md">
+                                        <i class="fas fa-image text-white text-sm sm:text-base"></i>
                                     </div>
-                                    <span class="text-sm font-medium">{{ __('messages.accepted_formats') }}</span>
+                                    <span class="text-xs sm:text-sm font-medium">{{ __('messages.accepted_formats') }}</span>
                                 </div>
-                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-3 border border-purple-400/50 shadow-md">
-                                    <div class="bg-purple-500/60 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-md">
-                                        <i class="fas fa-weight-hanging text-white"></i>
+                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-2 sm:p-3 border border-purple-400/50 shadow-md">
+                                    <div class="bg-purple-500/60 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-purple-300/50 shadow-md">
+                                        <i class="fas fa-weight-hanging text-white text-sm sm:text-base"></i>
                                     </div>
-                                    <span class="text-sm font-medium">{{ __('messages.max_size') }}</span>
+                                    <span class="text-xs sm:text-sm font-medium">{{ __('messages.max_size') }}</span>
                                 </div>
-                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-3 border border-purple-400/50 shadow-md">
-                                    <div class="bg-purple-500/60 rounded-full p-3 mr-4 border-2 border-purple-300/50 shadow-md">
-                                        <i class="fas fa-robot text-white"></i>
+                                <div class="flex items-center text-white bg-purple-800/30 rounded-lg p-2 sm:p-3 border border-purple-400/50 shadow-md">
+                                    <div class="bg-purple-500/60 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-purple-300/50 shadow-md">
+                                        <i class="fas fa-robot text-white text-sm sm:text-base"></i>
                                     </div>
-                                    <span class="text-sm font-medium">{{ __('messages.ai_analysis_description') }}</span>
+                                    <span class="text-xs sm:text-sm font-medium">{{ __('messages.ai_analysis_description') }}</span>
                                 </div>
                             </div>
-                            <div class="space-y-4">
-                                <div class="flex items-center text-white bg-green-800/30 rounded-lg p-3 border border-green-400/50 shadow-md">
-                                    <div class="bg-green-500/60 rounded-full p-3 mr-4 border-2 border-green-300/50 shadow-md">
-                                        <i class="fas fa-search text-white"></i>
+                            <div class="space-y-3 sm:space-y-4">
+                                <div class="flex items-center text-white bg-green-800/30 rounded-lg p-2 sm:p-3 border border-green-400/50 shadow-md">
+                                    <div class="bg-green-500/60 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-green-300/50 shadow-md">
+                                        <i class="fas fa-search text-white text-sm sm:text-base"></i>
                                     </div>
-                                    <span class="text-sm font-bold">{{ __('messages.auto_isbn_search') }}</span>
+                                    <span class="text-xs sm:text-sm font-bold">{{ __('messages.auto_isbn_search') }}</span>
                                 </div>
-                                <div class="flex items-center text-white bg-blue-800/30 rounded-lg p-3 border border-blue-400/50 shadow-md">
-                                    <div class="bg-blue-500/60 rounded-full p-3 mr-4 border-2 border-blue-300/50 shadow-md">
-                                        <i class="fas fa-bolt text-white"></i>
+                                <div class="flex items-center text-white bg-blue-800/30 rounded-lg p-2 sm:p-3 border border-blue-400/50 shadow-md">
+                                    <div class="bg-blue-500/60 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-blue-300/50 shadow-md">
+                                        <i class="fas fa-bolt text-white text-sm sm:text-base"></i>
                                     </div>
-                                    <span class="text-sm font-medium">{{ __('messages.isbn_found_search') }}</span>
+                                    <span class="text-xs sm:text-sm font-medium">{{ __('messages.isbn_found_search') }}</span>
                                 </div>
-                                <div class="flex items-center text-white bg-orange-800/30 rounded-lg p-3 border border-orange-400/50 shadow-md">
-                                    <div class="bg-orange-500/60 rounded-full p-3 mr-4 border-2 border-orange-300/50 shadow-md">
-                                        <i class="fas fa-clock text-white"></i>
+                                <div class="flex items-center text-white bg-orange-800/30 rounded-lg p-2 sm:p-3 border border-orange-400/50 shadow-md">
+                                    <div class="bg-orange-500/60 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border-2 border-orange-300/50 shadow-md">
+                                        <i class="fas fa-clock text-white text-sm sm:text-base"></i>
                                     </div>
-                                    <span class="text-sm font-medium">{{ __('messages.analysis_time') }}</span>
+                                    <span class="text-xs sm:text-sm font-medium">{{ __('messages.analysis_time') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Modal d'édition ISBN -->
-                    <div id="editIsbnModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                        <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
+                    <div id="editIsbnModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+                        <div class="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto mx-4">
                             <div class="flex items-center mb-4">
-                                <i class="fas fa-edit text-yellow-500 text-2xl mr-3"></i>
-                                <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.edit_isbn_modal') }}</h3>
+                                <i class="fas fa-edit text-yellow-500 text-xl sm:text-2xl mr-2 sm:mr-3"></i>
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-800">{{ __('messages.edit_isbn_modal') }}</h3>
                             </div>
                             
-                            <div class="mb-6">
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('messages.manga_title') }} :</label>
-                                    <p id="editMangaTitle" class="text-gray-900 font-medium bg-gray-50 p-2 rounded"></p>
+                            <div class="mb-4 sm:mb-6">
+                                <div class="mb-3 sm:mb-4">
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{{ __('messages.manga_title') }} :</label>
+                                    <p id="editMangaTitle" class="text-gray-900 font-medium bg-gray-50 p-2 rounded text-xs sm:text-sm"></p>
                                 </div>
-                                <div class="mb-4">
-                                    <label for="editIsbnInput" class="block text-sm font-medium text-gray-700 mb-1">{{ __('messages.isbn') }} :</label>
+                                <div class="mb-3 sm:mb-4">
+                                    <label for="editIsbnInput" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{{ __('messages.isbn') }} :</label>
                                     <input type="text" 
                                            id="editIsbnInput" 
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                                           class="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-xs sm:text-sm"
                                            placeholder="{{ __('messages.isbn_placeholder') }}">
                                 </div>
                             </div>
                             
-                            <div class="flex space-x-3">
+                            <div class="flex flex-col sm:flex-row gap-2 sm:space-x-3">
                                 <button type="button" 
                                         id="saveIsbn"
-                                        class="flex-1 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
-                                    <i class="fas fa-save mr-2"></i>
+                                        class="flex-1 bg-yellow-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors text-xs sm:text-sm">
+                                    <i class="fas fa-save mr-1 sm:mr-2"></i>
                                     {{ __('messages.save') }}
                                 </button>
                                 <button type="button" 
                                         id="cancelEdit"
-                                        class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                                    <i class="fas fa-times mr-2"></i>
+                                        class="flex-1 bg-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors text-xs sm:text-sm">
+                                    <i class="fas fa-times mr-1 sm:mr-2"></i>
                                     {{ __('messages.cancel') }}
                                 </button>
                             </div>
@@ -426,29 +434,29 @@
                     </div>
 
                     <!-- Modal de confirmation suppression -->
-                    <div id="deleteMangaModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                        <div class="bg-white rounded-lg p-6 max-w-md mx-4 w-full">
+                    <div id="deleteMangaModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+                        <div class="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto mx-4">
                             <div class="flex items-center mb-4">
-                                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
-                                <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.confirm_deletion') }}</h3>
+                                <i class="fas fa-exclamation-triangle text-red-500 text-xl sm:text-2xl mr-2 sm:mr-3"></i>
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-800">{{ __('messages.confirm_deletion') }}</h3>
                             </div>
                             
-                            <div class="mb-6">
-                                <p class="text-gray-600">{{ __('messages.confirm_delete_manga') }}</p>
-                                <p id="deleteMangaTitle" class="text-gray-900 font-medium mt-2 bg-gray-50 p-2 rounded"></p>
+                            <div class="mb-4 sm:mb-6">
+                                <p class="text-gray-600 text-xs sm:text-sm">{{ __('messages.confirm_delete_manga') }}</p>
+                                <p id="deleteMangaTitle" class="text-gray-900 font-medium mt-2 bg-gray-50 p-2 rounded text-xs sm:text-sm"></p>
                             </div>
                             
-                            <div class="flex space-x-3">
+                            <div class="flex flex-col sm:flex-row gap-2 sm:space-x-3">
                                 <button type="button" 
                                         id="confirmDelete"
-                                        class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                                    <i class="fas fa-trash mr-2"></i>
+                                        class="flex-1 bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-xs sm:text-sm">
+                                    <i class="fas fa-trash mr-1 sm:mr-2"></i>
                                     {{ __('messages.delete_manga') }}
                                 </button>
                                 <button type="button" 
                                         id="cancelDelete"
-                                        class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                                    <i class="fas fa-times mr-2"></i>
+                                        class="flex-1 bg-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors text-xs sm:text-sm">
+                                    <i class="fas fa-times mr-1 sm:mr-2"></i>
                                     {{ __('messages.cancel_delete') }}
                                 </button>
                             </div>
@@ -456,8 +464,8 @@
                     </div>
 
                     <!-- Loading Overlay pour la recherche globale -->
-                    <div id="searchAllOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
-                        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
+                    <div id="searchAllOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="display: none;">
+                        <div class="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full text-center mx-4">
                             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ __('messages.searching_prices') }}</h3>
                             <p class="text-gray-600 mb-4">{{ __('messages.retrieving_prices_for_all_mangas') }}</p>

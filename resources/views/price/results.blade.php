@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {{-- Breadcrumbs --}}
             <div class="mb-6">
                 <x-breadcrumbs page="results" />
@@ -15,7 +15,7 @@
 
             @guest
             <div class="mb-8">
-                <div class="bg-gradient-to-r from-pink-500 via-yellow-400 to-orange-400 border-2 border-yellow-300 shadow-xl rounded-2xl p-6 flex items-center gap-4">
+                <div class="bg-gradient-to-r from-pink-500 via-yellow-400 to-orange-400 border-2 border-yellow-300 shadow-xl rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4">
                     <div class="flex-shrink-0">
                         <i class="fas fa-star text-4xl text-white drop-shadow-lg"></i>
                     </div>
@@ -24,9 +24,9 @@
                         <p class="text-white/90 text-base md:text-lg mb-2">
                             <span class="font-semibold text-yellow-100">Garde ton historique de recherches</span>, <span class="font-semibold text-yellow-100">estime des lots à partir d'une image</span> et découvre plein d'autres fonctionnalités exclusives en créant un compte gratuit !
                         </p>
-                        <div class="flex flex-wrap gap-3 mt-2">
-                            <a href="{{ route('login') }}" class="bg-white text-pink-600 font-bold px-5 py-2 rounded-lg shadow hover:bg-yellow-100 transition">Connexion</a>
-                            <a href="{{ route('register') }}" class="bg-yellow-400 text-pink-900 font-bold px-5 py-2 rounded-lg shadow hover:bg-white transition">Inscription</a>
+                        <div class="flex flex-col sm:flex-row gap-3 mt-2">
+                            <a href="{{ route('login') }}" class="bg-white text-pink-600 font-bold px-4 sm:px-5 py-2 rounded-lg shadow hover:bg-yellow-100 transition text-center">Connexion</a>
+                            <a href="{{ route('register') }}" class="bg-yellow-400 text-pink-900 font-bold px-4 sm:px-5 py-2 rounded-lg shadow hover:bg-white transition text-center">Inscription</a>
                         </div>
                     </div>
                 </div>
@@ -34,13 +34,13 @@
             @endguest
 
             <!-- Search Info Card -->
-            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-6 mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-4 sm:p-6 mb-8">
                 <div class="text-center text-white">
                     <div class="flex items-center justify-center mb-4">
                         <i class="fas fa-book text-3xl text-yellow-400 mr-3"></i>
                         <h3 class="text-2xl font-bold">{{ __('messages.search_info') }}</h3>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
                         <div class="bg-white/5 rounded-lg p-3">
                             <span class="font-semibold text-yellow-300">{{ __('messages.isbn') }}:</span> 
                             <span class="font-mono">{{ $isbn }}</span>
@@ -57,17 +57,17 @@
 
 
             <!-- Price Comparison -->
-            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8 mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-4 sm:p-6 lg:p-8 mb-8">
                 <h2 class="text-3xl font-bold text-white mb-8 text-center">
                     <i class="fas fa-euro-sign text-green-400 mr-3"></i>
                     {{ __('messages.price_comparison') }}
                 </h2>
                 
-                <div class="grid lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Amazon Price -->
                     <div class="group relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-orange-300/30">
                         <div class="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-transparent"></div>
-                        <div class="relative p-6 text-center text-white">
+                        <div class="relative p-4 sm:p-6 text-center text-white">
                             <div class="flex items-center justify-center mb-4">
                                 <i class="fab fa-amazon text-4xl mr-3 group-hover:scale-110 transition-transform duration-300"></i>
                                 <h3 class="text-xl font-semibold">{{ __('messages.amazon') }}</h3>

@@ -10,10 +10,7 @@ use App\Http\Controllers\SitemapController;
 use App\Helpers\LocalizedRoute;
 
 // Routes d'authentification (sans préfixe de langue)
-Route::get('/', function () {
-    $locale = config('languages.default');
-    return redirect('/' . $locale . '/' . ($locale === 'fr' ? 'comparateur-prix-manga' : 'manga-price-comparator'));
-});
+Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('welcome');
 
 Route::get('/login', function () {
     return redirect()->route('login');
@@ -27,9 +24,7 @@ Route::get('/sitemap-index.xml', [SitemapController::class, 'index'])->name('sit
 Route::prefix('fr')->middleware('setlocale')->group(function () {
     
     // Route racine française
-    Route::get('/', function () {
-        return redirect()->route('fr.comparateur.prix');
-    });
+    Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('fr.welcome');
     
     // Routes principales françaises avec URLs SEO (publiques)
     Route::get('/dashboard', function () {
@@ -100,9 +95,7 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
 Route::prefix('en')->middleware('setlocale')->group(function () {
     
     // Route racine anglaise
-    Route::get('/', function () {
-        return redirect()->route('en.manga.price.comparator');
-    });
+    Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('en.welcome');
     
     // Routes principales anglaises avec URLs SEO (publiques)
     Route::get('/dashboard', function () {

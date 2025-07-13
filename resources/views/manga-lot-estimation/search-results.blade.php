@@ -6,14 +6,14 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Breadcrumbs -->
             <div class="mb-6">
                 <x-breadcrumbs page="search_results" />
             </div>
 
             <div class="bg-gradient-to-br from-purple-900/40 via-pink-900/40 to-yellow-900/40 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
-                <div class="p-6 text-white">
+                <div class="p-4 sm:p-6 text-white">
                     <!-- Header -->
                     <div class="text-center mb-8">
                         <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
@@ -73,17 +73,17 @@
                         }
                     @endphp
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                         <!-- Nombre de mangas -->
                         <div class="group transform hover:scale-105 transition-all duration-300">
-                            <div class="bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-xl p-6 border border-blue-400/30 backdrop-blur-sm">
+                            <div class="bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-xl p-4 sm:p-6 border border-blue-400/30 backdrop-blur-sm">
                                 <div class="flex items-center">
-                                    <div class="bg-gradient-to-br from-blue-600/30 to-cyan-600/30 rounded-full p-3 mr-4 border border-blue-500/30">
-                                        <i class="fas fa-books text-blue-300 text-2xl"></i>
+                                    <div class="bg-gradient-to-br from-blue-600/30 to-cyan-600/30 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border border-blue-500/30">
+                                        <i class="fas fa-books text-blue-300 text-lg sm:text-2xl"></i>
                                     </div>
                                     <div>
-                                        <div class="text-sm text-blue-200">{{ __('messages.manga_count_simple') }}</div>
-                                        <div class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{{ count($mangas) }}</div>
+                                        <div class="text-xs sm:text-sm text-blue-200">{{ __('messages.manga_count_simple') }}</div>
+                                        <div class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{{ count($mangas) }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -91,14 +91,14 @@
                         
                         <!-- Valeur totale estimée -->
                         <div class="group transform hover:scale-105 transition-all duration-300">
-                            <div class="bg-gradient-to-br from-green-500/20 to-emerald-600/20 rounded-xl p-6 border border-green-400/30 backdrop-blur-sm">
+                            <div class="bg-gradient-to-br from-green-500/20 to-emerald-600/20 rounded-xl p-4 sm:p-6 border border-green-400/30 backdrop-blur-sm">
                                 <div class="flex items-center">
-                                    <div class="bg-gradient-to-br from-green-600/30 to-emerald-600/30 rounded-full p-3 mr-4 border border-green-500/30">
-                                        <i class="fas fa-euro-sign text-green-300 text-2xl"></i>
+                                    <div class="bg-gradient-to-br from-green-600/30 to-emerald-600/30 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border border-green-500/30">
+                                        <i class="fas fa-euro-sign text-green-300 text-lg sm:text-2xl"></i>
                                     </div>
                                     <div>
-                                        <div class="text-sm text-green-200">Valeur totale estimée</div>
-                                        <div class="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                                        <div class="text-xs sm:text-sm text-green-200">Valeur totale estimée</div>
+                                        <div class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                                             {{ number_format($totalMinValue, 2) }} - {{ number_format($maxValue, 2) }} €
                                         </div>
                                         <div class="text-xs text-green-200 mt-1">Min - Max</div>
@@ -109,14 +109,14 @@
                         
                         <!-- Succès -->
                         <div class="group transform hover:scale-105 transition-all duration-300">
-                            <div class="bg-gradient-to-br from-emerald-500/20 to-green-600/20 rounded-xl p-6 border border-emerald-400/30 backdrop-blur-sm">
+                            <div class="bg-gradient-to-br from-emerald-500/20 to-green-600/20 rounded-xl p-4 sm:p-6 border border-emerald-400/30 backdrop-blur-sm">
                                 <div class="flex items-center">
-                                    <div class="bg-gradient-to-br from-emerald-600/30 to-green-600/30 rounded-full p-3 mr-4 border border-emerald-500/30">
-                                        <i class="fas fa-check text-emerald-300 text-2xl"></i>
+                                    <div class="bg-gradient-to-br from-emerald-600/30 to-green-600/30 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border border-emerald-500/30">
+                                        <i class="fas fa-check text-emerald-300 text-lg sm:text-2xl"></i>
                                     </div>
                                     <div>
-                                        <div class="text-sm text-emerald-200">Analyses réussies</div>
-                                        <div class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">{{ $successCount }}</div>
+                                        <div class="text-xs sm:text-sm text-emerald-200">Analyses réussies</div>
+                                        <div class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">{{ $successCount }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -124,14 +124,14 @@
 
                         <!-- Erreurs -->
                         <div class="group transform hover:scale-105 transition-all duration-300">
-                            <div class="bg-gradient-to-br from-red-500/20 to-pink-600/20 rounded-xl p-6 border border-red-400/30 backdrop-blur-sm">
+                            <div class="bg-gradient-to-br from-red-500/20 to-pink-600/20 rounded-xl p-4 sm:p-6 border border-red-400/30 backdrop-blur-sm">
                                 <div class="flex items-center">
-                                    <div class="bg-gradient-to-br from-red-600/30 to-pink-600/30 rounded-full p-3 mr-4 border border-red-500/30">
-                                        <i class="fas fa-exclamation-triangle text-red-300 text-2xl"></i>
+                                    <div class="bg-gradient-to-br from-red-600/30 to-pink-600/30 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 border border-red-500/30">
+                                        <i class="fas fa-exclamation-triangle text-red-300 text-lg sm:text-2xl"></i>
                                     </div>
                                     <div>
-                                        <div class="text-sm text-red-200">Analyses échouées</div>
-                                        <div class="text-2xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">{{ $errorCount }}</div>
+                                        <div class="text-xs sm:text-sm text-red-200">Analyses échouées</div>
+                                        <div class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">{{ $errorCount }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@
                             @endphp
 
                             <div class="bg-gradient-to-br from-purple-800/30 to-pink-800/30 rounded-xl border border-purple-600/30 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300">
-                                <div class="p-6">
+                                <div class="p-3 sm:p-4 lg:p-6">
                                     <!-- En-tête du manga -->
                                     <div class="flex items-center justify-between mb-4">
                                         <div class="flex-1">
@@ -208,7 +208,7 @@
                                         </div>
                                     @elseif($hasRarity)
                                         <!-- Résultats d'estimation -->
-                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
                                             <!-- Score de rareté -->
                                             <div class="bg-gradient-to-br from-purple-500/20 to-pink-600/20 rounded-lg p-4 border border-purple-400/30">
                                                 <div class="text-center">
@@ -270,7 +270,7 @@
 
                                         @if(!isset($historiqueIds[$index]))
                                         <!-- Détails (cachés par défaut) - seulement si pas d'historique -->
-                                        <div id="details-{{ $index }}" class="hidden bg-purple-800/20 border border-purple-600/30 rounded-lg p-4 mt-4">
+                                        <div id="details-{{ $index }}" class="hidden bg-purple-800/20 border border-purple-600/30 rounded-lg p-3 sm:p-4 mt-4">
                                             <div class="space-y-4">
                                                 <!-- Explication -->
                                                 @if(!empty($explanation))
@@ -308,7 +308,7 @@
                                                             <i class="fas fa-euro-sign mr-1"></i>
                                                             Estimations par état
                                                         </h4>
-                                                        <div class="grid grid-cols-3 gap-2 text-sm">
+                                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
                                                             <div class="text-center p-2 bg-orange-600/20 rounded border border-orange-500/30">
                                                                 <div class="text-orange-200">Correct</div>
                                                                 <div class="font-semibold text-orange-300">{{ $valueEstimation['correct'] ?? 'N/A' }}</div>
@@ -332,7 +332,7 @@
                                                             <i class="fas fa-chart-line mr-1"></i>
                                                             Détails de popularité AniList
                                                         </h4>
-                                                        <div class="grid grid-cols-2 gap-2 text-sm">
+                                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                                                             <div class="text-center p-2 bg-blue-600/20 rounded border border-blue-500/30">
                                                                 <div class="text-blue-200">Score de popularité</div>
                                                                 <div class="font-semibold text-blue-300">{{ $popularity['popularity_score'] ?? 'N/A' }}/100</div>
@@ -379,21 +379,21 @@
                     </div>
 
                     <!-- Actions -->
-                    <div class="mt-8 flex justify-center space-x-6">
+                    <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4 sm:space-x-6">
                         <a href="{{ \App\Helpers\LocalizedRoute::url('manga.lot.estimation.upload.form') }}" 
-                           class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 border border-blue-500/30 shadow-lg">
-                            <div class="bg-blue-600/30 rounded-full p-2 mr-3 border border-blue-500/30 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-arrow-left text-blue-200"></i>
+                           class="group inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 border border-blue-500/30 shadow-lg">
+                            <div class="bg-blue-600/30 rounded-full p-2 mr-2 sm:mr-3 border border-blue-500/30 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-arrow-left text-blue-200 text-sm sm:text-base"></i>
                             </div>
-                            <span class="font-medium">{{ __('messages.new_analysis') }}</span>
+                            <span class="font-medium text-sm sm:text-base">{{ __('messages.new_analysis') }}</span>
                         </a>
                         
                         <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" 
-                           class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 border border-green-500/30 shadow-lg">
-                            <div class="bg-green-600/30 rounded-full p-2 mr-3 border border-green-500/30 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-search text-green-200"></i>
+                           class="group inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 border border-green-500/30 shadow-lg">
+                            <div class="bg-green-600/30 rounded-full p-2 mr-2 sm:mr-3 border border-green-500/30 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-search text-green-200 text-sm sm:text-base"></i>
                             </div>
-                            <span class="font-medium">{{ __('messages.simple_search') }}</span>
+                            <span class="font-medium text-sm sm:text-base">{{ __('messages.simple_search') }}</span>
                         </a>
                     </div>
                 </div>

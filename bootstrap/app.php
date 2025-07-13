@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'setlocale' => \App\Http\Middleware\SetLocale::class,
             'recaptcha' => \App\Http\Middleware\RecaptchaMiddleware::class,
+            'detect.language' => \App\Http\Middleware\DetectLanguage::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

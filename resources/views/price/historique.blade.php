@@ -86,9 +86,9 @@
                 </div>
             </div>
 
-            <!-- Unified History Table -->
+            <!-- Unified History Table (desktop) -->
             <div class="bg-gradient-to-br from-purple-900/40 via-pink-900/40 to-yellow-900/40 backdrop-blur-lg overflow-hidden shadow-2xl sm:rounded-2xl border border-white/20">
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto hidden sm:block">
                     <table class="w-full min-w-full">
                         <thead class="bg-gradient-to-r from-purple-800/50 to-pink-800/50">
                             <tr>
@@ -373,25 +373,171 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="px-4 sm:px-6 py-8 sm:py-12 text-center text-purple-200">
-                                        <div class="flex flex-col items-center">
-                                            <div class="bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-full p-4 sm:p-6 mb-4 border border-purple-500/30">
-                                                <i class="fas fa-search text-3xl sm:text-4xl text-purple-300"></i>
-                                            </div>
-                                            <p class="text-base sm:text-lg font-medium text-white mb-2">{{ __('messages.no_searches_found') }}</p>
-                                            <p class="text-xs sm:text-sm text-purple-300 mb-4 text-center">{{ __('messages.start_first_search') }}</p>
-                                            <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" 
-                                               class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 border border-purple-500/30 text-sm sm:text-base">
-                                                <i class="fas fa-search mr-2"></i>
-                                                {{ __('messages.new_search_button') }}
-                                            </a>
-                                        </div>
-                                    </td>
+                                    <td colspan="10" class="text-center text-purple-200 py-8">{{ __('messages.no_history') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+                <!-- Mobile cards version -->
+                <div class="flex flex-col gap-4 sm:hidden p-2">
+                    @forelse($paginator as $item)
+                        <div class="bg-gradient-to-br from-purple-800/80 via-pink-800/80 to-yellow-800/80 rounded-xl shadow-lg border border-white/20 p-4 flex flex-col gap-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-purple-200 font-semibold">
+                                    <i class="fas fa-calendar-alt mr-1 text-purple-300"></i>{{ $item['created_at']->format('d/m/Y H:i') }}
+                                </span>
+                                <span class="text-xs font-bold">
+                                    @if($item['type'] === 'lot')
+                                        <span class="text-yellow-300"><i class="fas fa-boxes mr-1"></i>Lot ({{ $item['manga_count'] }})</span>
+                                    @else
+                                        <span class="text-green-300"><i class="fas fa-search mr-1"></i>Recherche</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="font-medium text-white truncate">{{ $item['title'] }}</div>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="bg-purple-900/40 px-2 py-1 rounded"><i class="fas fa-barcode mr-1"></i>{{ $item['isbn'] ?? 'N/A' }}</span>
+                                @if($item['type'] === 'search')
+                                    @php
+                                        $search = $item['data'];
+                                        $amazonProvider = $search->providers->where('name', 'amazon')->first();
+                                        $culturaProvider = $search->providers->where('name', 'cultura')->first();
+                                        $fnacProvider = $search->providers->where('name', 'fnac')->first();
+                                        
+                                        $amazonPrice = $amazonProvider && $amazonProvider->min > 0 ? number_format($amazonProvider->min, 2, ',', ' ') . '€' : '-';
+                                        $culturaPrice = $culturaProvider && $culturaProvider->min > 0 ? number_format($culturaProvider->min, 2, ',', ' ') . '€' : '-';
+                                        $fnacPrice = $fnacProvider && $fnacProvider->min > 0 ? number_format($fnacProvider->min, 2, ',', ' ') . '€' : '-';
+                                        
+                                        $bestPrice = $search->best_price ? $search->best_price['price'] : '-';
+                                        
+                                        $correct = $search->estimation_occasion_correct;
+                                        $bon = $search->estimation_occasion_bon;
+                                        $excellent = $search->estimation_occasion_excellent;
+                                        
+                                        $prices = array_filter([$correct, $bon, $excellent], function($price) {
+                                            return $price !== null && $price > 0;
+                                        });
+                                        
+                                        $hasEstimations = !empty($prices);
+                                        $minPrice = $hasEstimations ? min($prices) : null;
+                                        $maxPrice = $hasEstimations ? max($prices) : null;
+                                        
+                                        $estimationPrice = $hasEstimations ? 
+                                            ($minPrice === $maxPrice ? 
+                                                number_format($minPrice, 2, ',', ' ') . '€' : 
+                                                number_format($minPrice, 2, ',', ' ') . '-' . number_format($maxPrice, 2, ',', ' ') . '€'
+                                            ) : '-';
+                                    @endphp
+                                    <div class="flex flex-col gap-1 w-full">
+                                        <div class="text-xs text-purple-300 font-semibold mb-1">Prix trouvés :</div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-orange-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fab fa-amazon mr-1 text-orange-400"></i>
+                                                <span class="text-xs font-medium">Amazon:</span>
+                                                <span class="ml-1 font-bold">{{ $amazonPrice }}</span>
+                                            </span>
+                                            <span class="bg-blue-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fas fa-store mr-1 text-blue-400"></i>
+                                                <span class="text-xs font-medium">Cultura:</span>
+                                                <span class="ml-1 font-bold">{{ $culturaPrice }}</span>
+                                            </span>
+                                            <span class="bg-pink-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fas fa-shopping-cart mr-1 text-red-400"></i>
+                                                <span class="text-xs font-medium">Fnac:</span>
+                                                <span class="ml-1 font-bold">{{ $fnacPrice }}</span>
+                                            </span>
+                                        </div>
+                                        <div class="text-xs text-purple-300 font-semibold mt-2 mb-1">Résumé :</div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-yellow-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fas fa-trophy mr-1 text-yellow-400"></i>
+                                                <span class="text-xs font-medium">Meilleur:</span>
+                                                <span class="ml-1 font-bold">{{ $bestPrice }}</span>
+                                            </span>
+                                            <span class="bg-purple-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fas fa-robot mr-1 text-purple-400"></i>
+                                                <span class="text-xs font-medium">Occasion:</span>
+                                                <span class="ml-1 font-bold">{{ $estimationPrice }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="flex flex-col gap-1 w-full">
+                                        <div class="text-xs text-purple-300 font-semibold mb-1">Lot de mangas</div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-orange-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fab fa-amazon mr-1 text-orange-400"></i>
+                                                <span class="text-xs font-medium">Amazon:</span>
+                                                <span class="ml-1 font-bold">-</span>
+                                            </span>
+                                            <span class="bg-blue-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fas fa-store mr-1 text-blue-400"></i>
+                                                <span class="text-xs font-medium">Cultura:</span>
+                                                <span class="ml-1 font-bold">-</span>
+                                            </span>
+                                            <span class="bg-pink-900/40 px-2 py-1 rounded flex items-center">
+                                                <i class="fas fa-shopping-cart mr-1 text-red-400"></i>
+                                                <span class="text-xs font-medium">Fnac:</span>
+                                                <span class="ml-1 font-bold">-</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <!-- Actions (voir) -->
+                                @if($item['type'] === 'search')
+                                    @php
+                                        $search = $item['data'];
+                                    @endphp
+                                    <a href="{{ \App\Helpers\LocalizedRoute::url('historique.show', $item['data']->id) }}" 
+                                       class="text-green-400 hover:text-green-300 hover:scale-110 transition-all duration-200 bg-green-600/20 p-1 rounded border border-green-500/30 flex items-center justify-center space-x-1 text-xs" 
+                                       title="{{ __('messages.view_results') }}">
+                                        <i class="fas fa-eye text-xs"></i>
+                                        <span class="ml-1">👁️</span>
+                                        <span class="ml-1 font-bold">Vue</span>
+                                    </a>
+                                    <a href="https://www.amazon.fr/s?k={{ urlencode($search->isbn) }}" 
+                                       target="_blank"
+                                       class="text-orange-400 hover:text-orange-300 hover:scale-110 transition-all duration-200 bg-orange-600/20 p-1 rounded border border-orange-500/30 flex items-center justify-center space-x-1 text-xs" 
+                                       title="{{ __('messages.view_amazon') }}">
+                                        <i class="fab fa-amazon text-xs"></i>
+                                        <span class="ml-1">🛒</span>
+                                        <span class="ml-1 font-bold">Amazon</span>
+                                    </a>
+                                    <a href="https://www.cultura.com/search/results?search_query={{ urlencode($search->isbn) }}" 
+                                       target="_blank"
+                                       class="text-blue-400 hover:text-blue-300 hover:scale-110 transition-all duration-200 bg-blue-600/20 p-1 rounded border border-blue-500/30 flex items-center justify-center space-x-1 text-xs" 
+                                       title="{{ __('messages.view_cultura') }}">
+                                        <i class="fas fa-store text-xs"></i>
+                                        <span class="ml-1">📚</span>
+                                        <span class="ml-1 font-bold">Cultura</span>
+                                    </a>
+                                    <a href="https://www.fnac.com/SearchResult/ResultList.aspx?SCat=0!1&Search={{ urlencode($search->title ?? $search->isbn) }}&sft=1&sa=0" 
+                                       target="_blank"
+                                       class="text-red-400 hover:text-red-300 hover:scale-110 transition-all duration-200 bg-red-600/20 p-1 rounded border border-red-500/30 flex items-center justify-center space-x-1 text-xs" 
+                                       title="{{ __('messages.view_fnac') }}">
+                                        <i class="fas fa-shopping-cart text-xs"></i>
+                                        <span class="ml-1">⭐</span>
+                                        <span class="ml-1 font-bold">Fnac</span>
+                                    </a>
+                                @else
+                                    <a href="{{ \App\Helpers\LocalizedRoute::url('historique.show.lot', $item['data']->id) }}" 
+                                       class="text-yellow-400 hover:text-yellow-300 hover:scale-110 transition-all duration-200 bg-yellow-600/20 p-1 rounded border border-yellow-500/30 flex items-center justify-center space-x-1 text-xs" 
+                                       title="Voir les résultats du lot">
+                                        <i class="fas fa-eye text-xs"></i>
+                                        <span class="ml-1">👁️</span>
+                                        <span class="ml-1 font-bold">Voir lot</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center text-purple-200 py-8">{{ __('messages.no_history') }}</div>
+                    @endforelse
+                </div>
+            </div>
 
                 <!-- Pagination -->
                 @if($paginator->hasPages())

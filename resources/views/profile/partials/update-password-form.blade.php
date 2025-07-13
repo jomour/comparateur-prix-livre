@@ -36,9 +36,9 @@
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border border-blue-500/30 shadow-lg transform hover:scale-105 transition-all duration-300">
-                <i class="fas fa-key mr-2"></i>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+            <x-primary-button class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border border-blue-500/30 shadow-lg transform hover:scale-105 transition-all duration-300 text-sm">
+                <i class="fas fa-key mr-1 sm:mr-2"></i>
                 {{ __('Save') }}
             </x-primary-button>
 

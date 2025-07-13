@@ -54,17 +54,7 @@
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-6" :status="session('status')" />
 
-                <!-- Message d'information stylisé -->
-                <div class="mb-6 p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-300/30 rounded-xl backdrop-blur-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mr-3">
-                            <i class="fas fa-shield-alt text-white text-sm"></i>
-                        </div>
-                        <p class="text-sm text-white font-medium">
-                            {{ __('messages.restricted_access') }}
-                        </p>
-                    </div>
-                </div>
+
 
                 <form method="POST" action="{{ \App\Helpers\LocalizedRoute::localized('login') }}" class="space-y-6">
                     @csrf
@@ -132,6 +122,14 @@
                             <i class="fas fa-sign-in-alt"></i>
                             <span>{{ __('messages.log_in') }}</span>
                         </button>
+                    </div>
+
+                    <!-- Lien vers inscription -->
+                    <div class="text-center mt-4">
+                        <a class="text-sm text-purple-200 hover:text-white transition-colors duration-200 underline" 
+                           href="{{ \App\Helpers\LocalizedRoute::localized('register') }}">
+                            {{ __('messages.not_registered_yet') }}
+                        </a>
                     </div>
                 </form>
 

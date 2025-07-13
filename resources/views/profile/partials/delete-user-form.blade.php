@@ -55,14 +55,14 @@
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
             </div>
 
-            <div class="mt-6 flex justify-end space-x-3">
-                <x-secondary-button x-on:click="$dispatch('close')" class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 border border-gray-500/30 shadow-lg transform hover:scale-105 transition-all duration-300">
-                    <i class="fas fa-times mr-2"></i>
+            <div class="mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:space-x-3">
+                <x-secondary-button x-on:click="$dispatch('close')" class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 border border-gray-500/30 shadow-lg transform hover:scale-105 transition-all duration-300 text-sm">
+                    <i class="fas fa-times mr-1 sm:mr-2"></i>
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
-                <x-danger-button class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 border border-red-500/30 shadow-lg transform hover:scale-105 transition-all duration-300">
-                    <i class="fas fa-trash mr-2"></i>
+                <x-danger-button class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 border border-red-500/30 shadow-lg transform hover:scale-105 transition-all duration-300 text-sm">
+                    <i class="fas fa-trash mr-1 sm:mr-2"></i>
                     {{ __('Delete Account') }}
                 </x-danger-button>
             </div>
