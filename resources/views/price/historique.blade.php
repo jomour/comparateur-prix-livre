@@ -209,12 +209,12 @@
                                     </td>
                                     <td class="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
                                         @if($item['type'] === 'search')
-                                            @php
-                                                $search = $item['data'];
-                                                $amazonProvider = $search->providers->where('name', 'amazon')->first();
-                                                $amazonPrice = $amazonProvider && $amazonProvider->min > 0 ? number_format($amazonProvider->min, 2, ',', ' ') . '€' : __('messages.price_not_found');
-                                                $amazonFound = $amazonProvider && $amazonProvider->min > 0;
-                                            @endphp
+                                                                                    @php
+                                            $search = $item['data'];
+                                            $amazonProvider = $search->providers->where('name', 'amazon')->first();
+                                            $amazonPrice = $amazonProvider && $amazonProvider->min && is_numeric($amazonProvider->min) && $amazonProvider->min > 0 ? number_format((float)$amazonProvider->min, 2, ',', ' ') . '€' : __('messages.price_not_found');
+                                            $amazonFound = $amazonProvider && $amazonProvider->min && is_numeric($amazonProvider->min) && $amazonProvider->min > 0;
+                                        @endphp
                                             <div class="flex items-center">
                                                 <i class="fab fa-amazon text-orange-400 mr-1 sm:mr-2"></i>
                                                 <span class="text-xs sm:text-sm {{ $amazonFound ? 'text-green-300 font-semibold bg-green-600/20 px-1 sm:px-2 py-1 rounded border border-green-500/30' : 'text-red-300 bg-red-600/20 px-1 sm:px-2 py-1 rounded border border-red-500/30' }}">
@@ -227,12 +227,12 @@
                                     </td>
                                     <td class="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
                                         @if($item['type'] === 'search')
-                                            @php
-                                                $search = $item['data'];
-                                                $culturaProvider = $search->providers->where('name', 'cultura')->first();
-                                                $culturaPrice = $culturaProvider && $culturaProvider->min > 0 ? number_format($culturaProvider->min, 2, ',', ' ') . '€' : __('messages.price_not_found');
-                                                $culturaFound = $culturaProvider && $culturaProvider->min > 0;
-                                            @endphp
+                                                                                    @php
+                                            $search = $item['data'];
+                                            $culturaProvider = $search->providers->where('name', 'cultura')->first();
+                                            $culturaPrice = $culturaProvider && $culturaProvider->min && is_numeric($culturaProvider->min) && $culturaProvider->min > 0 ? number_format((float)$culturaProvider->min, 2, ',', ' ') . '€' : __('messages.price_not_found');
+                                            $culturaFound = $culturaProvider && $culturaProvider->min && is_numeric($culturaProvider->min) && $culturaProvider->min > 0;
+                                        @endphp
                                             <div class="flex items-center">
                                                 <i class="fas fa-store text-blue-400 mr-1 sm:mr-2"></i>
                                                 <span class="text-xs sm:text-sm {{ $culturaFound ? 'text-green-300 font-semibold bg-green-600/20 px-1 sm:px-2 py-1 rounded border border-green-500/30' : 'text-red-300 bg-red-600/20 px-1 sm:px-2 py-1 rounded border border-red-500/30' }}">
@@ -245,12 +245,12 @@
                                     </td>
                                     <td class="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
                                         @if($item['type'] === 'search')
-                                            @php
-                                                $search = $item['data'];
-                                                $fnacProvider = $search->providers->where('name', 'fnac')->first();
-                                                $fnacPrice = $fnacProvider && $fnacProvider->min > 0 ? number_format($fnacProvider->min, 2, ',', ' ') . '€' : __('messages.price_not_found');
-                                                $fnacFound = $fnacProvider && $fnacProvider->min > 0;
-                                            @endphp
+                                                                                    @php
+                                            $search = $item['data'];
+                                            $fnacProvider = $search->providers->where('name', 'fnac')->first();
+                                            $fnacPrice = $fnacProvider && $fnacProvider->min && is_numeric($fnacProvider->min) && $fnacProvider->min > 0 ? number_format((float)$fnacProvider->min, 2, ',', ' ') . '€' : __('messages.price_not_found');
+                                            $fnacFound = $fnacProvider && $fnacProvider->min && is_numeric($fnacProvider->min) && $fnacProvider->min > 0;
+                                        @endphp
                                             <div class="flex items-center">
                                                 <i class="fas fa-shopping-cart text-red-400 mr-1 sm:mr-2"></i>
                                                 <span class="text-xs sm:text-sm {{ $fnacFound ? 'text-green-300 font-semibold bg-green-600/20 px-1 sm:px-2 py-1 rounded border border-green-500/30' : 'text-red-300 bg-red-600/20 px-1 sm:px-2 py-1 rounded border border-red-500/30' }}">
@@ -285,30 +285,30 @@
                                     </td>
                                     <td class="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
                                         @if($item['type'] === 'search')
-                                            @php
-                                                $search = $item['data'];
-                                                $correct = $search->estimation_occasion_correct;
-                                                $bon = $search->estimation_occasion_bon;
-                                                $excellent = $search->estimation_occasion_excellent;
-                                                
-                                                // Trouver les valeurs non nulles
-                                                $prices = array_filter([$correct, $bon, $excellent], function($price) {
-                                                    return $price !== null && $price > 0;
-                                                });
-                                                
-                                                $hasEstimations = !empty($prices);
-                                                $minPrice = $hasEstimations ? min($prices) : null;
-                                                $maxPrice = $hasEstimations ? max($prices) : null;
-                                            @endphp
+                                                                                    @php
+                                            $search = $item['data'];
+                                            $correct = $search->estimation_occasion_correct;
+                                            $bon = $search->estimation_occasion_bon;
+                                            $excellent = $search->estimation_occasion_excellent;
+                                            
+                                            // Trouver les valeurs non nulles et numériques
+                                            $prices = array_filter([$correct, $bon, $excellent], function($price) {
+                                                return $price !== null && is_numeric($price) && $price > 0;
+                                            });
+                                            
+                                            $hasEstimations = !empty($prices);
+                                            $minPrice = $hasEstimations ? min($prices) : null;
+                                            $maxPrice = $hasEstimations ? max($prices) : null;
+                                        @endphp
                                             
                                             @if($hasEstimations)
                                                 <div class="flex items-center">
                                                     <i class="fas fa-robot text-purple-400 mr-1 sm:mr-2"></i>
                                                     <span class="text-xs sm:text-sm font-semibold text-purple-300 bg-purple-600/20 px-1 sm:px-2 py-1 rounded border border-purple-500/30">
                                                         @if($minPrice === $maxPrice)
-                                                            {{ number_format($minPrice, 2, ',', ' ') }}€
+                                                            {{ number_format((float)$minPrice, 2, ',', ' ') }}€
                                                         @else
-                                                            {{ number_format($minPrice, 2, ',', ' ') }} - {{ number_format($maxPrice, 2, ',', ' ') }}€
+                                                            {{ number_format((float)$minPrice, 2, ',', ' ') }} - {{ number_format((float)$maxPrice, 2, ',', ' ') }}€
                                                         @endif
                                                     </span>
                                                 </div>
@@ -405,9 +405,9 @@
                                         $culturaProvider = $search->providers->where('name', 'cultura')->first();
                                         $fnacProvider = $search->providers->where('name', 'fnac')->first();
                                         
-                                        $amazonPrice = $amazonProvider && $amazonProvider->min > 0 ? number_format($amazonProvider->min, 2, ',', ' ') . '€' : '-';
-                                        $culturaPrice = $culturaProvider && $culturaProvider->min > 0 ? number_format($culturaProvider->min, 2, ',', ' ') . '€' : '-';
-                                        $fnacPrice = $fnacProvider && $fnacProvider->min > 0 ? number_format($fnacProvider->min, 2, ',', ' ') . '€' : '-';
+                                        $amazonPrice = $amazonProvider && $amazonProvider->min && is_numeric($amazonProvider->min) && $amazonProvider->min > 0 ? number_format((float)$amazonProvider->min, 2, ',', ' ') . '€' : '-';
+                                        $culturaPrice = $culturaProvider && $culturaProvider->min && is_numeric($culturaProvider->min) && $culturaProvider->min > 0 ? number_format((float)$culturaProvider->min, 2, ',', ' ') . '€' : '-';
+                                        $fnacPrice = $fnacProvider && $fnacProvider->min && is_numeric($fnacProvider->min) && $fnacProvider->min > 0 ? number_format((float)$fnacProvider->min, 2, ',', ' ') . '€' : '-';
                                         
                                         $bestPrice = $search->best_price ? $search->best_price['price'] : '-';
                                         
@@ -416,7 +416,7 @@
                                         $excellent = $search->estimation_occasion_excellent;
                                         
                                         $prices = array_filter([$correct, $bon, $excellent], function($price) {
-                                            return $price !== null && $price > 0;
+                                            return $price !== null && is_numeric($price) && $price > 0;
                                         });
                                         
                                         $hasEstimations = !empty($prices);
@@ -425,8 +425,8 @@
                                         
                                         $estimationPrice = $hasEstimations ? 
                                             ($minPrice === $maxPrice ? 
-                                                number_format($minPrice, 2, ',', ' ') . '€' : 
-                                                number_format($minPrice, 2, ',', ' ') . '-' . number_format($maxPrice, 2, ',', ' ') . '€'
+                                                number_format((float)$minPrice, 2, ',', ' ') . '€' : 
+                                                number_format((float)$minPrice, 2, ',', ' ') . '-' . number_format((float)$maxPrice, 2, ',', ' ') . '€'
                                             ) : '-';
                                     @endphp
                                     <div class="flex flex-col gap-1 w-full">
