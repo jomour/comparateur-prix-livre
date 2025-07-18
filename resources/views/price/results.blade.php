@@ -389,13 +389,13 @@
                 </div>
             @endif
 
-            <!-- Text de revente -->
+            <!-- Texte de revente -->
             @if(isset($salesText) && !empty($salesText))
                 <div class="bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-2xl shadow-2xl border border-green-300/30 p-6 mb-8">
                     <div class="text-center text-white">
                         <div class="flex items-center justify-center mb-4">
                             <i class="fas fa-chart-line text-3xl text-green-200 mr-3"></i>
-                            <h3 class="text-2xl font-bold">Text de Revente SEO</h3>
+                            <h3 class="text-2xl font-bold">Texte de Revente SEO</h3>
                         </div>
                         <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                             <p class="text-lg leading-relaxed text-white/90">{{ $salesText }}</p>
