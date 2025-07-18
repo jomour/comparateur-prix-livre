@@ -198,6 +198,18 @@ class LocalizedRoute
     'fr' => 'fr.recherche.isbn.image',
     'en' => 'en.search.isbn.image'
 ],
+        'generateur.annonces' => [
+            'fr' => 'fr.generateur.annonces',
+            'en' => 'en.generateur.annonces'
+        ],
+        'generateur.annonces.generate' => [
+            'fr' => 'fr.generateur.annonces.generate',
+            'en' => 'en.generateur.annonces.generate'
+        ],
+        'generateur.annonces.results' => [
+            'fr' => 'fr.generateur.annonces.results',
+            'en' => 'en.generateur.annonces.results'
+        ],
 'manga.lot.estimation.search.price' => [
     'fr' => 'fr.recherche.prix.image',
     'en' => 'en.search.price.image'
@@ -301,7 +313,7 @@ class LocalizedRoute
         }
 
         // Récupère le nom de la route courante
-        $currentRouteName = \Route::currentRouteName();
+        $currentRouteName = Route::currentRouteName();
         $routeMapping = self::getRouteMapping();
 
         // Cherche la clé logique correspondant à la route courante

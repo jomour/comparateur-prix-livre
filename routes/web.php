@@ -72,6 +72,11 @@ Route::prefix('fr')->middleware('setlocale')->group(function () {
         Route::get('/resultats-recherche-image', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.recherche.image');
         Route::get('/resultats-estimation-lot', [MangaLotEstimationController::class, 'showSearchResults'])->name('fr.resultats.estimation.lot');
         
+        // Analyse d'images avec GPT-4o (authentifiée)
+        Route::get('/generateur-annonces', [App\Http\Controllers\GenerateurAnnoncesController::class, 'index'])->name('fr.generateur.annonces');
+Route::post('/generateur-annonces', [App\Http\Controllers\GenerateurAnnoncesController::class, 'generate'])->name('fr.generateur.annonces.generate');
+Route::get('/resultats-generateur-annonces', [App\Http\Controllers\GenerateurAnnoncesController::class, 'showResults'])->name('fr.generateur.annonces.results');
+        
         // Profil utilisateur
         Route::get('/mon-profil', [ProfileController::class, 'edit'])->name('fr.mon.profil');
         Route::patch('/mon-profil', [ProfileController::class, 'update'])->name('fr.mon.profil.update');
@@ -139,6 +144,11 @@ Route::prefix('en')->middleware('setlocale')->group(function () {
         Route::post('/remove-manga', [MangaLotEstimationController::class, 'removeManga'])->name('en.remove.manga');
         Route::get('/image-search-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.image.search.results');
         Route::get('/lot-estimation-results', [MangaLotEstimationController::class, 'showSearchResults'])->name('en.lot.estimation.results');
+        
+        // Image analysis with GPT-4o (authentifiée)
+        Route::get('/announcement-generator', [App\Http\Controllers\GenerateurAnnoncesController::class, 'index'])->name('en.generateur.annonces');
+Route::post('/announcement-generator', [App\Http\Controllers\GenerateurAnnoncesController::class, 'generate'])->name('en.generateur.annonces.generate');
+Route::get('/announcement-generator-results', [App\Http\Controllers\GenerateurAnnoncesController::class, 'showResults'])->name('en.generateur.annonces.results');
         
         // User profile
         Route::get('/my-profile', [ProfileController::class, 'edit'])->name('en.my.profile');
