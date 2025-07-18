@@ -159,7 +159,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-8">
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-                        {{ __('messages.why_choose_us') }}
+                        Découvrez les fonctionnalités de MangaValueCheck
                     </h2>
                     <p class="text-xl text-purple-200 max-w-3xl mx-auto">
                         {{ __('messages.landing_features_description') }}
@@ -189,14 +189,14 @@
                         </p>
                     </div>
 
-                    <!-- Feature 3: 24/7 -->
+                    <!-- Feature 3: Annonce de vente optimisée par IA -->
                     <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                        <div class="w-16 h-16 bg-gradient-to-br from-pink-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-clock text-white text-2xl"></i>
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-magic text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-4 text-center">{{ __('messages.available_24_7') }}</h3>
+                        <h3 class="text-2xl font-bold text-white mb-4 text-center">{{ __('messages.ai_sales_announcement') }}</h3>
                         <p class="text-purple-200 text-center">
-                            {{ __('messages.available_24_7_description') }}
+                            {{ __('messages.ai_sales_announcement_description') }}
                         </p>
                     </div>
 
@@ -232,6 +232,8 @@
                             {{ __('messages.lot_estimation_description') }}
                         </p>
                     </div>
+
+
                 </div>
             </div>
         </div>

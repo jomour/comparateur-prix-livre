@@ -143,6 +143,8 @@ return [
     'detailed_history_description' => 'Keep track of all your searches for optimal monitoring.',
     'lot_estimation' => 'Lot estimation',
     'lot_estimation_description' => 'Estimate the value of your manga collections in just a few clicks.',
+    'ai_sales_announcement' => 'AI-optimized sales announcement',
+    'ai_sales_announcement_description' => 'With each estimation, we automatically generate an AI-optimized used sales announcement text to maximize your selling chances.',
     'trusted_stores' => 'Trusted stores',
     'stores_description' => 'We base our estimates on prices from the largest retailers to provide you with accurate valuations.',
     'amazon_description' => 'World leader in e-commerce with the largest selection of mangas.',
