@@ -172,7 +172,8 @@ class HistoriqueController extends Controller
             'popularity' => $popularity,
             'meta' => $meta,
             'seoType' => $seoType,
-            'structuredData' => $structuredData
+            'structuredData' => $structuredData,
+            'salesText' => $search->sales_text
         ]);
     }
 

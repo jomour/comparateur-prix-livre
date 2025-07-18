@@ -5,21 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ __('messages.comparator_de_prix_manga') }} - {{ __('messages.landing_title') }} | MangaValueCheck</title>
+        <title>{{ __('messages.comparator_de_prix_manga') }} - {{ __('messages.landing_title') }} | MangaValueCheck Beta</title>
         <meta name="description" content="{{ __('messages.landing_description') }}">
         <meta name="keywords" content="{{ __('messages.landing_keywords') }}">
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="{{ __('messages.comparator_de_prix_manga') }} - {{ __('messages.landing_title') }} | MangaValueCheck">
+        <meta property="og:title" content="{{ __('messages.comparator_de_prix_manga') }} - {{ __('messages.landing_title') }} | MangaValueCheck Beta">
         <meta property="og:description" content="{{ __('messages.landing_description') }}">
         <meta property="og:image" content="{{ asset('images/mangavaluecheck_logo.png') }}">
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image">
         <meta property="twitter:url" content="{{ url()->current() }}">
-        <meta property="twitter:title" content="{{ __('messages.comparator_de_prix_manga') }} - {{ __('messages.landing_title') }} | MangaValueCheck">
+        <meta property="twitter:title" content="{{ __('messages.comparator_de_prix_manga') }} - {{ __('messages.landing_title') }} | MangaValueCheck Beta">
         <meta property="twitter:description" content="{{ __('messages.landing_description') }}">
         <meta property="twitter:image" content="{{ asset('images/mangavaluecheck_logo.png') }}">
 
@@ -62,7 +62,7 @@
                                 <i class="fas fa-book-open text-white text-lg"></i>
                             </div>
                             <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                                MangaValueCheck
+                                MangaValueCheck <span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-2">Beta</span>
                             </span>
                         </div>
                     </div>
@@ -129,8 +129,8 @@
                     <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
                         <i class="fas fa-book-open text-white text-4xl"></i>
                     </div>
-                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                        MangaValueCheck
+                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-6">
+                        <span class="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">MangaValueCheck</span><span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-1 align-top">Beta</span>
                     </h1>
                     <p class="text-2xl md:text-3xl text-purple-200 mb-8 max-w-4xl mx-auto">
                         {{ __('messages.landing_hero_subtitle') }}
@@ -339,7 +339,7 @@
                             <i class="fas fa-book-open text-white text-sm"></i>
                         </div>
                         <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                            MangaValueCheck
+                            MangaValueCheck <span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-2">Beta</span>
                         </span>
                     </div>
                     <p class="text-purple-200 mb-6">

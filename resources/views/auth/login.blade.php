@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>MangaValueCheck</title>
+        <title>MangaValueCheck Beta</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -42,7 +42,7 @@
             <!-- Logo et titre -->
             <div class="text-center mb-6">
                 <h1 class="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                    MangaValueCheck
+                    MangaValueCheck <span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-2">Beta</span>
                 </h1>
                 <p class="text-purple-200 text-lg font-medium">
                     {{ __('messages.comparator_de_prix_manga') }}

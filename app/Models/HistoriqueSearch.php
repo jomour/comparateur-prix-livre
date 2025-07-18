@@ -33,6 +33,7 @@ class HistoriqueSearch extends Model
         'anilist_note',
         'anilist_statut',
         'lot',
+        'sales_text',
     ];
 
     /**

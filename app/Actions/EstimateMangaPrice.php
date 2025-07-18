@@ -56,6 +56,13 @@ class EstimateMangaPrice
         // Appel à OpenAI pour définir la rareté du manga (avec les données de popularité)
         $rarity = $this->getMangaRarityFromOpenAI($title, $isbn, $searchData['prices'], $popularity);
         
+        // Générer le texte de vente SEO avec OpenAI
+        $salesText = $this->generateSeoSalesText($isbn, $search->title);
+
+        // Sauvegarder le texte de vente
+        $search->sales_text = $salesText;
+        $search->save();
+
         // Sauvegarder les données d'estimation et d'analyse via la méthode de la classe
         $this->saveEstimationData($search, $rarity, $popularity, $searchData['occasion_price'], $searchData['prices']);
 
@@ -63,7 +70,8 @@ class EstimateMangaPrice
             'search' => $search,
             'searchData' => $searchData,
             'popularity' => $popularity,
-            'rarity' => $rarity
+            'rarity' => $rarity,
+            'salesText' => $salesText
         ];
     }
 
@@ -396,6 +404,51 @@ class EstimateMangaPrice
             
         } catch (\Exception $e) {
             return 'Estimation non disponible';
+        }
+    }
+
+        /**
+     * Génère un texte de vente SEO optimisé avec OpenAI
+     */
+    private function generateSeoSalesText($isbn, $title = null)
+    {
+        try {
+            $bookInfo = $this->isbnService->getBookInfo($isbn);
+            $bookTitle = $title ?? $bookInfo['title'] ?? 'Ce manga';
+            
+            $prompt = "Génère un texte de vente SEO optimisé pour un manga avec ces informations :
+            
+            Titre: {$bookTitle}
+            ISBN: {$isbn}
+            
+            Le texte doit :
+            - Être optimisé SEO avec des mots-clés naturels
+            - Inclure des termes comme 'prix manga', 'comparateur prix', 'meilleur prix'
+            - Si possible inclure des élèments de l'histoire du manga
+            - Être persuasif et informatif
+            - Faire 150 mots maximum
+            - Être en français
+            - Mentionner l'opportunité d'économiser de l'argent
+            - Doit être cohérent avec un copier coller sur n'importe quelle site de revente d'occasions
+            - NE dois pas parler du comparateur de prix
+            
+            Format: Texte uniquement, sans titre ni structure spéciale.";
+
+            $response = OpenAI::chat()->create([
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'Tu es un expert en marketing digital et SEO spécialisé dans la vente de mangas.'],
+                    ['role' => 'user', 'content' => $prompt]
+                ],
+                'max_tokens' => 300,
+                'temperature' => 0.7
+            ]);
+
+            return $response->choices[0]->message->content;
+
+        } catch (\Exception $e) {
+            // Fallback en cas d'erreur OpenAI
+            return 'Le texte n\'a pas pu être généré.';
         }
     }
 } 

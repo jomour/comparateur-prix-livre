@@ -8,7 +8,7 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ \App\Helpers\LocalizedRoute::url('price.search') }}" class="flex items-center group">
                         <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                            MangaValueCheck
+                            MangaValueCheck <span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-2">Beta</span>
                         </span>
                     </a>
                 </div>

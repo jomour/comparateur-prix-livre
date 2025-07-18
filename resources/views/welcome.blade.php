@@ -5,21 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ __('messages.manga_price_comparator') }} - {{ __('messages.manga_price_estimation') }} | MangaValueCheck</title>
+        <title>{{ __('messages.manga_price_comparator') }} - {{ __('messages.manga_price_estimation') }} | MangaValueCheck Beta</title>
         <meta name="description" content="{{ __('messages.manga_price_search') }} {{ __('messages.manga_price_history') }} {{ __('messages.manga_used_price') }} {{ __('messages.manga_new_price') }}. {{ __('messages.manga_price_analysis') }} {{ __('messages.manga_price_tracker') }} {{ __('messages.manga_price_monitoring') }}.">
         <meta name="keywords" content="{{ __('messages.manga_price_comparator') }}, {{ __('messages.manga_price_estimation') }}, {{ __('messages.manga_used_price') }}, {{ __('messages.manga_price_search') }}, {{ __('messages.manga_price_history') }}, {{ __('messages.manga_price_analysis') }}, {{ __('messages.manga_price_tracker') }}, {{ __('messages.manga_price_monitoring') }}, {{ __('messages.manga_price_alert') }}, {{ __('messages.manga_price_trend') }}, {{ __('messages.manga_price_guide') }}, {{ __('messages.manga_price_database') }}, {{ __('messages.manga_price_calculator') }}, {{ __('messages.manga_price_estimator') }}, {{ __('messages.manga_price_checker') }}, {{ __('messages.manga_price_finder') }}, {{ __('messages.manga_price_scanner') }}, {{ __('messages.manga_price_analyzer') }}, {{ __('messages.manga_price_research') }}, {{ __('messages.manga_price_investigation') }}, {{ __('messages.manga_price_study') }}, {{ __('messages.manga_price_report') }}, {{ __('messages.manga_price_statistics') }}, {{ __('messages.manga_price_data') }}, {{ __('messages.manga_price_information') }}, {{ __('messages.manga_price_details') }}, {{ __('messages.manga_price_summary') }}, {{ __('messages.manga_price_overview') }}, {{ __('messages.manga_price_comparison_tool') }}, {{ __('messages.manga_price_estimation_service') }}, {{ __('messages.manga_price_analysis_tool') }}, {{ __('messages.manga_price_tracking_system') }}, {{ __('messages.manga_price_monitoring_service') }}, {{ __('messages.manga_price_alert_system') }}, {{ __('messages.manga_price_guide_service') }}, {{ __('messages.manga_price_database_system') }}, {{ __('messages.manga_price_calculator_tool') }}, {{ __('messages.manga_price_estimator_service') }}, {{ __('messages.manga_price_checker_tool') }}, {{ __('messages.manga_price_finder_service') }}, {{ __('messages.manga_price_scanner_tool') }}, {{ __('messages.manga_price_analyzer_service') }}, {{ __('messages.manga_price_research_tool') }}, {{ __('messages.manga_price_investigation_service') }}, {{ __('messages.manga_price_study_tool') }}, {{ __('messages.manga_price_report_service') }}, {{ __('messages.manga_price_statistics_tool') }}, {{ __('messages.manga_price_data_service') }}, {{ __('messages.manga_price_information_tool') }}, {{ __('messages.manga_price_details_service') }}, {{ __('messages.manga_price_summary_tool') }}, {{ __('messages.manga_price_overview_tool') }}, {{ __('messages.what_is_my_manga_worth') }}, {{ __('messages.manga_price_evaluation') }}, {{ __('messages.manga_price_assessment') }}, {{ __('messages.manga_price_appraisal') }}, {{ __('messages.manga_price_quote') }}, {{ __('messages.manga_price_estimate') }}, {{ __('messages.manga_price_valuation') }}, {{ __('messages.manga_price_analysis_report') }}, {{ __('messages.manga_price_research_report') }}, {{ __('messages.manga_price_study_report') }}, {{ __('messages.manga_price_investigation_report') }}, {{ __('messages.manga_price_statistics_report') }}, {{ __('messages.manga_price_data_report') }}, {{ __('messages.manga_price_information_report') }}, {{ __('messages.manga_price_details_report') }}, {{ __('messages.manga_price_summary_report') }}, {{ __('messages.manga_price_overview_report') }}, {{ __('messages.manga_price_comparison_report') }}, {{ __('messages.manga_price_estimation_report') }}, {{ __('messages.manga_price_analysis_service') }}, {{ __('messages.manga_price_research_service') }}, {{ __('messages.manga_price_study_service') }}, {{ __('messages.manga_price_investigation_service') }}, {{ __('messages.manga_price_statistics_service') }}, {{ __('messages.manga_price_data_service') }}, {{ __('messages.manga_price_information_service') }}, {{ __('messages.manga_price_details_service') }}, {{ __('messages.manga_price_summary_service') }}, {{ __('messages.manga_price_overview_service') }}, {{ __('messages.manga_price_comparison_service') }}, {{ __('messages.manga_price_estimation_service') }}, {{ __('messages.manga_price_analysis_tool') }}, {{ __('messages.manga_price_research_tool') }}, {{ __('messages.manga_price_study_tool') }}, {{ __('messages.manga_price_investigation_tool') }}, {{ __('messages.manga_price_statistics_tool') }}, {{ __('messages.manga_price_data_tool') }}, {{ __('messages.manga_price_information_tool') }}, {{ __('messages.manga_price_details_tool') }}, {{ __('messages.manga_price_summary_tool') }}, {{ __('messages.manga_price_overview_tool') }}, {{ __('messages.manga_price_comparison_tool') }}, {{ __('messages.manga_price_estimation_tool') }}">
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="{{ __('messages.manga_price_comparator') }} - {{ __('messages.manga_price_estimation') }} | MangaValueCheck">
+        <meta property="og:title" content="{{ __('messages.manga_price_comparator') }} - {{ __('messages.manga_price_estimation') }} | MangaValueCheck Beta">
         <meta property="og:description" content="{{ __('messages.manga_price_search') }} {{ __('messages.manga_price_history') }} {{ __('messages.manga_used_price') }} {{ __('messages.manga_new_price') }}. {{ __('messages.manga_price_analysis') }} {{ __('messages.manga_price_tracker') }} {{ __('messages.manga_price_monitoring') }}.">
         <meta property="og:image" content="{{ asset('images/mangavaluecheck_logo.png') }}">
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image">
         <meta property="twitter:url" content="{{ url()->current() }}">
-        <meta property="twitter:title" content="{{ __('messages.manga_price_comparator') }} - {{ __('messages.manga_price_estimation') }} | MangaValueCheck">
+        <meta property="twitter:title" content="{{ __('messages.manga_price_comparator') }} - {{ __('messages.manga_price_estimation') }} | MangaValueCheck Beta">
         <meta property="twitter:description" content="{{ __('messages.manga_price_search') }} {{ __('messages.manga_price_history') }} {{ __('messages.manga_used_price') }} {{ __('messages.manga_new_price') }}. {{ __('messages.manga_price_analysis') }} {{ __('messages.manga_price_tracker') }} {{ __('messages.manga_price_monitoring') }}.">
         <meta property="twitter:image" content="{{ asset('images/mangavaluecheck_logo.png') }}">
 
@@ -44,7 +44,7 @@
                                 <i class="fas fa-book-open text-white text-sm sm:text-lg"></i>
                             </div>
                             <span class="text-lg sm:text-xl font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                                MangaValueCheck
+                                MangaValueCheck <span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-2">Beta</span>
                             </span>
                         </div>
                     </div>
@@ -271,7 +271,7 @@
                             <i class="fas fa-book-open text-white text-xs sm:text-sm"></i>
                         </div>
                         <span class="text-base sm:text-lg font-bold bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
-                            MangaValueCheck
+                            MangaValueCheck <span class="text-sm bg-red-500 text-white px-2 py-1 rounded-full ml-2">Beta</span>
                         </span>
                     </div>
                     <p class="text-purple-200 mb-4 text-sm sm:text-base px-4">

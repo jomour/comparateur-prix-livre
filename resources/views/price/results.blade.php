@@ -54,8 +54,6 @@
                 </div>
             </div>
 
-
-
             <!-- Price Comparison -->
             <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-4 sm:p-6 lg:p-8 mb-8">
                 <h2 class="text-3xl font-bold text-white mb-8 text-center">
@@ -386,6 +384,25 @@
                                     Aucun manga trouvé sur AniList pour cet ISBN
                                 </div>
                             @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Text de revente -->
+            @if(isset($salesText) && !empty($salesText))
+                <div class="bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-2xl shadow-2xl border border-green-300/30 p-6 mb-8">
+                    <div class="text-center text-white">
+                        <div class="flex items-center justify-center mb-4">
+                            <i class="fas fa-chart-line text-3xl text-green-200 mr-3"></i>
+                            <h3 class="text-2xl font-bold">Text de Revente SEO</h3>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                            <p class="text-lg leading-relaxed text-white/90">{{ $salesText }}</p>
+                        </div>
+                        <div class="mt-4 text-sm text-green-200 opacity-80">
+                            <i class="fas fa-robot mr-1"></i>
+                            Analyse générée par IA pour optimiser votre revente
                         </div>
                     </div>
                 </div>
